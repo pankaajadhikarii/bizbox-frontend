@@ -32,7 +32,7 @@ const businessDescriptions = {
 
 const Home = () => {
     const navigate = useNavigate();
-    const { user, isAuthenticated, logout } = useAuth();
+    const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
     const [businessTypes, setBusinessTypes] = useState([]);
     const [products, setProducts] = useState([]);
@@ -158,6 +158,15 @@ const Home = () => {
                             </div>
                         ) : (
                             <div className="hidden items-center gap-2 sm:flex">
+                                {isAdmin && (
+                                    <Link
+                                        to="/admin"
+                                        className="rounded-full px-3 py-2 text-sm font-medium text-[#4c4546] hover:bg-[#f0eff3]"
+                                    >
+                                        Admin Dashboard
+                                    </Link>
+                                )}
+
                                 <Link
                                     to="/orders"
                                     className="rounded-full px-3 py-2 text-sm font-medium text-[#4c4546] hover:bg-[#f0eff3]"

@@ -47,8 +47,13 @@ export const AuthProvider = ({ children }) => {
 
     const isAuthenticated = !!authService.getToken();
 
-    const isAdmin =
-        user?.roles?.includes("Admin") ?? false;
+    const userRoles = Array.isArray(user?.roles)
+        ? user.roles
+        : [user?.role].filter(Boolean);
+
+    const isAdmin = userRoles.some(
+        (role) => String(role).toLowerCase() === "admin"
+    );
 
     const value = {
         user,

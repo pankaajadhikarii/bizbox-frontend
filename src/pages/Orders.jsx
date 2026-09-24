@@ -7,26 +7,16 @@ const Orders = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const loadOrders = async () => {
+    const fetchOrders = async () => {
         try {
             setLoading(true);
             setError("");
 
             const data = await orderService.getAll();
-
-            const orderList = Array.isArray(data)
-                ? data
-                : data?.orders ||
-                data?.items ||
-                data?.data ||
-                [];
-
-            setOrders(orderList);
+            setOrders(Array.isArray(data) ? data : data.orders || []);
         } catch (err) {
             setError(
-                err.userMessage ||
-                err.response?.data?.message ||
-                "Unable to load your orders."
+                err.userMessage || "Unable to load your orders. Please try again."
             );
         } finally {
             setLoading(false);
@@ -34,241 +24,81 @@ const Orders = () => {
     };
 
     useEffect(() => {
-        loadOrders();
+        fetchOrders();
     }, []);
 
-    const getOrderId = (order) =>
-        order.id || order.orderId || order._id;
-
-    const getOrderDate = (order) =>
-        order.createdAt ||
-        order.orderDate ||
-        order.createdDate ||
-        order.date;
-
-    const getStatus = (order) =>
-        order.status || order.orderStatus || "Pending";
-
-    const getPaymentStatus = (order) =>
-        order.paymentStatus ||
-        order.payment?.status ||
-        "Pending";
-
-    const getTotal = (order) =>
-        order.totalAmount ??
-        order.total ??
-        order.orderTotal ??
-        order.grandTotal ??
-        0;
-
-    const getItems = (order) =>
-        order.items ||
-        order.orderItems ||
-        order.products ||
-        [];
-
-    const getItemCount = (order) => {
-        const items = getItems(order);
-
-        if (!Array.isArray(items)) {
-            return order.itemCount || order.totalItems || 0;
+    const getStatusClass = (status) => {
+        switch (status) {
+            case "Pending":
+                return "bg-yellow-100 text-yellow-700";
+            case "Processing":
+                return "bg-blue-100 text-blue-700";
+            case "Shipped":
+                return "bg-purple-100 text-purple-700";
+            case "Delivered":
+                return "bg-green-100 text-green-700";
+            case "Cancelled":
+                return "bg-red-100 text-red-700";
+            default:
+                return "bg-gray-100 text-gray-700";
         }
-
-        return items.reduce(
-            (total, item) =>
-                total +
-                Number(item.quantity ?? item.qty ?? 1),
-            0
-        );
     };
 
     const formatDate = (date) => {
-        if (!date) {
-            return "—";
-        }
+        if (!date) return "-";
 
-        const parsedDate = new Date(date);
-
-        if (Number.isNaN(parsedDate.getTime())) {
-            return date;
-        }
-
-        return parsedDate.toLocaleDateString("en-US", {
+        return new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
         });
     };
 
-    const formatCurrency = (amount) => {
-        const value = Number(amount);
-
-        if (Number.isNaN(value)) {
-            return "NPR 0.00";
-        }
-
-        return `NPR ${value.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        })}`;
-    };
-
-    const getStatusClasses = (status) => {
-        switch (String(status).toLowerCase()) {
-            case "delivered":
-                return "bg-green-50 text-green-700";
-
-            case "shipped":
-                return "bg-blue-50 text-blue-700";
-
-            case "processing":
-                return "bg-yellow-50 text-yellow-700";
-
-            case "cancelled":
-            case "canceled":
-                return "bg-red-50 text-red-700";
-
-            case "pending":
-            default:
-                return "bg-gray-100 text-gray-700";
-        }
-    };
-
-    const getPaymentClasses = (status) => {
-        switch (String(status).toLowerCase()) {
-            case "paid":
-                return "bg-green-50 text-green-700";
-
-            case "failed":
-                return "bg-red-50 text-red-700";
-
-            case "unpaid":
-                return "bg-orange-50 text-orange-700";
-
-            case "pending":
-            default:
-                return "bg-gray-100 text-gray-700";
-        }
-    };
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white px-6 py-12">
+                <div className="mx-auto max-w-6xl">
+                    <div className="animate-pulse">
+                        <div className="mb-8 h-8 w-40 rounded bg-gray-200" />
+                        <div className="h-20 rounded-xl bg-gray-100" />
+                        <div className="mt-4 h-20 rounded-xl bg-gray-100" />
+                        <div className="mt-4 h-20 rounded-xl bg-gray-100" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-white text-gray-900">
-            <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                    <Link
-                        to="/"
-                        className="text-2xl font-bold tracking-tight"
-                    >
-                        BizKit
-                    </Link>
-
-                    <nav className="hidden items-center gap-8 md:flex">
-                        <Link
-                            to="/"
-                            className="text-sm text-gray-600 transition hover:text-black"
-                        >
-                            Home
-                        </Link>
-
-                        <Link
-                            to="/equipment"
-                            className="text-sm text-gray-600 transition hover:text-black"
-                        >
-                            Equipment
-                        </Link>
-
-                        <Link
-                            to="/orders"
-                            className="text-sm font-medium text-black"
-                        >
-                            Orders
-                        </Link>
-
-                        <Link
-                            to="/cart"
-                            className="text-sm text-gray-600 transition hover:text-black"
-                        >
-                            Cart
-                        </Link>
-                    </nav>
-
-                    <Link
-                        to="/equipment"
-                        className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
-                    >
-                        Shop Equipment
-                    </Link>
-                </div>
-            </header>
-
-            <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-6xl">
                 <div className="mb-10">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                        Account
-                    </p>
-
-                    <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-                        Your Orders
+                    <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+                        My Orders
                     </h1>
-
-                    <p className="mt-4 max-w-2xl text-base leading-7 text-gray-600">
-                        View your complete purchase history and track your orders.
+                    <p className="mt-2 text-sm text-gray-500">
+                        View and track your orders.
                     </p>
                 </div>
 
-                {loading && (
-                    <div className="space-y-4">
-                        {[1, 2, 3].map((item) => (
-                            <div
-                                key={item}
-                                className="animate-pulse rounded-2xl border border-gray-200 p-6"
-                            >
-                                <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                                    <div className="space-y-3">
-                                        <div className="h-4 w-32 rounded bg-gray-200" />
-                                        <div className="h-3 w-24 rounded bg-gray-200" />
-                                    </div>
-
-                                    <div className="h-7 w-24 rounded-full bg-gray-200" />
-
-                                    <div className="h-4 w-28 rounded bg-gray-200" />
-
-                                    <div className="h-10 w-28 rounded-full bg-gray-200" />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {!loading && error && (
-                    <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
-                        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
-                            !
-                        </div>
-
-                        <h2 className="text-lg font-semibold text-red-900">
-                            Unable to load orders
-                        </h2>
-
-                        <p className="mt-2 text-sm text-red-700">
-                            {error}
-                        </p>
+                {error && (
+                    <div className="mb-6 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <span>{error}</span>
 
                         <button
-                            type="button"
-                            onClick={loadOrders}
-                            className="mt-6 rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+                            onClick={fetchOrders}
+                            className="font-medium underline hover:no-underline"
                         >
-                            Try Again
+                            Retry
                         </button>
                     </div>
                 )}
 
-                {!loading && !error && orders.length === 0 && (
-                    <div className="rounded-3xl border border-gray-200 px-6 py-20 text-center">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                {!error && orders.length === 0 ? (
+                    <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-16 text-center">
+                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm">
                             <svg
-                                className="h-7 w-7 text-gray-500"
+                                className="h-7 w-7"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -276,66 +106,170 @@ const Orders = () => {
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    strokeWidth="1.5"
-                                    d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                                    strokeWidth={1.5}
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"
                                 />
                             </svg>
                         </div>
 
-                        <h2 className="mt-6 text-2xl font-semibold">
+                        <h2 className="mt-5 text-lg font-medium text-gray-900">
                             No orders yet
                         </h2>
 
-                        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-600">
-                            You have not placed any orders yet. Explore our equipment
-                            catalog and find what your business needs.
+                        <p className="mt-2 text-sm text-gray-500">
+                            Your completed purchases will appear here.
                         </p>
 
                         <Link
-                            to="/equipment"
-                            className="mt-7 inline-flex rounded-full bg-black px-7 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+                            to="/"
+                            className="mt-6 inline-flex rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
                         >
-                            Browse Equipment
+                            Start Shopping
                         </Link>
                     </div>
-                )}
+                ) : (
+                    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                        <div className="hidden overflow-x-auto md:block">
+                            <table className="w-full text-left">
+                                <thead className="border-b border-gray-200 bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Order
+                                        </th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Date
+                                        </th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Items
+                                        </th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Total
+                                        </th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Status
+                                        </th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
 
-                {!loading && !error && orders.length > 0 && (
-                    <div className="space-y-4">
-                        {orders.map((order) => {
-                            const orderId = getOrderId(order);
-                            const status = getStatus(order);
-                            const paymentStatus = getPaymentStatus(order);
-                            const itemCount = getItemCount(order);
-                            const total = getTotal(order);
+                                <tbody className="divide-y divide-gray-100">
+                                    {orders.map((order) => {
+                                        const orderId = order.id;
+                                        const orderNumber =
+                                            order.orderNumber || `#${order.id}`;
 
-                            return (
-                                <div
-                                    key={orderId}
-                                    className="rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-gray-300 sm:p-6"
-                                >
-                                    <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr_1fr_auto] lg:items-center">
-                                        <div>
-                                            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-                                                Order
-                                            </p>
+                                        const total =
+                                            order.totalAmount ??
+                                            order.total ??
+                                            order.grandTotal ??
+                                            0;
 
-                                            <p className="mt-2 font-mono text-sm font-semibold text-gray-900">
-                                                #{orderId}
-                                            </p>
+                                        const items =
+                                            order.items ||
+                                            order.orderItems ||
+                                            [];
 
-                                            <p className="mt-1 text-sm text-gray-500">
-                                                {formatDate(getOrderDate(order))}
-                                            </p>
-                                        </div>
+                                        const status = order.status || "Pending";
 
-                                        <div>
-                                            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-                                                Status
-                                            </p>
+                                        const date =
+                                            order.createdAt ||
+                                            order.orderDate ||
+                                            order.createdDate;
+
+                                        return (
+                                            <tr
+                                                key={orderId}
+                                                className="transition hover:bg-gray-50"
+                                            >
+                                                <td className="px-6 py-5">
+                                                    <div className="font-medium text-gray-900">
+                                                        {orderNumber}
+                                                    </div>
+
+                                                    <div className="mt-1 text-xs text-gray-400">
+                                                        ID: {orderId}
+                                                    </div>
+                                                </td>
+
+                                                <td className="px-6 py-5 text-sm text-gray-600">
+                                                    {formatDate(date)}
+                                                </td>
+
+                                                <td className="px-6 py-5 text-sm text-gray-600">
+                                                    {items.length}
+                                                </td>
+
+                                                <td className="px-6 py-5 text-sm font-medium text-gray-900">
+                                                    Rs. {Number(total).toLocaleString()}
+                                                </td>
+
+                                                <td className="px-6 py-5">
+                                                    <span
+                                                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(
+                                                            status
+                                                        )}`}
+                                                    >
+                                                        {status}
+                                                    </span>
+                                                </td>
+
+                                                <td className="px-6 py-5">
+                                                    <Link
+                                                        to={`/orders/${orderId}`}
+                                                        className="text-sm font-medium text-gray-900 underline underline-offset-4 hover:text-gray-600"
+                                                    >
+                                                        View Details
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="divide-y divide-gray-100 md:hidden">
+                            {orders.map((order) => {
+                                const orderId = order.id;
+
+                                const orderNumber =
+                                    order.orderNumber || `#${order.id}`;
+
+                                const total =
+                                    order.totalAmount ??
+                                    order.total ??
+                                    order.grandTotal ??
+                                    0;
+
+                                const items =
+                                    order.items ||
+                                    order.orderItems ||
+                                    [];
+
+                                const status = order.status || "Pending";
+
+                                const date =
+                                    order.createdAt ||
+                                    order.orderDate ||
+                                    order.createdDate;
+
+                                return (
+                                    <div key={orderId} className="p-5">
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div>
+                                                <p className="font-medium text-gray-900">
+                                                    {orderNumber}
+                                                </p>
+
+                                                <p className="mt-1 text-xs text-gray-400">
+                                                    {formatDate(date)}
+                                                </p>
+                                            </div>
 
                                             <span
-                                                className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClasses(
+                                                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(
                                                     status
                                                 )}`}
                                             >
@@ -343,91 +277,35 @@ const Orders = () => {
                                             </span>
                                         </div>
 
-                                        <div>
-                                            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-                                                Payment
-                                            </p>
-
-                                            <span
-                                                className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-medium ${getPaymentClasses(
-                                                    paymentStatus
-                                                )}`}
-                                            >
-                                                {paymentStatus}
-                                            </span>
-
-                                            <div className="mt-2">
-                                                <p className="text-sm text-gray-500">
-                                                    {itemCount}{" "}
-                                                    {itemCount === 1 ? "item" : "items"}
+                                        <div className="mt-5 grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-xs text-gray-400">Items</p>
+                                                <p className="mt-1 text-sm font-medium text-gray-900">
+                                                    {items.length}
                                                 </p>
+                                            </div>
 
-                                                <p className="mt-1 text-base font-semibold">
-                                                    {formatCurrency(total)}
+                                            <div>
+                                                <p className="text-xs text-gray-400">Total</p>
+                                                <p className="mt-1 text-sm font-medium text-gray-900">
+                                                    Rs. {Number(total).toLocaleString()}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <Link
-                                                to={`/orders/${orderId}`}
-                                                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-900 transition hover:border-black hover:bg-gray-50 lg:w-auto"
-                                            >
-                                                View Details
-
-                                                <svg
-                                                    className="h-4 w-4"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="1.5"
-                                                        d="M5 12h14M13 6l6 6-6 6"
-                                                    />
-                                                </svg>
-                                            </Link>
-                                        </div>
+                                        <Link
+                                            to={`/orders/${orderId}`}
+                                            className="mt-5 block rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-900 transition hover:bg-gray-50"
+                                        >
+                                            View Order
+                                        </Link>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
-            </main>
-
-            <footer className="mt-16 border-t border-gray-200">
-                <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-gray-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-                    <p>
-                        © {new Date().getFullYear()} BizKit. All rights reserved.
-                    </p>
-
-                    <div className="flex gap-6">
-                        <Link
-                            to="/equipment"
-                            className="transition hover:text-black"
-                        >
-                            Equipment
-                        </Link>
-
-                        <Link
-                            to="/orders"
-                            className="transition hover:text-black"
-                        >
-                            Orders
-                        </Link>
-
-                        <Link
-                            to="/cart"
-                            className="transition hover:text-black"
-                        >
-                            Cart
-                        </Link>
-                    </div>
-                </div>
-            </footer>
+            </div>
         </div>
     );
 };

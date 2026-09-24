@@ -1,23 +1,24 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
+
 import Home from "../pages/Home";
 import Equipment from "../pages/Equiment";
 import ProductDetails from "../pages/ProductDetails";
+
 import Cart from "../pages/Cart";
 import CheckoutPage from "../pages/CheckoutPage";
 import OrderDetails from "../pages/OrderDetails";
 import Orders from "../pages/Orders";
-import Resale from "../pages/Resale";
-import ResaleDetails from "../pages/ResaleDetails";
-import ResalePurchase from "../pages/ResalePurchase";
-import CreateResaleListing from "../pages/CreateResaleListing";
+
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminBusinessTypes from "../pages/admin/AdminBusinessTypes";
+import AdminCategories from "../pages/admin/AdminCategories";
+import AdminProducts from "../pages/admin/AdminProducts";
+import AdminOrders from "../pages/admin/AdminOrders";
 
-const Placeholder = ({ title }) => {
-    return <div>{title}</div>;
-};
+import Login from "../pages/Login";
+import Register from "../pages/Register";
 
 const AppRoutes = () => {
     return (
@@ -41,12 +42,12 @@ const AppRoutes = () => {
 
                 <Route
                     path="/login"
-                    element={<Placeholder title="Login Page" />}
+                    element={<Login />}
                 />
 
                 <Route
                     path="/register"
-                    element={<Placeholder title="Register Page" />}
+                    element={<Register />}
                 />
 
                 {/* Protected Customer Routes */}
@@ -70,27 +71,7 @@ const AppRoutes = () => {
                         path="/orders/:id"
                         element={<OrderDetails />}
                     />
-
-                    <Route
-                        path="/resale"
-                        element={<Resale />}
-                    />
                 </Route>
-
-                <Route
-                    path="/resale/:id"
-                    element={<ResaleDetails />}
-                />
-
-                <Route
-                    path="/resale/:id/purchase"
-                    element={<ResalePurchase />}
-                />
-
-                <Route
-                    path="/resale/create"
-                    element={<CreateResaleListing />}
-                />
 
                 {/* Protected Admin Routes */}
                 <Route element={<AdminRoute />}>
@@ -106,22 +87,17 @@ const AppRoutes = () => {
 
                     <Route
                         path="/admin/categories"
-                        element={<Placeholder title="Admin Categories" />}
+                        element={<AdminCategories />}
                     />
 
                     <Route
                         path="/admin/products"
-                        element={<Placeholder title="Admin Products" />}
+                        element={<AdminProducts />}
                     />
 
                     <Route
                         path="/admin/orders"
-                        element={<Placeholder title="Admin Orders" />}
-                    />
-
-                    <Route
-                        path="/admin/resale"
-                        element={<Placeholder title="Admin Resale" />}
+                        element={<AdminOrders />}
                     />
                 </Route>
             </Routes>
