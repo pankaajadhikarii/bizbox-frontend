@@ -16,7 +16,7 @@ const fallbackImages = [
 ];
 
 const Equipment = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isAdmin } = useAuth();
     const [searchParams] = useSearchParams();
 
     const [products, setProducts] = useState([]);
@@ -26,7 +26,9 @@ const Equipment = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState(
+        () => searchParams.get("search") || ""
+    );
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [stockOnly, setStockOnly] = useState(false);
     const [sortBy, setSortBy] = useState("featured");
@@ -286,9 +288,9 @@ const Equipment = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
+        <div className="min-h-screen bg-gray-50 text-[#1a1b1f]">
             {/* Header */}
-            <header className="fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
+            <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
                     <Link
                         to="/"
@@ -387,34 +389,18 @@ const Equipment = () => {
             </header>
 
             {/* Main */}
-            <main className="flex min-h-screen flex-1 flex-col pt-16">
+            <main className="flex min-h-screen flex-1 flex-col">
                 {/* Page Heading */}
-                <section className="mx-auto w-full max-w-7xl px-6 pb-10 pt-12 lg:px-12">
+                <section className="mx-auto w-full max-w-7xl px-5 pb-6 pt-8 sm:px-6 lg:px-8">
                     <div className="flex flex-col gap-6">
-                        <div className="flex items-center gap-3">
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e9e7ed] px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-black">
-                                <span className="h-1.5 w-1.5 rounded-full bg-black" />
-                                Commercial Equipment
-                            </span>
-
-                            <span className="text-[11px] text-[#cfc4c5]">
-                                •
-                            </span>
-
-                            <span className="text-[11px] text-[#4c4546]">
-                                BizKit Catalog
-                            </span>
-                        </div>
-
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                             <div>
-                                <h1 className="text-[42px] font-semibold leading-[1.05] tracking-[-0.035em] sm:text-[52px]">
-                                    Equipment.
+                                <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+                                    Shop equipment
                                 </h1>
 
-                                <p className="mt-3 max-w-2xl text-[17px] leading-7 text-[#4c4546]">
-                                    Professional equipment for the
-                                    business you're building.
+                                <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+                                    Find the right products for your business.
                                 </p>
 
                                 {businessTypeId && (
@@ -434,7 +420,7 @@ const Equipment = () => {
                                     </span>
 
                                     <span className="text-[11px] text-[#4c4546]">
-                                        Catalog Units
+                                        Products
                                     </span>
                                 </div>
 
@@ -465,7 +451,7 @@ const Equipment = () => {
                                     </span>
 
                                     <span className="text-[11px] text-[#4c4546]">
-                                        In Stock
+                                        Available
                                     </span>
                                 </div>
                             </div>
@@ -486,8 +472,8 @@ const Equipment = () => {
                                     type="text"
                                     value={searchQuery}
                                     onChange={handleSearchChange}
-                                    placeholder="Search equipment by name, category, or description..."
-                                    className="h-12 w-full rounded-full bg-[#eeedf3] pl-12 pr-4 text-[13px] text-[#1a1b1f] outline-none transition-all placeholder:text-[#4c4546] focus:bg-white focus:ring-2 focus:ring-black"
+                                    placeholder="Search equipment..."
+                                    className="h-11 w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 text-sm text-[#1a1b1f] outline-none placeholder:text-gray-400 focus:border-black"
                                 />
                             </div>
 
@@ -495,7 +481,7 @@ const Equipment = () => {
                                 <button
                                     type="button"
                                     onClick={handleStockToggle}
-                                    className={`flex h-10 items-center gap-2 rounded-full px-4 text-[12px] font-medium transition-all ${stockOnly
+                                    className={`flex h-10 items-center gap-2 rounded-lg px-4 text-[12px] font-medium ${stockOnly
                                             ? "bg-black text-white"
                                             : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
                                         }`}
@@ -513,7 +499,7 @@ const Equipment = () => {
                                 <select
                                     value={sortBy}
                                     onChange={handleSortChange}
-                                    className="h-10 cursor-pointer appearance-none rounded-full bg-[#f4f3f8] px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-[#eeedf3]"
+                                    className="h-10 cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-gray-50"
                                 >
                                     <option value="featured">
                                         Sort: Featured
@@ -542,7 +528,7 @@ const Equipment = () => {
                                     onClick={() =>
                                         handleCategoryChange("all")
                                     }
-                                    className={`h-9 rounded-full px-4 text-[12px] font-medium transition-all ${selectedCategory === "all"
+                                    className={`h-9 rounded-lg px-4 text-[12px] font-medium ${selectedCategory === "all"
                                             ? "bg-black text-white shadow-sm"
                                             : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
                                         }`}
@@ -560,7 +546,7 @@ const Equipment = () => {
                                                     category
                                                 )
                                             }
-                                            className={`h-9 rounded-full px-4 text-[12px] font-medium transition-all ${selectedCategory ===
+                                            className={`h-9 rounded-lg px-4 text-[12px] font-medium ${selectedCategory ===
                                                     category
                                                     ? "bg-black text-white shadow-sm"
                                                     : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
@@ -600,7 +586,7 @@ const Equipment = () => {
                             }).map((_, index) => (
                                 <div
                                     key={index}
-                                    className="animate-pulse rounded-2xl bg-white p-4"
+                                    className="rounded-2xl bg-white p-4"
                                 >
                                     <div className="aspect-square rounded-xl bg-[#eeedf3]" />
 
@@ -652,14 +638,14 @@ const Equipment = () => {
                                         return (
                                             <article
                                                 key={product.id}
-                                                className="group relative flex flex-col justify-between rounded-2xl bg-white p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                                                className="relative flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 hover:border-gray-300 hover:bg-gray-50"
                                             >
                                                 <div>
                                                     <Link
                                                         to={`/products/${product.id}`}
                                                         className="block"
                                                     >
-                                                        <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl bg-[#f4f3f8] p-6">
+                                                        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-[#f4f3f8]">
                                                             <img
                                                                 src={getProductImage(
                                                                     product,
@@ -668,7 +654,7 @@ const Equipment = () => {
                                                                 alt={
                                                                     product.name
                                                                 }
-                                                                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                                                className="h-full w-full object-cover"
                                                                 onError={(
                                                                     event
                                                                 ) => {
@@ -742,42 +728,45 @@ const Equipment = () => {
                                                     <div className="flex gap-2">
                                                         <Link
                                                             to={`/products/${product.id}`}
-                                                            className="flex h-10 flex-1 items-center justify-center gap-1 rounded-full bg-[#f4f3f8] text-[12px] font-medium text-black transition-all hover:bg-black hover:text-white"
+                                                            className="flex h-10 flex-1 items-center justify-center gap-1 rounded-lg bg-[#f4f3f8] text-[12px] font-medium text-black hover:bg-gray-200"
                                                         >
                                                             View Product
-
-                                                            <span className="text-sm transition-transform group-hover:translate-x-0.5">
-                                                                →
-                                                            </span>
                                                         </Link>
 
-                                                        <button
-                                                            type="button"
-                                                            disabled={
-                                                                !inStock ||
-                                                                addingProductId ===
-                                                                product.id
-                                                            }
-                                                            onClick={() =>
-                                                                handleAddToCart(
+                                                        {!isAdmin && (
+                                                            <button
+                                                                type="button"
+                                                                disabled={
+                                                                    !inStock ||
+                                                                    addingProductId ===
                                                                     product.id
-                                                                )
-                                                            }
-                                                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all ${!inStock
-                                                                    ? "cursor-not-allowed bg-[#eeedf3] text-[#aaa]"
-                                                                    : "bg-black text-white hover:bg-[#333]"
-                                                                }`}
-                                                            title={
-                                                                inStock
-                                                                    ? "Add to cart"
-                                                                    : "Out of stock"
-                                                            }
-                                                        >
-                                                            {addingProductId ===
-                                                                product.id
-                                                                ? "..."
-                                                                : "+"}
-                                                        </button>
+                                                                }
+                                                                onClick={() =>
+                                                                    handleAddToCart(
+                                                                        product.id
+                                                                    )
+                                                                }
+                                                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-base ${!inStock
+                                                                        ? "cursor-not-allowed bg-[#eeedf3] text-[#aaa]"
+                                                                        : "bg-black text-white hover:bg-[#333]"
+                                                                    }`}
+                                                                title={
+                                                                    inStock
+                                                                        ? "Add to cart"
+                                                                        : "Out of stock"
+                                                                }
+                                                                aria-label={
+                                                                    inStock
+                                                                        ? "Add to cart"
+                                                                        : "Out of stock"
+                                                                }
+                                                            >
+                                                                {addingProductId ===
+                                                                    product.id
+                                                                    ? "..."
+                                                                    : "🛒"}
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </article>
@@ -837,7 +826,7 @@ const Equipment = () => {
                 </section>
 
                 {/* Procurement Banner */}
-                <section className="mx-auto w-full max-w-7xl px-6 pb-16 lg:px-12">
+                <section className="hidden mx-auto w-full max-w-7xl px-6 pb-16 lg:px-12">
                     <div className="relative overflow-hidden rounded-3xl bg-black p-8 text-white md:p-12 lg:p-16">
                         <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
                             <div
@@ -892,7 +881,7 @@ const Equipment = () => {
             </main>
 
             {/* Footer */}
-            <footer className="mt-10 w-full bg-[#f4f3f8]">
+            <footer className="hidden mt-10 w-full bg-[#f4f3f8]">
                 <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
                     <div className="grid grid-cols-2 gap-8 pb-14 md:grid-cols-4 lg:gap-12">
                         <div className="flex flex-col gap-3.5">

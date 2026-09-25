@@ -244,7 +244,7 @@ const Cart = () => {
     return (
         <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
             {/* Header */}
-            <header className="fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
+            <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
                     <Link
                         to="/"
@@ -325,7 +325,7 @@ const Cart = () => {
             </header>
 
             {/* Main */}
-            <main className="mx-auto max-w-7xl px-6 pb-20 pt-28 lg:px-12">
+            <main className="mx-auto max-w-7xl px-6 pb-20 lg:px-12">
                 {/* Heading */}
                 <section className="pb-10">
                     <div className="flex items-center gap-3">
@@ -516,7 +516,7 @@ const Cart = () => {
                                                 <img
                                                     src={getProductImage(item)}
                                                     alt={getProductName(item)}
-                                                    className="h-full w-full object-contain p-4 transition-transform duration-300 hover:scale-105"
+                                                    className="h-full w-full object-cover"
                                                     onError={(event) => {
                                                         event.currentTarget.src =
                                                             fallbackImage;
@@ -800,7 +800,7 @@ const Cart = () => {
             )}
 
             {/* Footer */}
-            <footer className="w-full bg-[#f4f3f8]">
+            <footer className="hidden w-full bg-[#f4f3f8]">
                 <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
                     <div className="grid grid-cols-2 gap-8 pb-14 md:grid-cols-4 lg:gap-12">
                         <div className="flex flex-col gap-3.5">

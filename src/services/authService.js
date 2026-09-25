@@ -4,6 +4,12 @@ const TOKEN_KEY = "token";
 const USER_KEY = "user";
 
 const authService = {
+    // Get the currently authenticated user
+    async getMe() {
+        const response = await api.get("/auth/me");
+        return response.data;
+    },
+
     // Login
     async login(email, password) {
         const response = await api.post("/auth/login", {
