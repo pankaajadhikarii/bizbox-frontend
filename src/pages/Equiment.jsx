@@ -42,12 +42,6 @@ const Equipment = () => {
 
     useEffect(() => {
         loadData();
-    }, []);
-
-    useEffect(() => {
-        if (businessTypeId) {
-            loadBusinessTypeProducts(businessTypeId);
-        }
     }, [businessTypeId]);
 
     const loadData = async () => {
@@ -55,18 +49,28 @@ const Equipment = () => {
             setLoading(true);
             setError("");
 
-            const [
-                productsData,
-                categoriesData,
-                businessTypesData,
-            ] = await Promise.all([
-                productService.getAll(),
+            const productRequest = businessTypeId
+                ? businessTypeService.getProducts(businessTypeId)
+                : productService.getAll();
+
+            const [productsData, categoriesData, businessTypesData] =
+                await Promise.all([
+                productRequest,
                 categoryService.getAll(),
                 businessTypeService.getAll(),
-            ]);
+                ]);
+
+            const productList = Array.isArray(productsData)
+                ? productsData
+                : productsData?.products ||
+                productsData?.items ||
+                productsData?.data ||
+                [];
 
             setProducts(
-                Array.isArray(productsData) ? productsData : []
+                productList
+                    .map((item) => item.product || item)
+                    .filter(Boolean)
             );
 
             setCategories(
@@ -85,26 +89,6 @@ const Equipment = () => {
             );
         } finally {
             setLoading(false);
-        }
-    };
-
-    const loadBusinessTypeProducts = async (id) => {
-        try {
-            const data = await businessTypeService.getProducts(id);
-
-            if (!Array.isArray(data)) {
-                return;
-            }
-
-            const mappedProducts = data
-                .map((item) => item.product || item)
-                .filter(Boolean);
-
-            if (mappedProducts.length > 0) {
-                setProducts(mappedProducts);
-            }
-        } catch {
-            // Keep the normal product catalog if this request fails.
         }
     };
 
@@ -228,11 +212,6 @@ const Equipment = () => {
 
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
-        setVisibleCount(8);
-    };
-
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
         setVisibleCount(8);
     };
 
@@ -405,8 +384,6 @@ const Equipment = () => {
 
                                 {businessTypeId && (
                                     <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[12px] font-medium shadow-sm ring-1 ring-black/4">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-black" />
-
                                         {selectedBusinessType?.name ||
                                             "Selected Business"}
                                     </div>
@@ -460,69 +437,10 @@ const Equipment = () => {
                 </section>
 
                 {/* Filters */}
-                <section className="mx-auto w-full max-w-7xl px-6 pb-12 lg:px-12">
-                    <div className="flex flex-col gap-5">
-                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                            <div className="relative w-full md:max-w-xl">
-                                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[18px] text-[#4c4546]">
-                                    ⌕
-                                </span>
-
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    placeholder="Search equipment..."
-                                    className="h-11 w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 text-sm text-[#1a1b1f] outline-none placeholder:text-gray-400 focus:border-black"
-                                />
-                            </div>
-
-                            <div className="flex w-full items-center justify-between gap-3 md:w-auto md:justify-end">
-                                <button
-                                    type="button"
-                                    onClick={handleStockToggle}
-                                    className={`flex h-10 items-center gap-2 rounded-lg px-4 text-[12px] font-medium ${stockOnly
-                                            ? "bg-black text-white"
-                                            : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
-                                        }`}
-                                >
-                                    <span
-                                        className={`h-2 w-2 rounded-full ${stockOnly
-                                                ? "bg-white"
-                                                : "bg-[#cfc4c5]"
-                                            }`}
-                                    />
-
-                                    In Stock Only
-                                </button>
-
-                                <select
-                                    value={sortBy}
-                                    onChange={handleSortChange}
-                                    className="h-10 cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-gray-50"
-                                >
-                                    <option value="featured">
-                                        Sort: Featured
-                                    </option>
-
-                                    <option value="price-low">
-                                        Price: Low to High
-                                    </option>
-
-                                    <option value="price-high">
-                                        Price: High to Low
-                                    </option>
-
-                                    <option value="name">
-                                        Name: A-Z
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
+                <section className="mx-auto w-full max-w-7xl px-6 pb-8 lg:px-12">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
                         {/* Categories */}
-                        <div className="w-full overflow-x-auto py-1">
-                            <div className="flex min-w-max items-center gap-2">
+                        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
                                 <button
                                     type="button"
                                     onClick={() =>
@@ -556,7 +474,37 @@ const Equipment = () => {
                                         </button>
                                     )
                                 )}
-                            </div>
+                        </div>
+
+                        <div className="flex shrink-0 items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={handleStockToggle}
+                                className={`flex h-10 items-center gap-2 rounded-lg px-4 text-[12px] font-medium ${stockOnly
+                                        ? "bg-black text-white"
+                                        : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
+                                    }`}
+                            >
+                                <span
+                                    className={`h-2 w-2 rounded-full ${stockOnly
+                                            ? "bg-white"
+                                            : "bg-[#cfc4c5]"
+                                        }`}
+                                />
+
+                                In Stock Only
+                            </button>
+
+                            <select
+                                value={sortBy}
+                                onChange={handleSortChange}
+                                className="h-10 cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-gray-50"
+                            >
+                                <option value="featured">Sort: Featured</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name">Name: A-Z</option>
+                            </select>
                         </div>
                     </div>
                 </section>

@@ -18,6 +18,7 @@ const ProductDetails = () => {
     const [error, setError] = useState("");
 
     const [quantity, setQuantity] = useState(1);
+    const [showFullDescription, setShowFullDescription] = useState(false);
     const [addingToCart, setAddingToCart] = useState(false);
     const [cartMessage, setCartMessage] = useState("");
 
@@ -30,6 +31,7 @@ const ProductDetails = () => {
             setLoading(true);
             setError("");
             setProduct(null);
+            setShowFullDescription(false);
 
             const data = await productService.getById(id);
 
@@ -62,6 +64,11 @@ const ProductDetails = () => {
         product?.imageUrl ||
         product?.image ||
         fallbackImage;
+
+    const descriptionText =
+        product?.description ||
+        "Professional commercial equipment designed for growing businesses.";
+    const canExpandDescription = descriptionText.length > 180;
 
     const handleQuantityDecrease = () => {
         setQuantity((current) => Math.max(1, current - 1));
@@ -191,7 +198,7 @@ const ProductDetails = () => {
                 </header>
 
                 <main className="mx-auto max-w-7xl px-6 pb-20 lg:px-12">
-                    <div className="grid animate-pulse grid-cols-1 gap-12 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
                         <div className="aspect-square rounded-3xl bg-[#eeedf3]" />
 
                         <div className="flex flex-col justify-center">
@@ -270,7 +277,7 @@ const ProductDetails = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
+        <div className="min-h-screen bg-gray-50 text-[#1a1b1f]">
             {/* Header */}
             <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
@@ -371,9 +378,9 @@ const ProductDetails = () => {
             </header>
 
             {/* Main */}
-            <main className="mx-auto max-w-7xl px-6 pb-20 lg:px-12">
+            <main className="mx-auto max-w-5xl px-5 py-6 sm:px-6 lg:px-8">
                 {/* Breadcrumb */}
-                <div className="mb-8 flex items-center gap-2 text-[11px] text-[#4c4546]">
+                <div className="mb-4 flex items-center gap-2 text-xs text-gray-500">
                     <Link
                         to="/"
                         className="transition-colors hover:text-black"
@@ -402,10 +409,10 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Product */}
-                <section className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
+                <section className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-8">
                     {/* Image */}
-                    <div>
-                        <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-3xl bg-[#f4f3f8] p-8 sm:p-12">
+                    <div className="lg:max-w-md">
+                        <div className="relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-white">
                             <img
                                 src={productImage}
                                 alt={product.name}
@@ -416,64 +423,44 @@ const ProductDetails = () => {
                                 }}
                             />
 
-                            <div className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-black backdrop-blur-md">
-                                {categoryName}
-                            </div>
-
                             <div
-                                className={`absolute right-5 top-5 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-medium backdrop-blur-md ${inStock
+                                className={`absolute right-4 top-4 rounded-md bg-white px-3 py-1.5 text-xs font-medium shadow-sm ${inStock
                                         ? "text-[#1b873f]"
                                         : "text-[#ba1a1a]"
                                     }`}
                             >
-                                <span
-                                    className={`h-1.5 w-1.5 rounded-full ${inStock
-                                            ? "bg-[#1b873f]"
-                                            : "bg-[#ba1a1a]"
-                                        }`}
-                                />
-
                                 {inStock
-                                    ? "In Stock"
-                                    : "Out of Stock"}
+                                    ? `${stock} in stock`
+                                    : "Out of stock"}
                             </div>
+
                         </div>
 
-                        <div className="mt-4 flex items-center justify-between px-1">
+                        <div className="mt-3 flex items-center justify-between px-1">
                             <Link
                                 to="/equipment"
-                                className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
+                                className="text-[12px] font-medium text-black transition-colors  underline hover:text-gray-800"
                             >
-                                ← Back to Equipment
+                                Back to Equipment
                             </Link>
 
-                            <span className="text-[11px] text-[#4c4546]">
-                                BizKit Equipment Catalog
-                            </span>
                         </div>
                     </div>
 
                     {/* Details */}
                     <div className="flex flex-col justify-center">
-                        <div className="flex items-center gap-3">
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e9e7ed] px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-black">
-                                <span className="h-1.5 w-1.5 rounded-full bg-black" />
+                        <div>
+                            <span className="inline-flex rounded-md bg-gray-200 px-3 py-1 text-xs font-medium text-black">
                                 {categoryName}
                             </span>
-
-                            {inStock && (
-                                <span className="text-[11px] text-[#4c4546]">
-                                    {stock} available
-                                </span>
-                            )}
                         </div>
 
-                        <h1 className="mt-5 max-w-2xl text-[38px] font-semibold leading-[1.08] tracking-[-0.035em] sm:text-[48px]">
+                        <h1 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
                             {product.name}
                         </h1>
 
                         <div className="mt-6">
-                            <span className="text-[30px] font-semibold tracking-tight">
+                            <span className="text-2xl font-semibold tracking-tight">
                                 $
                                 {Number(
                                     product.price || 0
@@ -481,68 +468,47 @@ const ProductDetails = () => {
                             </span>
                         </div>
 
-                        <div className="my-8 h-px w-full bg-[#e3e2e7]" />
+                        <div className="my-6 h-px w-full bg-gray-200" />
 
                         <div>
-                            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[#4c4546]">
-                                Product Description
+                            <h2 className="text-sm font-semibold text-black">
+                                Description
                             </h2>
 
-                            <p className="mt-3 max-w-xl text-[15px] leading-7 text-[#4c4546]">
-                                {product.description ||
-                                    "Professional commercial equipment designed for growing businesses."}
+                            <p
+                                className={`mt-2 max-w-xl text-sm leading-6 text-gray-600 ${!showFullDescription && canExpandDescription
+                                        ? "line-clamp-3"
+                                        : ""
+                                    }`}
+                            >
+                                {descriptionText}
                             </p>
-                        </div>
 
-                        {/* Stock */}
-                        <div className="mt-8 rounded-2xl bg-white p-5 ring-1 ring-black/4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-[12px] font-semibold">
-                                        Availability
-                                    </p>
-
-                                    <p className="mt-1 text-[11px] text-[#4c4546]">
-                                        {inStock
-                                            ? `${stock} units currently available`
-                                            : "This product is currently unavailable"}
-                                    </p>
-                                </div>
-
-                                <span
-                                    className={`flex items-center gap-1.5 text-[11px] font-medium ${inStock
-                                            ? "text-[#1b873f]"
-                                            : "text-[#ba1a1a]"
-                                        }`}
+                            {canExpandDescription && (
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowFullDescription(
+                                            (current) => !current
+                                        )
+                                    }
+                                    className="mt-2 text-sm font-medium text-black underline underline-offset-2"
                                 >
-                                    <span
-                                        className={`h-2 w-2 rounded-full ${inStock
-                                                ? "bg-[#1b873f]"
-                                                : "bg-[#ba1a1a]"
-                                            }`}
-                                    />
-
-                                    {inStock
-                                        ? "Available"
-                                        : "Unavailable"}
-                                </span>
-                            </div>
+                                    {showFullDescription
+                                        ? "See less"
+                                        : "See more"}
+                                </button>
+                            )}
                         </div>
 
                         {/* Quantity */}
                         {inStock && (
-                            <div className="mt-8">
-                                <div className="mb-3 flex items-center justify-between">
-                                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#4c4546]">
-                                        Quantity
-                                    </span>
-
-                                    <span className="text-[11px] text-[#4c4546]">
-                                        Maximum {stock}
-                                    </span>
+                            <div className="mt-5">
+                                <div className="mb-2 text-sm font-medium text-black">
+                                    Quantity
                                 </div>
 
-                                <div className="flex h-12 w-fit items-center overflow-hidden rounded-full bg-[#f4f3f8]">
+                                <div className="flex h-11 w-fit items-center overflow-hidden rounded-lg border border-gray-300 bg-white">
                                     <button
                                         type="button"
                                         onClick={
@@ -582,14 +548,14 @@ const ProductDetails = () => {
                         )}
 
                         {/* Actions */}
-                        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                             <button
                                 type="button"
                                 onClick={handleAddToCart}
                                 disabled={
                                     !inStock || addingToCart
                                 }
-                                className={`flex h-13 flex-1 items-center justify-center rounded-full px-6 text-[12px] font-semibold transition-all ${!inStock
+                                className={`flex h-12 flex-1 items-center justify-center rounded-lg px-6 text-sm font-semibold ${!inStock
                                         ? "cursor-not-allowed bg-[#eeedf3] text-[#aaa]"
                                         : "bg-black text-white hover:bg-[#333]"
                                     }`}
@@ -606,7 +572,7 @@ const ProductDetails = () => {
                                     type="button"
                                     onClick={handleBuyNow}
                                     disabled={addingToCart}
-                                    className="flex h-13 flex-1 items-center justify-center rounded-full bg-[#f4f3f8] px-6 text-[12px] font-semibold text-black transition-all hover:bg-[#eeedf3] disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="flex h-12 flex-1 items-center justify-center rounded-lg bg-gray-200 px-6 text-sm font-semibold text-black hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     Buy Now
                                 </button>
@@ -635,7 +601,7 @@ const ProductDetails = () => {
                 </section>
 
                 {/* Product Information */}
-                <section className="mt-20 border-t border-black/6 pt-14">
+                <section className="hidden mt-20 border-t border-black/6 pt-14">
                     <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
                         <div>
                             <span className="text-[10px] font-semibold uppercase tracking-wider text-[#4c4546]">
@@ -672,7 +638,7 @@ const ProductDetails = () => {
                 </section>
 
                 {/* Continue Shopping */}
-                <section className="mt-20">
+                <section className="hidden mt-20">
                     <div className="relative overflow-hidden rounded-3xl bg-black p-8 text-white md:p-12">
                         <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
                             <div

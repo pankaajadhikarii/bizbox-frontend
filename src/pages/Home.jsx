@@ -29,6 +29,7 @@ const Home = () => {
 
     const [businessTypes, setBusinessTypes] = useState([]);
     const [products, setProducts] = useState([]);
+    const [featuredProductIndex, setFeaturedProductIndex] = useState(0);
     const [loadingBusinessTypes, setLoadingBusinessTypes] = useState(true);
     const [loadingProducts, setLoadingProducts] = useState(true);
 
@@ -59,9 +60,31 @@ const Home = () => {
         loadProducts();
     }, []);
 
+    useEffect(() => {
+        if (products.length < 2) {
+            return undefined;
+        }
+
+        const intervalId = setInterval(() => {
+            setFeaturedProductIndex((currentIndex) => {
+                let nextIndex = Math.floor(Math.random() * products.length);
+
+                if (nextIndex === currentIndex) {
+                    nextIndex = (currentIndex + 1) % products.length;
+                }
+
+                return nextIndex;
+            });
+        }, 3000);
+
+        return () => clearInterval(intervalId);
+    }, [products.length]);
+
     const handleBusinessClick = (id) => {
         navigate(`/equipment?businessTypeId=${id}`);
     };
+
+    const featuredProduct = products[featuredProductIndex] || products[0];
 
     return (
         <div className="min-h-screen bg-white text-[#171717]">
@@ -81,12 +104,12 @@ const Home = () => {
                             </p>
 
                             <div className="mt-5 flex flex-wrap gap-3">
-                                <a
-                                    href="#business-types"
+                                <Link
+                                    to="/business-types"
                                     className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800"
                                 >
                                     Choose business
-                                </a>
+                                </Link>
 
                                 <Link
                                     to="/equipment"
@@ -99,8 +122,8 @@ const Home = () => {
 
                         <Link
                             to={
-                                products[0]
-                                    ? `/products/${products[0].id}`
+                                featuredProduct
+                                    ? `/products/${featuredProduct.id}`
                                     : "/equipment"
                             }
                             className="hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:block"
@@ -109,11 +132,11 @@ const Home = () => {
                                 <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-lg bg-gray-50">
                                     <img
                                         src={
-                                            products[0]?.imageUrl ||
+                                            featuredProduct?.imageUrl ||
                                             fallbackProductImages[0]
                                         }
                                         alt={
-                                            products[0]?.name ||
+                                            featuredProduct?.name ||
                                             "Featured equipment"
                                         }
                                         className="h-full w-full object-cover"
@@ -126,12 +149,12 @@ const Home = () => {
                                     </p>
 
                                     <h2 className="mt-2 line-clamp-2 text-lg font-semibold text-black">
-                                        {products[0]?.name ||
+                                        {featuredProduct?.name ||
                                             "Browse our equipment catalog"}
                                     </h2>
 
-                                    <span className="mt-4 inline-block text-sm font-medium text-black">
-                                        View product →
+                                    <span className="mt-4 inline-block text-sm font-medium text-black underline hover:text-gray-800">
+                                        View product
                                     </span>
                                 </div>
                             </div>
@@ -140,11 +163,8 @@ const Home = () => {
                 </section>
 
                 {/* Business Types */}
-                <section
-                    id="business-types"
-                    className="mx-auto max-w-7xl px-5 py-16 sm:px-6 lg:px-8 lg:py-20"
-                >
-                    <div className="mb-8">
+                <section className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
+                    <div className="mb-6">
                         <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
                             Choose your business
                         </h2>
@@ -203,8 +223,8 @@ const Home = () => {
                                                 "View equipment for this business."}
                                         </p>
 
-                                        <span className="mt-4 inline-block text-sm font-medium text-black">
-                                            View equipment →
+                                        <span className="mt-4 inline-block text-sm font-medium text-black underline hover:text-gray-800">
+                                            View equipment
                                         </span>
                                     </div>
                                 </button>
@@ -215,8 +235,8 @@ const Home = () => {
 
                 {/* Equipment */}
                 <section className="border-y border-gray-200 bg-[#fafafa]">
-                    <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-                        <div className="mb-8 flex items-end justify-between gap-4">
+                    <div className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
+                        <div className="mb-6 flex items-end justify-between gap-4">
                             <div>
                                 <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
                                     Shop equipment
@@ -229,9 +249,9 @@ const Home = () => {
 
                             <Link
                                 to="/equipment"
-                                className="hidden text-sm font-medium text-gray-700 transition-colors hover:text-black sm:block"
+                                className="hidden text-sm font-medium text-black transition-colors sm:block underline hover:text-gray-800"
                             >
-                                View all →
+                                View all
                             </Link>
                         </div>
 

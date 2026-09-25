@@ -2,9 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
 import AppLayout from "../components/layout/AppLayout";
+import AdminLayout from "../components/layout/AdminLayout";
 
 import Home from "../pages/Home";
 import Equipment from "../pages/Equiment";
+import BusinessTypes from "../pages/BusinessTypes";
 import ProductDetails from "../pages/ProductDetails";
 
 import Cart from "../pages/Cart";
@@ -30,6 +32,7 @@ const AppRoutes = () => {
                 <Route element={<AppLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/equipment" element={<Equipment />} />
+                    <Route path="/business-types" element={<BusinessTypes />} />
                     <Route path="/products/:id" element={<ProductDetails />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
@@ -45,30 +48,25 @@ const AppRoutes = () => {
 
                 {/* Protected Admin Routes */}
                 <Route element={<AdminRoute />}>
-                    <Route
-                        path="/admin"
-                        element={<AdminDashboard />}
-                    />
-
-                    <Route
-                        path="/admin/business-types"
-                        element={<AdminBusinessTypes />}
-                    />
-
-                    <Route
-                        path="/admin/categories"
-                        element={<AdminCategories />}
-                    />
-
-                    <Route
-                        path="/admin/products"
-                        element={<AdminProducts />}
-                    />
-
-                    <Route
-                        path="/admin/orders"
-                        element={<AdminOrders />}
-                    />
+                    <Route element={<AdminLayout />}>
+                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route
+                            path="/admin/business-types"
+                            element={<AdminBusinessTypes />}
+                        />
+                        <Route
+                            path="/admin/categories"
+                            element={<AdminCategories />}
+                        />
+                        <Route
+                            path="/admin/products"
+                            element={<AdminProducts />}
+                        />
+                        <Route
+                            path="/admin/orders"
+                            element={<AdminOrders />}
+                        />
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>

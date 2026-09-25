@@ -4,6 +4,7 @@ import businessTypeService from "../../services/businessTypeService";
 import categoryService from "../../services/categoryService";
 import productService from "../../services/productService";
 import api from "../../services/api";
+import { ArrowRight } from "lucide-react"
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
@@ -230,7 +231,7 @@ const AdminDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-50 text-gray-900">
             {/* Header */}
-            <header className="border-b border-gray-200 bg-white">
+            <header className="hidden border-b border-gray-200 bg-white">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                     <Link
                         to="/admin"
@@ -255,21 +256,15 @@ const AdminDashboard = () => {
             </header>
 
             {/* Main */}
-            <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <main className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8">
                 {/* Heading */}
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                        Administration
-                    </p>
-
-                    <h1 className="mt-3 text-4xl font-semibold tracking-tight">
+                    <h1 className="text-3xl font-semibold tracking-tight">
                         Dashboard
                     </h1>
 
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600">
-                        Manage BizKit's equipment catalog, business
-                        types, categories, orders, and marketplace
-                        activity.
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+                        Overview of your catalog and customer orders.
                     </p>
                 </div>
 
@@ -297,7 +292,7 @@ const AdminDashboard = () => {
                         <Link
                             key={card.title}
                             to={card.href}
-                            className="group rounded-3xl border border-gray-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-gray-400"
+                            className="rounded-lg border border-gray-200 bg-white p-5 hover:border-gray-400"
                         >
                             <div className="flex items-start justify-between">
                                 <div>
@@ -306,7 +301,7 @@ const AdminDashboard = () => {
                                     </p>
 
                                     {loading ? (
-                                        <div className="mt-4 h-9 w-20 animate-pulse rounded-lg bg-gray-200" />
+                                        <div className="mt-4 h-9 w-20 rounded-lg bg-gray-200" />
                                     ) : (
                                         <p className="mt-3 text-3xl font-semibold tracking-tight">
                                             {card.value}
@@ -314,9 +309,7 @@ const AdminDashboard = () => {
                                     )}
                                 </div>
 
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition group-hover:bg-black group-hover:text-white">
-                                    →
-                                </div>
+                                <span className="text-lg text-gray-400"><ArrowRight size={15} /></span>
                             </div>
 
                             <p className="mt-5 text-xs text-gray-500">
@@ -327,9 +320,9 @@ const AdminDashboard = () => {
                 </section>
 
                 {/* Content Grid */}
-                <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">
+                <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
                     {/* Recent Orders */}
-                    <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
+                    <section className="overflow-hidden rounded-lg border border-gray-200 bg-white">
                         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
                             <div>
                                 <h2 className="text-lg font-semibold">
@@ -355,7 +348,7 @@ const AdminDashboard = () => {
                                     (item) => (
                                         <div
                                             key={item}
-                                            className="animate-pulse px-6 py-5"
+                                            className="px-6 py-5"
                                         >
                                             <div className="h-4 w-32 rounded bg-gray-200" />
                                             <div className="mt-3 h-3 w-48 rounded bg-gray-100" />
@@ -442,7 +435,7 @@ const AdminDashboard = () => {
                     </section>
 
                     {/* Quick Actions */}
-                    <section className="h-fit rounded-3xl border border-gray-200 bg-white">
+                    <section className="h-fit rounded-lg border border-gray-200 bg-white">
                         <div className="border-b border-gray-200 px-6 py-5">
                             <h2 className="text-lg font-semibold">
                                 Quick Actions
@@ -456,7 +449,7 @@ const AdminDashboard = () => {
                         <div className="space-y-3 p-5">
                             <Link
                                 to="/admin/products"
-                                className="flex items-center justify-between rounded-2xl bg-gray-50 px-5 py-4 transition hover:bg-gray-100"
+                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
                             >
                                 <div>
                                     <p className="text-sm font-medium">
@@ -469,13 +462,13 @@ const AdminDashboard = () => {
                                 </div>
 
                                 <span className="text-gray-400">
-                                    →
+                                    <ArrowRight size={15} />
                                 </span>
                             </Link>
 
                             <Link
                                 to="/admin/categories"
-                                className="flex items-center justify-between rounded-2xl bg-gray-50 px-5 py-4 transition hover:bg-gray-100"
+                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
                             >
                                 <div>
                                     <p className="text-sm font-medium">
@@ -488,13 +481,13 @@ const AdminDashboard = () => {
                                 </div>
 
                                 <span className="text-gray-400">
-                                    →
+                                    <ArrowRight size={15} />
                                 </span>
                             </Link>
 
                             <Link
                                 to="/admin/business-types"
-                                className="flex items-center justify-between rounded-2xl bg-gray-50 px-5 py-4 transition hover:bg-gray-100"
+                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
                             >
                                 <div>
                                     <p className="text-sm font-medium">
@@ -507,13 +500,13 @@ const AdminDashboard = () => {
                                 </div>
 
                                 <span className="text-gray-400">
-                                    →
+                                    <ArrowRight size={15} />
                                 </span>
                             </Link>
 
                             <Link
                                 to="/admin/orders"
-                                className="flex items-center justify-between rounded-2xl bg-gray-50 px-5 py-4 transition hover:bg-gray-100"
+                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
                             >
                                 <div>
                                     <p className="text-sm font-medium">
@@ -526,34 +519,16 @@ const AdminDashboard = () => {
                                 </div>
 
                                 <span className="text-gray-400">
-                                    →
+                                    <ArrowRight size={15} />
                                 </span>
                             </Link>
 
-                            <Link
-                                to="/admin/resale"
-                                className="flex items-center justify-between rounded-2xl bg-gray-50 px-5 py-4 transition hover:bg-gray-100"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium">
-                                        Resale Marketplace
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Manage resale listings
-                                    </p>
-                                </div>
-
-                                <span className="text-gray-400">
-                                    →
-                                </span>
-                            </Link>
                         </div>
                     </section>
                 </div>
 
                 {/* Admin Information */}
-                <section className="mt-8 rounded-3xl bg-black p-7 text-white sm:p-8">
+                <section className="hidden mt-8 rounded-3xl bg-black p-7 text-white sm:p-8">
                     <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">

@@ -61,12 +61,15 @@ const Navbar = () => {
                             Equipment
                         </Link>
 
-                        <a
-                            href="/#business-types"
-                            className="text-sm font-medium text-gray-600 transition-colors hover:text-black"
+                        <Link
+                            to="/business-types"
+                            className={`text-sm font-medium ${location.pathname === "/business-types"
+                                    ? "text-black"
+                                    : "text-gray-600 hover:text-black"
+                                }`}
                         >
                             Business Types
-                        </a>
+                        </Link>
                     </nav>
 
                     <form

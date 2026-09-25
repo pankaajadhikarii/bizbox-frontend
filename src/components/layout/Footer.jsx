@@ -43,12 +43,12 @@ const Footer = () => {
                             Equipment
                         </Link>
 
-                        <a
-                            href="/#business-types"
+                        <Link
+                            to="/business-types"
                             className="transition-colors hover:text-black"
                         >
                             Business Types
-                        </a>
+                        </Link>
 
                         {!isAuthenticated && (
                             <>
