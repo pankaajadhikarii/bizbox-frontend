@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import cartService from "../services/cartService";
 import orderService from "../services/orderService";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const fallbackImage =
     "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80";
@@ -78,10 +79,10 @@ const CheckoutPage = () => {
 
     const getProductImage = (item) => {
         const product = getProduct(item);
+        const raw = product.imageUrl || product.image;
 
         return (
-            product.imageUrl ||
-            product.image ||
+            resolveImageUrl(raw) ||
             fallbackImage
         );
     };
@@ -192,7 +193,7 @@ const CheckoutPage = () => {
                         </div>
 
                         <span className="text-[17px] font-semibold tracking-tight">
-                            BizKit
+                            BizBox
                         </span>
                     </Link>
 
@@ -746,7 +747,7 @@ const CheckoutPage = () => {
 
                                         <p className="mt-1 text-[11px] leading-5 text-[#4c4546]">
                                             Your order information is processed
-                                            through the BizKit API. No raw card
+                                            through the BizBox API. No raw card
                                             details are stored by this page.
                                         </p>
                                     </div>
@@ -878,7 +879,7 @@ const CheckoutPage = () => {
 
                         <div className="flex flex-col gap-3.5">
                             <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                BizKit
+                                BizBox
                             </h4>
 
                             <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
@@ -886,7 +887,7 @@ const CheckoutPage = () => {
                                     to="/"
                                     className="hover:text-black"
                                 >
-                                    About BizKit
+                                    About BizBox
                                 </Link>
 
                                 <Link
@@ -922,7 +923,7 @@ const CheckoutPage = () => {
 
                     <div className="flex flex-col items-center justify-between gap-4 border-t border-black/6 pt-8 md:flex-row">
                         <p className="text-center text-[11px] text-[#4c4546] md:text-left">
-                            © 2026 BizKit. Commercial equipment
+                            © 2026 BizBox. Commercial equipment
                             for growing businesses.
                         </p>
 

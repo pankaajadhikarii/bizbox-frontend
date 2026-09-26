@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import productService from "../services/productService";
 import resaleService from "../services/resaleService";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const CreateResaleListing = () => {
     const navigate = useNavigate();
@@ -54,9 +55,9 @@ const CreateResaleListing = () => {
     };
 
     const getProductImage = (product) => {
+        const raw = product?.imageUrl || product?.image;
         return (
-            product?.imageUrl ||
-            product?.image ||
+            resolveImageUrl(raw) ||
             "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=80"
         );
     };
@@ -133,7 +134,7 @@ const CreateResaleListing = () => {
                         to="/"
                         className="text-2xl font-bold tracking-tight"
                     >
-                        BizKit
+                        BizBox
                     </Link>
 
                     <nav className="hidden items-center gap-8 md:flex">
@@ -196,7 +197,7 @@ const CreateResaleListing = () => {
 
                     <p className="mt-5 text-base leading-7 text-gray-600">
                         Turn equipment you no longer need into value by
-                        listing it on the BizKit resale marketplace.
+                        listing it on the BizBox resale marketplace.
                     </p>
                 </div>
 
@@ -453,7 +454,7 @@ const CreateResaleListing = () => {
             <footer className="mt-16 border-t border-gray-200">
                 <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-gray-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
                     <p>
-                        © {new Date().getFullYear()} BizKit. All rights
+                        © {new Date().getFullYear()} BizBox. All rights
                         reserved.
                     </p>
 

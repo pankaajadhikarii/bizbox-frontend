@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import businessTypeService from "../services/businessTypeService";
 import productService from "../services/productService";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const fallbackBusinessImages = [
     "https://lh3.googleusercontent.com/aida-public/AB6AXuDIaOBOZ6WvxPs3fRgYuk_rEYxP_4yCXlYzLebC9P7RVlTM3j3O8OtmVoIW0W_0qqX6lswChJ23cUrvJcfoO75eU8uXABNUsgQeOCEpX4D6nikiAeVeHxk0_9A9vsUDjCI81F4QLvV7ZBhNO7W4D9TpeiqU60CVyJTJ6eBMC5LVjUs3cwvg76UnWar6Snu7I7wOItbFfm04oKahgcm4zeG5b-15Yl7Z5AQNsN7u7rg4Ms2PKLQ_SjaW",
@@ -94,8 +95,8 @@ const Home = () => {
                     <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-8 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-10">
                         <div className="max-w-2xl">
 
-                            <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl lg:text-5xl">
-                                Shop equipment for your business.
+                            <h1 className="text-3xl font-semibold tracking-tight leading-[1.15] text-black sm:text-4xl lg:text-5xl">
+                                Shop equipment for you business.
                             </h1>
 
                             <p className="mt-3 max-w-lg text-base leading-7 text-gray-600">
@@ -132,7 +133,7 @@ const Home = () => {
                                 <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-lg bg-gray-50">
                                     <img
                                         src={
-                                            featuredProduct?.imageUrl ||
+                                            resolveImageUrl(featuredProduct?.imageUrl) ||
                                             fallbackProductImages[0]
                                         }
                                         alt={
@@ -202,7 +203,7 @@ const Home = () => {
                                     <div className="aspect-[4/3] overflow-hidden bg-gray-100">
                                         <img
                                             src={
-                                                businessType.imageUrl ||
+                                                resolveImageUrl(businessType.imageUrl) ||
                                                 fallbackBusinessImages[index]
                                             }
                                             alt={businessType.name}
@@ -282,7 +283,7 @@ const Home = () => {
                                                 <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-50">
                                                     <img
                                                         src={
-                                                            product.imageUrl ||
+                                                            resolveImageUrl(product.imageUrl) ||
                                                             fallbackProductImages[
                                                             index %
                                                             fallbackProductImages.length

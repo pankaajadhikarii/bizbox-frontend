@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import productService from "../../services/productService";
 import categoryService from "../../services/categoryService";
+import { resolveImageUrl } from "../../utils/imageUrl";
 
 const AdminProducts = () => {
     const [products, setProducts] = useState([]);
@@ -464,7 +465,7 @@ const AdminProducts = () => {
                                                     <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                                                         {product.imageUrl ? (
                                                             <img
-                                                                src={product.imageUrl}
+                                                                src={resolveImageUrl(product.imageUrl)}
                                                                 alt={product.name}
                                                                 className="h-full w-full object-cover"
                                                             />

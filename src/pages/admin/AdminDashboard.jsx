@@ -237,7 +237,7 @@ const AdminDashboard = () => {
                         to="/admin"
                         className="text-2xl font-bold tracking-tight"
                     >
-                        BizKit
+                        BizBox
                     </Link>
 
                     <div className="flex items-center gap-4">
@@ -437,7 +437,7 @@ const AdminDashboard = () => {
                     <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
-                                BizKit Administration
+                                BizBox Administration
                             </p>
 
                             <h2 className="mt-3 text-2xl font-semibold">

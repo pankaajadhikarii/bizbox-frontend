@@ -17,7 +17,7 @@ const Footer = () => {
                         <Link to="/" onClick={handleHomeClick}>
                             <img
                                 src={bizkitLogo}
-                                alt="BizKit"
+                                alt="BizBox"
                                 className="h-9 w-auto object-contain"
                             />
                         </Link>
@@ -98,7 +98,7 @@ const Footer = () => {
                 </div>
 
                 <div className="mt-8 border-t border-gray-200 pt-6 text-xs text-gray-500">
-                    © 2026 BizKit
+                    © 2026 BizBox
                 </div>
             </div>
         </footer>

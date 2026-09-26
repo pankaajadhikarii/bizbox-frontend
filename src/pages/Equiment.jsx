@@ -5,6 +5,7 @@ import categoryService from "../services/categoryService";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { useAuth } from "../context/AuthContext";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const fallbackImages = [
     "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80",
@@ -105,9 +106,9 @@ const Equipment = () => {
     };
 
     const getProductImage = (product, index) => {
+        const raw = product.imageUrl || product.image;
         return (
-            product.imageUrl ||
-            product.image ||
+            resolveImageUrl(raw) ||
             fallbackImages[index % fallbackImages.length]
         );
     };
@@ -280,7 +281,7 @@ const Equipment = () => {
                         </div>
 
                         <span className="text-[17px] font-semibold tracking-tight">
-                            BizKit
+                            BizBox
                         </span>
                     </Link>
 
@@ -820,7 +821,7 @@ const Equipment = () => {
                                     to="/"
                                     className="flex h-12 items-center justify-center rounded-full border border-white/20 px-6 text-[12px] font-medium text-white transition-all hover:bg-white/10"
                                 >
-                                    How BizKit Works
+                                    How BizBox Works
                                 </Link>
                             </div>
                         </div>
@@ -956,7 +957,7 @@ const Equipment = () => {
 
                         <div className="flex flex-col gap-3.5">
                             <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                BizKit
+                                BizBox
                             </h4>
 
                             <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
@@ -964,7 +965,7 @@ const Equipment = () => {
                                     to="/"
                                     className="hover:text-black"
                                 >
-                                    About BizKit
+                                    About BizBox
                                 </Link>
 
                                 <Link
@@ -1000,7 +1001,7 @@ const Equipment = () => {
 
                     <div className="flex flex-col items-center justify-between gap-4 border-t border-black/6 pt-8 md:flex-row">
                         <p className="text-center text-[11px] text-[#4c4546] md:text-left">
-                            © 2026 BizKit. Commercial equipment
+                            © 2026 BizBox. Commercial equipment
                             for growing businesses.
                         </p>
 

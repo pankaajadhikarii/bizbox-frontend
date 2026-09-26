@@ -60,6 +60,8 @@ api.interceptors.response.use(
                 message = "You do not have permission to perform this action.";
             } else if (status === 404) {
                 message = "The requested resource was not found.";
+            } else if (status === 415) {
+                message = "Unsupported Media Type. The server rejected the request format.";
             } else if (status >= 500) {
                 message = "Server error. Please try again later.";
             } else {

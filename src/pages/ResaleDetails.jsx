@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import resaleService from "../services/resaleService";
 import { useAuth } from "../context/AuthContext";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const ResaleDetails = () => {
     const { id } = useParams();
@@ -66,12 +67,14 @@ const ResaleDetails = () => {
 
     const getImage = () => {
         const product = getProduct();
-
-        return (
+        const raw =
             listing?.imageUrl ||
             listing?.productImageUrl ||
             product.imageUrl ||
-            product.image ||
+            product.image;
+
+        return (
+            resolveImageUrl(raw) ||
             "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=80"
         );
     };
@@ -95,7 +98,7 @@ const ResaleDetails = () => {
             seller.fullName ||
             seller.name ||
             seller.userName ||
-            "BizKit User"
+            "BizBox User"
         );
     };
 
@@ -146,7 +149,7 @@ const ResaleDetails = () => {
                             to="/"
                             className="text-2xl font-bold tracking-tight"
                         >
-                            BizKit
+                            BizBox
                         </Link>
                     </div>
                 </header>
@@ -185,7 +188,7 @@ const ResaleDetails = () => {
                             to="/"
                             className="text-2xl font-bold tracking-tight"
                         >
-                            BizKit
+                            BizBox
                         </Link>
 
                         <Link
@@ -247,7 +250,7 @@ const ResaleDetails = () => {
                         to="/"
                         className="text-2xl font-bold tracking-tight"
                     >
-                        BizKit
+                        BizBox
                     </Link>
 
                     <nav className="hidden items-center gap-8 md:flex">
@@ -430,7 +433,7 @@ const ResaleDetails = () => {
             <footer className="mt-16 border-t border-gray-200">
                 <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-gray-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
                     <p>
-                        © {new Date().getFullYear()} BizKit. All rights reserved.
+                        © {new Date().getFullYear()} BizBox. All rights reserved.
                     </p>
 
                     <div className="flex gap-6">

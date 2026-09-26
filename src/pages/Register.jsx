@@ -109,7 +109,7 @@ const Register = () => {
                             to="/"
                             className="text-2xl font-semibold tracking-tight text-gray-900"
                         >
-                            BizKit
+                            BizBox
                         </Link>
 
                         <h1 className="mt-8 text-3xl font-semibold tracking-tight text-gray-900">
@@ -117,7 +117,7 @@ const Register = () => {
                         </h1>
 
                         <p className="mt-2 text-sm text-gray-500">
-                            Sign up to start shopping with BizKit.
+                            Sign up to start shopping with BizBox.
                         </p>
                     </div>
 
@@ -271,7 +271,7 @@ const Register = () => {
 
                     <p className="mt-6 text-center text-xs text-gray-400">
                         By creating an account, you agree to the terms and conditions of
-                        BizKit.
+                        BizBox.
                     </p>
                 </div>
             </div>

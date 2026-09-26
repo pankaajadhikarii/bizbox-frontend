@@ -21,7 +21,9 @@ const businessTypeService = {
 
     // Create business type - Admin
     async create(businessTypeData) {
-        const response = await api.post("/business-types", businessTypeData);
+        const response = await api.post("/business-types", businessTypeData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
         return response.data;
     },
 

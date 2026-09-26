@@ -33,7 +33,7 @@ const Navbar = () => {
                 >
                     <img
                         src={bizkitLogo}
-                        alt="BizKit"
+                        alt="BizBox"
                         className="h-10 w-auto object-contain"
                     />
                 </button>
@@ -44,8 +44,8 @@ const Navbar = () => {
                             type="button"
                             onClick={handleHomeClick}
                             className={`text-sm font-medium ${location.pathname === "/"
-                                    ? "text-black"
-                                    : "text-gray-600 hover:text-black"
+                                ? "text-black"
+                                : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             Home
@@ -54,8 +54,8 @@ const Navbar = () => {
                         <Link
                             to="/equipment"
                             className={`text-sm font-medium ${location.pathname === "/equipment"
-                                    ? "text-black"
-                                    : "text-gray-600 hover:text-black"
+                                ? "text-black"
+                                : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             Equipment
@@ -64,8 +64,8 @@ const Navbar = () => {
                         <Link
                             to="/business-types"
                             className={`text-sm font-medium ${location.pathname === "/business-types"
-                                    ? "text-black"
-                                    : "text-gray-600 hover:text-black"
+                                ? "text-black"
+                                : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             Business Types
@@ -133,7 +133,7 @@ const Navbar = () => {
                                     to="/admin"
                                     className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
                                 >
-                                    Admin Dashboard
+                                    Dashboard
                                 </Link>
                             ) : (
                                 <Link

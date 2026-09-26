@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { useAuth } from "../context/AuthContext";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const fallbackImage =
     "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80";
@@ -61,8 +62,7 @@ const ProductDetails = () => {
         "Equipment";
 
     const productImage =
-        product?.imageUrl ||
-        product?.image ||
+        resolveImageUrl(product?.imageUrl || product?.image) ||
         fallbackImage;
 
     const descriptionText =
@@ -191,7 +191,7 @@ const ProductDetails = () => {
                             </div>
 
                             <span className="text-[17px] font-semibold tracking-tight">
-                                BizKit
+                                BizBox
                             </span>
                         </Link>
                     </div>
@@ -236,7 +236,7 @@ const ProductDetails = () => {
                             </div>
 
                             <span className="text-[17px] font-semibold tracking-tight">
-                                BizKit
+                                BizBox
                             </span>
                         </Link>
 
@@ -290,7 +290,7 @@ const ProductDetails = () => {
                         </div>
 
                         <span className="text-[17px] font-semibold tracking-tight">
-                            BizKit
+                            BizBox
                         </span>
                     </Link>
 
@@ -631,7 +631,7 @@ const ProductDetails = () => {
                             </span>
 
                             <p className="mt-2 text-[15px] font-medium">
-                                Available through BizKit
+                                Available through BizBox
                             </p>
                         </div>
                     </div>
@@ -654,7 +654,7 @@ const ProductDetails = () => {
                         <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                             <div>
                                 <span className="text-[10px] font-medium uppercase tracking-wider text-white/60">
-                                    BizKit Equipment
+                                    BizBox Equipment
                                 </span>
 
                                 <h2 className="mt-2 text-[26px] font-semibold tracking-tight md:text-[32px]">
@@ -813,7 +813,7 @@ const ProductDetails = () => {
 
                         <div className="flex flex-col gap-3.5">
                             <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                BizKit
+                                BizBox
                             </h4>
 
                             <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
@@ -821,7 +821,7 @@ const ProductDetails = () => {
                                     to="/"
                                     className="hover:text-black"
                                 >
-                                    About BizKit
+                                    About BizBox
                                 </Link>
 
                                 <Link
@@ -857,7 +857,7 @@ const ProductDetails = () => {
 
                     <div className="flex flex-col items-center justify-between gap-4 border-t border-black/6 pt-8 md:flex-row">
                         <p className="text-center text-[11px] text-[#4c4546] md:text-left">
-                            © 2026 BizKit. Commercial equipment
+                            © 2026 BizBox. Commercial equipment
                             for growing businesses.
                         </p>
 

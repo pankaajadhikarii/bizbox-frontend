@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import businessTypeService from "../services/businessTypeService";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const fallbackBusinessImages = [
     "https://lh3.googleusercontent.com/aida-public/AB6AXuDIaOBOZ6WvxPs3fRgYuk_rEYxP_4yCXlYzLebC9P7RVlTM3j3O8OtmVoIW0W_0qqX6lswChJ23cUrvJcfoO75eU8uXABNUsgQeOCEpX4D6nikiAeVeHxk0_9A9vsUDjCI81F4QLvV7ZBhNO7W4D9TpeiqU60CVyJTJ6eBMC5LVjUs3cwvg76UnWar6Snu7I7wOItbFfm04oKahgcm4zeG5b-15Yl7Z5AQNsN7u7rg4Ms2PKLQ_SjaW",
@@ -81,7 +82,7 @@ const BusinessTypes = () => {
                                 <div className="aspect-[4/3] overflow-hidden bg-gray-100">
                                     <img
                                         src={
-                                            businessType.imageUrl ||
+                                            resolveImageUrl(businessType.imageUrl) ||
                                             fallbackBusinessImages[
                                                 index % fallbackBusinessImages.length
                                             ]

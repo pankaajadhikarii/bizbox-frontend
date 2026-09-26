@@ -109,7 +109,7 @@ const Login = () => {
                             to="/"
                             className="text-2xl font-semibold tracking-tight text-gray-900"
                         >
-                            BizKit
+                            BizBox
                         </Link>
 
                         <h1 className="mt-8 text-3xl font-semibold tracking-tight text-gray-900">
@@ -240,7 +240,7 @@ const Login = () => {
                     </div>
 
                     <p className="mt-6 text-center text-xs text-gray-400">
-                        By signing in, you agree to the terms and conditions of BizKit.
+                        By signing in, you agree to the terms and conditions of BizBox.
                     </p>
                 </div>
             </div>

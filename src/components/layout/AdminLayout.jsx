@@ -22,7 +22,7 @@ const AdminLayout = () => {
                     <Link to="/admin" aria-label="BizKit admin dashboard">
                         <img
                             src={bizkitLogo}
-                            alt="BizKit"
+                            alt="BizBox"
                             className="h-9 w-auto object-contain"
                         />
                     </Link>

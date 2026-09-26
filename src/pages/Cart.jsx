@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import cartService from "../services/cartService";
+import { resolveImageUrl } from "../utils/imageUrl";
 
 const fallbackImage =
     "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80";
@@ -82,10 +83,10 @@ const Cart = () => {
 
     const getProductImage = (item) => {
         const product = getProduct(item);
+        const raw = product.imageUrl || product.image;
 
         return (
-            product.imageUrl ||
-            product.image ||
+            resolveImageUrl(raw) ||
             fallbackImage
         );
     };
@@ -255,7 +256,7 @@ const Cart = () => {
                         </div>
 
                         <span className="text-[17px] font-semibold tracking-tight">
-                            BizKit
+                            BizBox
                         </span>
                     </Link>
 
@@ -339,7 +340,7 @@ const Cart = () => {
                         </span>
 
                         <span className="text-[11px] text-[#4c4546]">
-                            BizKit Cart
+                            BizBox Cart
                         </span>
                     </div>
 
@@ -436,7 +437,7 @@ const Cart = () => {
 
                         <p className="mt-3 max-w-md text-[14px] leading-6 text-[#4c4546]">
                             You haven't added any equipment yet.
-                            Explore the BizKit catalog and start
+                            Explore the BizBox catalog and start
                             building your business setup.
                         </p>
 
@@ -766,7 +767,7 @@ const Cart = () => {
                             <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                                 <div>
                                     <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                        BizKit Equipment
+                                        BizBox Equipment
                                     </span>
 
                                     <h2 className="mt-2 text-[24px] font-semibold tracking-tight">
@@ -927,7 +928,7 @@ const Cart = () => {
 
                         <div className="flex flex-col gap-3.5">
                             <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                BizKit
+                                BizBox
                             </h4>
 
                             <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
@@ -935,7 +936,7 @@ const Cart = () => {
                                     to="/"
                                     className="hover:text-black"
                                 >
-                                    About BizKit
+                                    About BizBox
                                 </Link>
 
                                 <Link
@@ -971,7 +972,7 @@ const Cart = () => {
 
                     <div className="flex flex-col items-center justify-between gap-4 border-t border-black/6 pt-8 md:flex-row">
                         <p className="text-center text-[11px] text-[#4c4546] md:text-left">
-                            © 2026 BizKit. Commercial equipment
+                            © 2026 BizBox. Commercial equipment
                             for growing businesses.
                         </p>
 
