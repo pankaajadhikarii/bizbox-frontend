@@ -15,13 +15,19 @@ const productService = {
 
     // Create product - Admin
     async create(productData) {
-        const response = await api.post("/products", productData);
+        const isFormData = productData instanceof FormData;
+        const response = await api.post("/products", productData, {
+            headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+        });
         return response.data;
     },
 
     // Update product - Admin
     async update(id, productData) {
-        const response = await api.put(`/products/${id}`, productData);
+        const isFormData = productData instanceof FormData;
+        const response = await api.put(`/products/${id}`, productData, {
+            headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+        });
         return response.data;
     },
 

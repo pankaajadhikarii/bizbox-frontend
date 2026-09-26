@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import productService from "../../services/productService";
 import categoryService from "../../services/categoryService";
 import { resolveImageUrl } from "../../utils/imageUrl";
+import { Upload } from "lucide-react";
 
 const AdminProducts = () => {
     const [products, setProducts] = useState([]);
@@ -22,9 +23,11 @@ const AdminProducts = () => {
         price: "",
         stockQuantity: "",
         categoryId: "",
-        imageUrl: "",
         isActive: true,
     });
+
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     useEffect(() => {
         loadData();
@@ -65,10 +68,11 @@ const AdminProducts = () => {
             price: "",
             stockQuantity: "",
             categoryId: "",
-            imageUrl: "",
             isActive: true,
         });
 
+        setImageFile(null);
+        setImagePreview(null);
         setEditingId(null);
         setShowForm(false);
     };
@@ -82,13 +86,43 @@ const AdminProducts = () => {
             price: "",
             stockQuantity: "",
             categoryId: "",
-            imageUrl: "",
             isActive: true,
         });
 
+        setImageFile(null);
+        setImagePreview(null);
         setError("");
         setSuccess("");
         setShowForm(true);
+    };
+
+    const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
+    const ALLOWED_EXTENSIONS = [".png", ".jpg", ".jpeg"];
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+        const isValidFormat =
+            ALLOWED_IMAGE_TYPES.includes(file.type) ||
+            ALLOWED_EXTENSIONS.includes(fileExtension);
+
+        if (!isValidFormat) {
+            setError("Unsupported file format. Please upload a PNG, JPG, or JPEG image.");
+            e.target.value = "";
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            setError("Image must be 2MB or smaller.");
+            e.target.value = "";
+            return;
+        }
+
+        setError("");
+        setImageFile(file);
+        setImagePreview(URL.createObjectURL(file));
     };
 
     const handleEdit = (product) => {
@@ -100,9 +134,11 @@ const AdminProducts = () => {
             price: product.price ?? "",
             stockQuantity: product.stockQuantity ?? "",
             categoryId: product.categoryId ?? "",
-            imageUrl: product.imageUrl || "",
             isActive: product.isActive ?? true,
         });
+
+        setImageFile(null);
+        setImagePreview(product.imageUrl ? resolveImageUrl(product.imageUrl) : null);
 
         setError("");
         setSuccess("");
@@ -125,6 +161,11 @@ const AdminProducts = () => {
             return;
         }
 
+        if (!formData.description.trim()) {
+            setError("Description is required.");
+            return;
+        }
+
         if (formData.price === "" || Number(formData.price) < 0) {
             setError("Please enter a valid price.");
             return;
@@ -138,27 +179,50 @@ const AdminProducts = () => {
             return;
         }
 
+        if (!editingId && !imageFile) {
+            setError("Please upload an image for this product.");
+            return;
+        }
+
         try {
             setSaving(true);
 
-            const productData = {
-                name: formData.name.trim(),
-                description: formData.description.trim() || null,
-                price: Number(formData.price),
-                stockQuantity: Number(formData.stockQuantity),
-                categoryId: Number(formData.categoryId),
-                imageUrl: formData.imageUrl.trim() || null,
-            };
-
             if (editingId) {
-                await productService.update(editingId, {
-                    ...productData,
-                    isActive: formData.isActive,
-                });
+                if (imageFile) {
+                    const payload = new FormData();
+                    payload.append("name", formData.name.trim());
+                    payload.append("description", formData.description.trim());
+                    payload.append("price", Number(formData.price));
+                    payload.append("stockQuantity", Number(formData.stockQuantity));
+                    payload.append("categoryId", Number(formData.categoryId));
+                    payload.append("isActive", formData.isActive);
+                    payload.append("image", imageFile);
+
+                    await productService.update(editingId, payload);
+                } else {
+                    await productService.update(editingId, {
+                        name: formData.name.trim(),
+                        description: formData.description.trim(),
+                        price: Number(formData.price),
+                        stockQuantity: Number(formData.stockQuantity),
+                        categoryId: Number(formData.categoryId),
+                        isActive: formData.isActive,
+                    });
+                }
 
                 setSuccess("Product updated successfully.");
             } else {
-                await productService.create(productData);
+                const payload = new FormData();
+                payload.append("name", formData.name.trim());
+                payload.append("description", formData.description.trim());
+                payload.append("price", Number(formData.price));
+                payload.append("stockQuantity", Number(formData.stockQuantity));
+                payload.append("categoryId", Number(formData.categoryId));
+                if (imageFile) {
+                    payload.append("image", imageFile);
+                }
+
+                await productService.create(payload);
 
                 setSuccess("Product created successfully.");
             }
@@ -226,13 +290,13 @@ const AdminProducts = () => {
                     </button>
                 </div>
 
-                {error && (
+                {!showForm && error && (
                     <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                         {error}
                     </div>
                 )}
 
-                {success && (
+                {!showForm && success && (
                     <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
                         {success}
                     </div>
@@ -264,7 +328,7 @@ const AdminProducts = () => {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        Product Name
+                                        Product Name <span className="text-red-500">*</span>
                                     </label>
 
                                     <input
@@ -273,19 +337,21 @@ const AdminProducts = () => {
                                         value={formData.name}
                                         onChange={handleChange}
                                         placeholder="Commercial Coffee Machine"
+                                        required
                                         className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
                                     />
                                 </div>
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        Category
+                                        Category <span className="text-red-500">*</span>
                                     </label>
 
                                     <select
                                         name="categoryId"
                                         value={formData.categoryId}
                                         onChange={handleChange}
+                                        required
                                         className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
                                     >
                                         <option value="">
@@ -305,7 +371,7 @@ const AdminProducts = () => {
 
                                 <div className="md:col-span-2">
                                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        Description
+                                        Description <span className="text-red-500">*</span>
                                     </label>
 
                                     <textarea
@@ -314,13 +380,14 @@ const AdminProducts = () => {
                                         onChange={handleChange}
                                         rows="4"
                                         placeholder="Describe the product..."
+                                        required
                                         className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
                                     />
                                 </div>
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        Price
+                                        Price <span className="text-red-500">*</span>
                                     </label>
 
                                     <input
@@ -331,13 +398,14 @@ const AdminProducts = () => {
                                         min="0"
                                         step="0.01"
                                         placeholder="0.00"
+                                        required
                                         className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
                                     />
                                 </div>
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        Stock Quantity
+                                        Stock Quantity <span className="text-red-500">*</span>
                                     </label>
 
                                     <input
@@ -348,23 +416,72 @@ const AdminProducts = () => {
                                         min="0"
                                         step="1"
                                         placeholder="0"
+                                        required
                                         className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
                                     />
                                 </div>
 
                                 <div className="md:col-span-2">
                                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        Image URL
+                                        Product Image <span className="text-red-500">*</span>
                                     </label>
 
-                                    <input
-                                        type="url"
-                                        name="imageUrl"
-                                        value={formData.imageUrl}
-                                        onChange={handleChange}
-                                        placeholder="https://example.com/product.jpg"
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
-                                    />
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                                        <label
+                                            htmlFor="productImage"
+                                            className="flex flex-1 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 text-center transition hover:border-gray-400 hover:bg-gray-50"
+                                        >
+                                            <Upload size={24} />
+
+                                            <span className="text-sm font-medium text-gray-600">
+                                                {imageFile
+                                                    ? imageFile.name
+                                                    : "Click to upload image"}
+                                            </span>
+                                            <span className="mt-1 text-xs text-gray-400">
+                                                PNG, JPG, JPEG - max 2MB
+                                            </span>
+                                            <input
+                                                id="productImage"
+                                                type="file"
+                                                accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                                                onChange={handleFileChange}
+                                                className="hidden"
+                                            />
+                                        </label>
+
+                                        {imagePreview && (
+                                            <div className="relative h-36 w-36 shrink-0 overflow-hidden rounded-lg border border-gray-200">
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Preview"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setImageFile(null);
+                                                        setImagePreview(null);
+                                                    }}
+                                                    className="absolute right-1 top-1 rounded-full bg-white/80 p-1 text-gray-600 shadow hover:bg-white hover:text-red-600"
+                                                    title="Remove image"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-4 w-4"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {editingId && (
@@ -386,18 +503,32 @@ const AdminProducts = () => {
                                 )}
                             </div>
 
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    type="submit"
-                                    disabled={saving}
-                                    className="rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
-                                    {saving
-                                        ? "Saving..."
-                                        : editingId
-                                            ? "Update Product"
-                                            : "Create Product"}
-                                </button>
+                            <div className="mt-6 space-y-4">
+                                {error && (
+                                    <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                        {error}
+                                    </div>
+                                )}
+
+                                {success && (
+                                    <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                                        {success}
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end">
+                                    <button
+                                        type="submit"
+                                        disabled={saving}
+                                        className="rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        {saving
+                                            ? "Saving..."
+                                            : editingId
+                                                ? "Update Product"
+                                                : "Create Product"}
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
