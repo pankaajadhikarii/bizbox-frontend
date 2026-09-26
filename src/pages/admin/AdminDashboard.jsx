@@ -319,213 +319,118 @@ const AdminDashboard = () => {
                     ))}
                 </section>
 
-                {/* Content Grid */}
-                <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
-                    {/* Recent Orders */}
-                    <section className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-                        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
-                            <div>
-                                <h2 className="text-lg font-semibold">
-                                    Recent Orders
-                                </h2>
-
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Latest customer activity
-                                </p>
-                            </div>
-
-                            <Link
-                                to="/admin/orders"
-                                className="text-sm font-medium text-gray-900 transition hover:text-gray-500"
-                            >
-                                View all
-                            </Link>
-                        </div>
-
-                        {loading ? (
-                            <div className="divide-y divide-gray-100">
-                                {[1, 2, 3, 4, 5].map(
-                                    (item) => (
-                                        <div
-                                            key={item}
-                                            className="px-6 py-5"
-                                        >
-                                            <div className="h-4 w-32 rounded bg-gray-200" />
-                                            <div className="mt-3 h-3 w-48 rounded bg-gray-100" />
-                                        </div>
-                                    )
-                                )}
-                            </div>
-                        ) : recentOrders.length === 0 ? (
-                            <div className="px-6 py-16 text-center">
-                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-                                    <span className="text-xl text-gray-400">
-                                        —
-                                    </span>
-                                </div>
-
-                                <h3 className="mt-5 font-semibold">
-                                    No orders yet
-                                </h3>
-
-                                <p className="mt-2 text-sm text-gray-500">
-                                    Customer orders will appear here.
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="divide-y divide-gray-100">
-                                {recentOrders.map((order) => (
-                                    <Link
-                                        key={
-                                            order.id ||
-                                            order.orderNumber
-                                        }
-                                        to={`/orders/${order.id
-                                            }`}
-                                        className="flex flex-col gap-4 px-6 py-5 transition hover:bg-gray-50 sm:flex-row sm:items-center sm:justify-between"
-                                    >
-                                        <div className="min-w-0">
-                                            <p className="truncate text-sm font-semibold">
-                                                #
-                                                {getOrderNumber(
-                                                    order
-                                                )}
-                                            </p>
-
-                                            <p className="mt-1 text-xs text-gray-500">
-                                                {
-                                                    getCustomerName(
-                                                        order
-                                                    )
-                                                }
-                                                {" • "}
-                                                {formatDate(
-                                                    order.orderDate ||
-                                                    order.createdAt ||
-                                                    order.date
-                                                )}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex items-center justify-between gap-5 sm:justify-end">
-                                            <span
-                                                className={`rounded-full px-3 py-1.5 text-xs font-medium ${getStatusClasses(
-                                                    getOrderStatus(
-                                                        order
-                                                    )
-                                                )}`}
-                                            >
-                                                {getOrderStatus(
-                                                    order
-                                                )}
-                                            </span>
-
-                                            <span className="text-sm font-semibold">
-                                                {formatCurrency(
-                                                    getOrderTotal(
-                                                        order
-                                                    )
-                                                )}
-                                            </span>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </section>
-
-                    {/* Quick Actions */}
-                    <section className="h-fit rounded-lg border border-gray-200 bg-white">
-                        <div className="border-b border-gray-200 px-6 py-5">
+                {/* Recent Orders */}
+                <section className="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
+                    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
+                        <div>
                             <h2 className="text-lg font-semibold">
-                                Quick Actions
+                                Recent Orders
                             </h2>
 
                             <p className="mt-1 text-xs text-gray-500">
-                                Manage your store
+                                Latest customer activity
                             </p>
                         </div>
 
-                        <div className="space-y-3 p-5">
-                            <Link
-                                to="/admin/products"
-                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium">
-                                        Manage Products
-                                    </p>
+                        <Link
+                            to="/admin/orders"
+                            className="text-sm font-medium text-gray-900 transition hover:text-gray-500"
+                        >
+                            View all
+                        </Link>
+                    </div>
 
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Add or update equipment
-                                    </p>
-                                </div>
-
-                                <span className="text-gray-400">
-                                    <ArrowRight size={15} />
-                                </span>
-                            </Link>
-
-                            <Link
-                                to="/admin/categories"
-                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium">
-                                        Manage Categories
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Organize equipment
-                                    </p>
-                                </div>
-
-                                <span className="text-gray-400">
-                                    <ArrowRight size={15} />
-                                </span>
-                            </Link>
-
-                            <Link
-                                to="/admin/business-types"
-                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium">
-                                        Business Types
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Manage business categories
-                                    </p>
-                                </div>
-
-                                <span className="text-gray-400">
-                                    <ArrowRight size={15} />
-                                </span>
-                            </Link>
-
-                            <Link
-                                to="/admin/orders"
-                                className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4 hover:bg-gray-100"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium">
-                                        Manage Orders
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Process customer orders
-                                    </p>
-                                </div>
-
-                                <span className="text-gray-400">
-                                    <ArrowRight size={15} />
-                                </span>
-                            </Link>
-
+                    {loading ? (
+                        <div className="divide-y divide-gray-100">
+                            {[1, 2, 3, 4, 5].map(
+                                (item) => (
+                                    <div
+                                        key={item}
+                                        className="px-6 py-5"
+                                    >
+                                        <div className="h-4 w-32 rounded bg-gray-200" />
+                                        <div className="mt-3 h-3 w-48 rounded bg-gray-100" />
+                                    </div>
+                                )
+                            )}
                         </div>
-                    </section>
-                </div>
+                    ) : recentOrders.length === 0 ? (
+                        <div className="px-6 py-16 text-center">
+                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+                                <span className="text-xl text-gray-400">
+                                    —
+                                </span>
+                            </div>
+
+                            <h3 className="mt-5 font-semibold">
+                                No orders yet
+                            </h3>
+
+                            <p className="mt-2 text-sm text-gray-500">
+                                Customer orders will appear here.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-gray-100">
+                            {recentOrders.map((order) => (
+                                <Link
+                                    key={
+                                        order.id ||
+                                        order.orderNumber
+                                    }
+                                    to={`/orders/${order.id
+                                        }`}
+                                    className="flex flex-col gap-4 px-6 py-5 transition hover:bg-gray-50 sm:flex-row sm:items-center sm:justify-between"
+                                >
+                                    <div className="min-w-0">
+                                        <p className="truncate text-sm font-semibold">
+                                            #
+                                            {getOrderNumber(
+                                                order
+                                            )}
+                                        </p>
+
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            {
+                                                getCustomerName(
+                                                    order
+                                                )
+                                            }
+                                            {" • "}
+                                            {formatDate(
+                                                order.orderDate ||
+                                                order.createdAt ||
+                                                order.date
+                                            )}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center justify-between gap-5 sm:justify-end">
+                                        <span
+                                            className={`rounded-full px-3 py-1.5 text-xs font-medium ${getStatusClasses(
+                                                getOrderStatus(
+                                                    order
+                                                )
+                                            )}`}
+                                        >
+                                            {getOrderStatus(
+                                                order
+                                            )}
+                                        </span>
+
+                                        <span className="text-sm font-semibold">
+                                            {formatCurrency(
+                                                getOrderTotal(
+                                                    order
+                                                )
+                                            )}
+                                        </span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </section>
 
                 {/* Admin Information */}
                 <section className="hidden mt-8 rounded-3xl bg-black p-7 text-white sm:p-8">

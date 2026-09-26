@@ -161,19 +161,14 @@ const AdminOrders = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-7xl">
+        <main className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8">
 
                 <div className="mb-8">
-                    <p className="text-sm font-medium text-gray-500">
-                        Admin
-                    </p>
-
-                    <h1 className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+                    <h1 className="text-3xl font-semibold tracking-tight">
                         Orders
                     </h1>
 
-                    <p className="mt-2 text-sm text-gray-500">
+                    <p className="mt-2 text-sm text-gray-600">
                         View customer orders and manage their delivery status.
                     </p>
                 </div>
@@ -403,8 +398,7 @@ const AdminOrders = () => {
                     )}
 
                 </div>
-            </div>
-        </div>
+        </main>
     );
 };
 
