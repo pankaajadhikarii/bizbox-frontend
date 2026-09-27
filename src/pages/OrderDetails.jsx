@@ -1,31 +1,45 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import {
+    ArrowLeft,
+    CheckCircle2,
+    Clock,
+    Truck,
+    PackageCheck,
+    XCircle,
+    AlertCircle,
+    RotateCcw,
+    MapPin,
+    CreditCard,
+} from "lucide-react";
 import orderService from "../services/orderService";
+import productService from "../services/productService";
 import { resolveImageUrl } from "../utils/imageUrl";
-
-const fallbackImage =
-    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80";
 
 const statusSteps = [
     {
         key: "Pending",
         label: "Order Placed",
         description: "Your order has been received.",
+        icon: Clock,
     },
     {
         key: "Processing",
         label: "Processing",
         description: "Your order is being prepared.",
+        icon: PackageCheck,
     },
     {
         key: "Shipped",
         label: "Shipped",
-        description: "Your order is on its way.",
+        description: "Your order is on the way.",
+        icon: Truck,
     },
     {
         key: "Delivered",
         label: "Delivered",
         description: "Your order has been delivered.",
+        icon: CheckCircle2,
     },
 ];
 
@@ -41,6 +55,7 @@ const OrderDetails = () => {
     const { id } = useParams();
 
     const [order, setOrder] = useState(null);
+    const [productsMap, setProductsMap] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -55,9 +70,35 @@ const OrderDetails = () => {
             setLoading(true);
             setError("");
 
-            const data = await orderService.getById(id);
+            const [orderData, productsData] = await Promise.allSettled([
+                orderService.getById(id),
+                productService.getAll(),
+            ]);
 
-            setOrder(data);
+            if (orderData.status === "rejected") {
+                throw orderData.reason;
+            }
+
+            setOrder(orderData.value);
+
+            if (productsData.status === "fulfilled" && productsData.value) {
+                const list = Array.isArray(productsData.value)
+                    ? productsData.value
+                    : productsData.value?.products ||
+                      productsData.value?.items ||
+                      productsData.value?.data ||
+                      [];
+
+                const pMap = {};
+                list.forEach((p) => {
+                    const pId = p.id || p.productId;
+                    if (pId != null) {
+                        pMap[pId] = p;
+                        pMap[String(pId)] = p;
+                    }
+                });
+                setProductsMap(pMap);
+            }
         } catch (err) {
             setError(
                 err.userMessage ||
@@ -74,11 +115,7 @@ const OrderDetails = () => {
         }
 
         const value = String(status).toLowerCase();
-
-        return (
-            statusAliases[value] ||
-            String(status)
-        );
+        return statusAliases[value] || String(status);
     };
 
     const getItems = () => {
@@ -100,26 +137,42 @@ const OrderDetails = () => {
     const items = getItems();
 
     const getProduct = (item) => {
-        return (
-            item.product ||
-            item.productDetails ||
-            item
-        );
+        const productId = item.productId || item.product?.id || item.id;
+        const catalogProduct = productId ? productsMap[productId] || productsMap[String(productId)] : null;
+
+        return {
+            ...(catalogProduct || {}),
+            ...(item.product || item.productDetails || {}),
+            ...item,
+            ...(catalogProduct ? {
+                imageUrl: item.product?.imageUrl || item.imageUrl || item.productImageUrl || item.image || catalogProduct.imageUrl || catalogProduct.image,
+                categoryName: item.categoryName || item.product?.category?.name || catalogProduct.category?.name || catalogProduct.categoryName,
+            } : {}),
+        };
     };
 
     const getProductName = (item) => {
         const product = getProduct(item);
-
         return (
             product.name ||
+            product.productName ||
             item.productName ||
+            item.name ||
             "Equipment"
         );
     };
 
     const getProductImage = (item) => {
         const product = getProduct(item);
-        const raw = product.imageUrl || product.image;
+        const raw =
+            item.imageUrl ||
+            item.productImageUrl ||
+            item.productImage ||
+            item.image ||
+            product?.imageUrl ||
+            product?.productImageUrl ||
+            product?.image ||
+            product?.thumbnailUrl;
 
         return (
             resolveImageUrl(raw) ||
@@ -170,9 +223,7 @@ const OrderDetails = () => {
             return Number(item.subtotal);
         }
 
-        return (
-            getUnitPrice(item) * quantity
-        );
+        return getUnitPrice(item) * quantity;
     };
 
     const getOrderTotal = () => {
@@ -221,11 +272,31 @@ const OrderDetails = () => {
     };
 
     const getPaymentStatus = () => {
-        return (
+        const status =
             order?.paymentStatus ??
-            order?.payment?.status ??
-            "Pending"
-        );
+            order?.payment?.status;
+
+        if (status === 0 || status === "0" || status === "Unpaid" || status === "Pending") {
+            return "Unpaid";
+        }
+
+        if (status === 1 || status === "1" || status === "Paid") {
+            return "Paid";
+        }
+
+        if (status === 2 || status === "2" || status === "Failed") {
+            return "Failed";
+        }
+
+        if (status === 3 || status === "3" || status === "Refunded") {
+            return "Refunded";
+        }
+
+        if (typeof status === "string" && status.trim()) {
+            return status;
+        }
+
+        return "Unpaid";
     };
 
     const getOrderDate = () => {
@@ -248,7 +319,7 @@ const OrderDetails = () => {
             "en-US",
             {
                 year: "numeric",
-                month: "long",
+                month: "short",
                 day: "numeric",
             }
         );
@@ -262,855 +333,448 @@ const OrderDetails = () => {
         );
     };
 
-    const currentStatus = normalizeStatus(
-        order?.status
+    const currentStatus = normalizeStatus(order?.status);
+
+    const currentStepIndex = statusSteps.findIndex(
+        (step) => step.key === currentStatus
     );
 
-    const currentStepIndex =
-        statusSteps.findIndex(
-            (step) => step.key === currentStatus
-        );
+    const isCancelled = currentStatus === "Cancelled";
 
-    const isCancelled =
-        currentStatus === "Cancelled";
+    const getStatusClass = (status) => {
+        switch (status) {
+            case "Pending":
+                return "bg-amber-50 text-amber-700 border border-amber-200/60";
+            case "Processing":
+                return "bg-blue-50 text-blue-700 border border-blue-200/60";
+            case "Shipped":
+                return "bg-purple-50 text-purple-700 border border-purple-200/60";
+            case "Delivered":
+                return "bg-emerald-50 text-emerald-700 border border-emerald-200/60";
+            case "Cancelled":
+                return "bg-red-50 text-red-700 border border-red-200/60";
+            default:
+                return "bg-gray-100 text-gray-700 border border-gray-200";
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
-            {/* Header */}
-            <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
-                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
-                    <Link
-                        to="/"
-                        className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-75"
-                    >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
-                            B
-                        </div>
+        <main className="min-h-screen bg-gray-50 py-8 sm:py-10">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                {/* Back Link */}
+                <Link
+                    to="/orders"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-black mb-4"
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Back to orders
+                </Link>
 
-                        <span className="text-[17px] font-semibold tracking-tight">
-                            BizBox
-                        </span>
-                    </Link>
-
-                    <nav className="hidden items-center gap-7 xl:flex">
-                        <Link
-                            to="/equipment"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Equipment
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Business Kits
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Resale & Trade-in
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            How It Works
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Support
-                        </Link>
-                    </nav>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            to="/cart"
-                            className="flex h-9 items-center gap-2 rounded-full bg-[#eeedf3] px-3 text-black"
-                        >
-                            <span className="text-[17px]">
-                                🛍
-                            </span>
-
-                            <span className="text-[11px] font-medium">
-                                Cart
-                            </span>
-                        </Link>
-
-                        <Link
-                            to="/orders"
-                            className="hidden h-9 items-center rounded-full bg-black px-4 text-[12px] font-medium text-white sm:flex"
-                        >
-                            Orders
-                        </Link>
-
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm text-white">
-                            U
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <main className="mx-auto max-w-7xl px-6 pb-20 lg:px-12">
-                {/* Breadcrumb */}
-                <div className="mb-8 flex items-center gap-2 text-[11px] text-[#4c4546]">
-                    <Link
-                        to="/orders"
-                        className="transition-colors hover:text-black"
-                    >
-                        Orders
-                    </Link>
-
-                    <span>/</span>
-
-                    <span className="text-black">
-                        Order Details
-                    </span>
-                </div>
-
-                {/* Loading */}
+                {/* Loading Skeleton */}
                 {loading && (
-                    <div className="animate-pulse">
-                        <div className="h-12 w-72 rounded bg-[#eeedf3]" />
+                    <div className="animate-pulse space-y-6">
+                        <div className="space-y-2">
+                            <div className="h-9 w-64 rounded-xl bg-gray-200" />
+                            <div className="h-4 w-40 rounded bg-gray-200" />
+                        </div>
 
-                        <div className="mt-4 h-4 w-52 rounded bg-[#eeedf3]" />
+                        <div className="h-28 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
 
-                        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
-                            <div className="space-y-6">
-                                <div className="h-64 rounded-3xl bg-white" />
-                                <div className="h-80 rounded-3xl bg-white" />
-                            </div>
-
-                            <div className="h-96 rounded-3xl bg-white" />
+                        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+                            <div className="lg:col-span-8 h-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
+                            <div className="lg:col-span-4 h-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
                         </div>
                     </div>
                 )}
 
-                {/* Error */}
+                {/* Error Banner */}
                 {!loading && error && (
-                    <section className="flex min-h-112.5 flex-col items-center justify-center rounded-3xl bg-white px-6 text-center">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#ffdad6] text-xl font-semibold text-[#93000a]">
-                            !
+                    <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+                            <AlertCircle className="h-7 w-7" />
                         </div>
 
-                        <h1 className="mt-6 text-2xl font-semibold tracking-tight">
+                        <h2 className="mt-4 text-xl font-semibold text-gray-900">
                             Unable to load order
-                        </h1>
+                        </h2>
 
-                        <p className="mt-3 max-w-md text-[13px] leading-6 text-[#4c4546]">
+                        <p className="mt-1.5 max-w-md text-sm text-gray-500">
                             {error}
                         </p>
 
-                        <div className="mt-7 flex gap-3">
+                        <div className="mt-6 flex items-center gap-3">
                             <button
                                 type="button"
                                 onClick={loadOrder}
-                                className="h-11 rounded-full bg-black px-6 text-[12px] font-semibold text-white"
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-xs font-medium text-white transition hover:bg-gray-800"
                             >
+                                <RotateCcw className="h-3.5 w-3.5" />
                                 Try Again
                             </button>
 
                             <Link
                                 to="/orders"
-                                className="flex h-11 items-center rounded-full bg-[#eeedf3] px-6 text-[12px] font-semibold text-black"
+                                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
                             >
                                 Back to Orders
                             </Link>
                         </div>
-                    </section>
+                    </div>
                 )}
 
-                {/* Order */}
+                {/* Order Details Content */}
                 {!loading && !error && order && (
-                    <>
+                    <div className="space-y-8">
                         {/* Page Heading */}
-                        <section className="mb-10">
-                            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-                                <div>
-                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e9e7ed] px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-black">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-black" />
-                                        Order Details
-                                    </span>
-
-                                    <h1 className="mt-5 text-[38px] font-semibold leading-[1.05] tracking-[-0.035em] sm:text-[48px]">
-                                        Order #{getOrderNumber()}
-                                    </h1>
-
-                                    <p className="mt-3 text-[13px] text-[#4c4546]">
-                                        Placed on {getOrderDate()}
-                                    </p>
-                                </div>
-
-                                <div
-                                    className={`inline-flex w-fit items-center rounded-full px-4 py-2 text-[11px] font-semibold ${isCancelled
-                                            ? "bg-[#ffdad6] text-[#93000a]"
-                                            : currentStatus ===
-                                                "Delivered"
-                                                ? "bg-[#dff5df] text-[#176b2c]"
-                                                : "bg-black text-white"
-                                        }`}
-                                >
-                                    {currentStatus}
-                                </div>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+                                    Order #{getOrderNumber()}
+                                </h1>
+                                <p className="mt-2 text-sm text-gray-600">
+                                    Placed on {getOrderDate()}
+                                </p>
                             </div>
-                        </section>
+
+                            <span
+                                className={`inline-flex self-start sm:self-auto rounded-full px-3.5 py-1 text-xs font-medium ${getStatusClass(
+                                    currentStatus
+                                )}`}
+                            >
+                                {currentStatus}
+                            </span>
+                        </div>
 
                         {/* Status Timeline */}
-                        <section className="mb-8 rounded-3xl bg-white p-7 sm:p-8">
-                            <div>
-                                <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                    Order Progress
-                                </span>
-
-                                <h2 className="mt-2 text-[20px] font-semibold tracking-tight">
-                                    Status Timeline
-                                </h2>
-                            </div>
+                        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                            <h2 className="text-base font-semibold text-gray-900 mb-6">
+                                Order Progress
+                            </h2>
 
                             {isCancelled ? (
-                                <div className="mt-7 rounded-2xl bg-[#ffdad6] p-5">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#93000a] text-sm text-white">
-                                            ×
-                                        </div>
-
-                                        <div>
-                                            <p className="text-[13px] font-semibold text-[#93000a]">
-                                                Order Cancelled
-                                            </p>
-
-                                            <p className="mt-1 text-[11px] text-[#93000a]/70">
-                                                This order is no longer being
-                                                processed.
-                                            </p>
-                                        </div>
+                                <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+                                    <XCircle className="h-5 w-5 shrink-0 text-red-600" />
+                                    <div>
+                                        <p className="text-sm font-semibold">Order Cancelled</p>
+                                        <p className="text-xs text-red-600/80 mt-0.5">
+                                            This order is no longer being processed.
+                                        </p>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="mt-8">
-                                    <div className="hidden md:block">
+                                <div>
+                                    {/* Desktop Timeline */}
+                                    <div className="hidden sm:block">
                                         <div className="relative">
-                                            <div className="absolute left-[10%] right-[10%] top-5 h-px bg-[#dedce2]" />
+                                            {/* Track Background */}
+                                            <div className="absolute left-[12%] right-[12%] top-5 h-0.5 bg-gray-200" />
 
+                                            {/* Track Active Progress */}
                                             <div
-                                                className="absolute left-[10%] top-5 h-px bg-black transition-all"
+                                                className="absolute left-[12%] top-5 h-0.5 bg-black transition-all duration-300"
                                                 style={{
                                                     width:
-                                                        currentStepIndex <=
-                                                            0
+                                                        currentStepIndex <= 0
                                                             ? "0%"
                                                             : `${Math.min(
-                                                                (currentStepIndex /
-                                                                    (statusSteps.length -
-                                                                        1)) *
-                                                                80,
-                                                                80
-                                                            )}%`,
+                                                                  (currentStepIndex /
+                                                                      (statusSteps.length - 1)) *
+                                                                      76,
+                                                                  76
+                                                              )}%`,
                                                 }}
                                             />
 
+                                            {/* Steps */}
                                             <div className="relative grid grid-cols-4">
-                                                {statusSteps.map(
-                                                    (step, index) => {
-                                                        const completed =
-                                                            index <=
-                                                            currentStepIndex;
+                                                {statusSteps.map((step, index) => {
+                                                    const completed = index <= currentStepIndex;
+                                                    const active = index === currentStepIndex;
+                                                    const StepIcon = step.icon;
 
-                                                        const active =
-                                                            index ===
-                                                            currentStepIndex;
-
-                                                        return (
+                                                    return (
+                                                        <div
+                                                            key={step.key}
+                                                            className="flex flex-col items-center text-center"
+                                                        >
                                                             <div
-                                                                key={step.key}
-                                                                className="flex flex-col items-center text-center"
-                                                            >
-                                                                <div
-                                                                    className={`flex h-10 w-10 items-center justify-center rounded-full border-4 border-white text-[11px] font-semibold ${completed
-                                                                            ? "bg-black text-white"
-                                                                            : "bg-[#eeedf3] text-[#8d8889]"
-                                                                        }`}
-                                                                >
-                                                                    {completed
-                                                                        ? "✓"
-                                                                        : index + 1}
-                                                                </div>
-
-                                                                <p
-                                                                    className={`mt-4 text-[11px] font-semibold ${active
-                                                                            ? "text-black"
-                                                                            : completed
-                                                                                ? "text-[#4c4546]"
-                                                                                : "text-[#9b9697]"
-                                                                        }`}
-                                                                >
-                                                                    {step.label}
-                                                                </p>
-
-                                                                <p className="mt-1 max-w-32.5 text-[10px] leading-4 text-[#8d8889]">
-                                                                    {
-                                                                        step.description
-                                                                    }
-                                                                </p>
-                                                            </div>
-                                                        );
-                                                    }
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-5 md:hidden">
-                                        {statusSteps.map(
-                                            (step, index) => {
-                                                const completed =
-                                                    index <=
-                                                    currentStepIndex;
-
-                                                const active =
-                                                    index ===
-                                                    currentStepIndex;
-
-                                                return (
-                                                    <div
-                                                        key={step.key}
-                                                        className="flex gap-4"
-                                                    >
-                                                        <div className="flex flex-col items-center">
-                                                            <div
-                                                                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${completed
+                                                                className={`flex h-10 w-10 items-center justify-center rounded-full border-4 border-white shadow-xs transition-colors ${
+                                                                    completed
                                                                         ? "bg-black text-white"
-                                                                        : "bg-[#eeedf3] text-[#8d8889]"
-                                                                    }`}
+                                                                        : "bg-gray-100 text-gray-400"
+                                                                }`}
                                                             >
-                                                                {completed
-                                                                    ? "✓"
-                                                                    : index + 1}
+                                                                <StepIcon className="h-4 w-4" />
                                                             </div>
 
-                                                            {index !==
-                                                                statusSteps.length -
-                                                                1 && (
-                                                                    <div
-                                                                        className={`mt-2 h-8 w-px ${index <
-                                                                                currentStepIndex
-                                                                                ? "bg-black"
-                                                                                : "bg-[#dedce2]"
-                                                                            }`}
-                                                                    />
-                                                                )}
-                                                        </div>
-
-                                                        <div className="pt-1">
                                                             <p
-                                                                className={`text-[12px] font-semibold ${active
+                                                                className={`mt-3 text-xs font-semibold ${
+                                                                    active
                                                                         ? "text-black"
                                                                         : completed
-                                                                            ? "text-[#4c4546]"
-                                                                            : "text-[#9b9697]"
-                                                                    }`}
+                                                                        ? "text-gray-700"
+                                                                        : "text-gray-400"
+                                                                }`}
                                                             >
                                                                 {step.label}
                                                             </p>
 
-                                                            <p className="mt-1 text-[10px] leading-5 text-[#8d8889]">
-                                                                {
-                                                                    step.description
-                                                                }
+                                                            <p className="mt-1 text-[11px] text-gray-500 max-w-[120px]">
+                                                                {step.description}
                                                             </p>
                                                         </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Mobile Vertical Timeline */}
+                                    <div className="space-y-4 sm:hidden">
+                                        {statusSteps.map((step, index) => {
+                                            const completed = index <= currentStepIndex;
+                                            const active = index === currentStepIndex;
+                                            const StepIcon = step.icon;
+
+                                            return (
+                                                <div key={step.key} className="flex gap-3.5">
+                                                    <div className="flex flex-col items-center">
+                                                        <div
+                                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
+                                                                completed
+                                                                    ? "bg-black text-white"
+                                                                    : "bg-gray-100 text-gray-400"
+                                                            }`}
+                                                        >
+                                                            <StepIcon className="h-3.5 w-3.5" />
+                                                        </div>
+
+                                                        {index !== statusSteps.length - 1 && (
+                                                            <div
+                                                                className={`mt-1.5 h-6 w-0.5 ${
+                                                                    index < currentStepIndex
+                                                                        ? "bg-black"
+                                                                        : "bg-gray-200"
+                                                                }`}
+                                                            />
+                                                        )}
                                                     </div>
-                                                );
-                                            }
-                                        )}
+
+                                                    <div className="pt-0.5">
+                                                        <p
+                                                            className={`text-xs font-semibold ${
+                                                                active
+                                                                    ? "text-black"
+                                                                    : completed
+                                                                    ? "text-gray-800"
+                                                                    : "text-gray-400"
+                                                            }`}
+                                                        >
+                                                            {step.label}
+                                                        </p>
+                                                        <p className="text-[11px] text-gray-500 mt-0.5">
+                                                            {step.description}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
                         </section>
 
-                        {/* Main Content */}
-                        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
-                            {/* Left */}
-                            <div className="space-y-8">
-                                {/* Ordered Items */}
-                                <section className="rounded-3xl bg-white px-6 sm:px-8">
-                                    <div className="flex items-center justify-between border-b border-black/5 py-6">
-                                        <div>
-                                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                                Order Contents
-                                            </span>
-
-                                            <h2 className="mt-1 text-[18px] font-semibold">
-                                                Ordered Items
-                                            </h2>
-                                        </div>
-
-                                        <span className="text-[11px] text-[#4c4546]">
-                                            {items.length}{" "}
-                                            {items.length === 1
-                                                ? "product"
-                                                : "products"}
+                        {/* Order Content Grid */}
+                        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
+                            {/* Left Column: Items & Address */}
+                            <div className="lg:col-span-8 space-y-6">
+                                {/* Items Card */}
+                                <section className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+                                    <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                                        <h2 className="text-base font-semibold text-gray-900">
+                                            Ordered Items
+                                        </h2>
+                                        <span className="text-xs text-gray-500">
+                                            {items.length} {items.length === 1 ? "item" : "items"}
                                         </span>
                                     </div>
 
                                     {items.length === 0 ? (
-                                        <div className="py-12 text-center text-[13px] text-[#4c4546]">
-                                            No items found for this
-                                            order.
+                                        <div className="p-8 text-center text-sm text-gray-500">
+                                            No items found for this order.
                                         </div>
                                     ) : (
-                                        <div>
-                                            {items.map(
-                                                (item, index) => {
-                                                    const quantity =
-                                                        getQuantity(item);
+                                        <div className="divide-y divide-gray-100">
+                                            {items.map((item, index) => {
+                                                const quantity = getQuantity(item);
+                                                const unitPrice = getUnitPrice(item);
+                                                const itemTotal = getItemTotal(item);
+                                                const productId = item.productId || item.product?.id;
 
-                                                    const unitPrice =
-                                                        getUnitPrice(item);
-
-                                                    const itemTotal =
-                                                        getItemTotal(item);
-
-                                                    return (
-                                                        <div
-                                                            key={
-                                                                item.id ||
-                                                                item.productId ||
-                                                                index
-                                                            }
-                                                            className={`flex flex-col gap-5 py-6 sm:flex-row ${index !== 0
-                                                                ? "border-t border-black/5"
-                                                                    : ""
-                                                                }`}
-                                                        >
-                                                            <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-[#f4f3f8]">
-                                                                <img
-                                                                    src={getProductImage(
-                                                                        item
-                                                                    )}
-                                                                    alt={getProductName(
-                                                                        item
-                                                                    )}
-                                                                    className="h-full w-full object-cover"
-                                                                    onError={(
-                                                                        event
-                                                                    ) => {
-                                                                        event.currentTarget.src =
-                                                                            fallbackImage;
-                                                                    }}
-                                                                />
-                                                            </div>
-
-                                                            <div className="flex min-w-0 flex-1 flex-col justify-between gap-4">
-                                                                <div className="flex items-start justify-between gap-4">
-                                                                    <div>
-                                                                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                                                            {getCategoryName(
-                                                                                item
-                                                                            )}
-                                                                        </span>
-
-                                                                        <h3 className="mt-1 text-[15px] font-semibold">
-                                                                            {getProductName(
-                                                                                item
-                                                                            )}
-                                                                        </h3>
-                                                                    </div>
-
-                                                                    <span className="shrink-0 text-[15px] font-semibold">
-                                                                        Rs.
-                                                                        {itemTotal.toLocaleString()}
-                                                                    </span>
-                                                                </div>
-
-                                                                <div className="flex items-center justify-between gap-4 text-[11px] text-[#4c4546]">
-                                                                    <span>
-                                                                        Rs.
-                                                                        {unitPrice.toLocaleString()}{" "}
-                                                                        × {quantity}
-                                                                    </span>
-
-                                                                    <span>
-                                                                        Quantity:{" "}
-                                                                        {quantity}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
+                                                return (
+                                                    <div
+                                                        key={item.id || productId || index}
+                                                        className="flex items-center gap-4 p-5 sm:gap-6"
+                                                    >
+                                                        {/* Thumbnail */}
+                                                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                                                            <img
+                                                                src={getProductImage(item)}
+                                                                alt={getProductName(item)}
+                                                                className="h-full w-full object-cover"
+                                                                onError={(e) => {
+                                                                    e.currentTarget.src = fallbackImage;
+                                                                }}
+                                                            />
                                                         </div>
-                                                    );
-                                                }
-                                            )}
+
+                                                        {/* Info */}
+                                                        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                                                            <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                                                                {getCategoryName(item)}
+                                                            </span>
+
+                                                            {productId ? (
+                                                                <Link
+                                                                    to={`/products/${productId}`}
+                                                                    className="text-sm font-semibold text-gray-900 line-clamp-1 hover:text-black transition"
+                                                                >
+                                                                    {getProductName(item)}
+                                                                </Link>
+                                                            ) : (
+                                                                <span className="text-sm font-semibold text-gray-900 line-clamp-1">
+                                                                    {getProductName(item)}
+                                                                </span>
+                                                            )}
+
+                                                            <p className="text-xs text-gray-500">
+                                                                Rs. {unitPrice.toLocaleString()} × {quantity}
+                                                            </p>
+                                                        </div>
+
+                                                        {/* Total */}
+                                                        <div className="text-right shrink-0">
+                                                            <span className="text-sm font-semibold text-gray-900">
+                                                                Rs. {itemTotal.toLocaleString()}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     )}
                                 </section>
 
-                                {/* Shipping Address */}
-                                <section className="rounded-3xl bg-white p-7 sm:p-8">
-                                    <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                        Delivery
-                                    </span>
+                                {/* Delivery Address Card */}
+                                <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <MapPin className="h-4 w-4 text-gray-500" />
+                                        <h2 className="text-base font-semibold text-gray-900">
+                                            Delivery Information
+                                        </h2>
+                                    </div>
 
-                                    <h2 className="mt-2 text-[20px] font-semibold tracking-tight">
-                                        Shipping Address
-                                    </h2>
-
-                                    <div className="mt-6 rounded-2xl bg-[#f4f3f8] p-5">
-                                        <div className="flex gap-4">
-                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm">
-                                                📍
-                                            </div>
-
-                                            <div>
-                                                <p className="text-[12px] font-semibold">
-                                                    Delivery Address
-                                                </p>
-
-                                                <p className="mt-2 text-[12px] leading-6 text-[#4c4546]">
-                                                    {order.shippingAddress ||
-                                                        order.deliveryAddress ||
-                                                        "No shipping address provided."}
-                                                </p>
-                                            </div>
+                                    {order.customerName && (
+                                        <div className="mb-3 rounded-xl bg-gray-50/75 p-3.5 border border-gray-100 text-sm">
+                                            <p className="font-semibold text-gray-900">
+                                                {order.customerName}
+                                            </p>
                                         </div>
+                                    )}
+
+                                    <div className="rounded-xl bg-gray-50 p-4 border border-gray-100 text-sm text-gray-700 leading-relaxed">
+                                        {order.shippingAddress ||
+                                            order.deliveryAddress ||
+                                            "No delivery address provided."}
                                     </div>
                                 </section>
                             </div>
 
-                            {/* Right */}
-                            <aside className="space-y-4 lg:sticky lg:top-24">
-                                {/* Order Summary */}
-                                <section className="rounded-3xl bg-black p-7 text-white">
-                                    <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
-                                        Summary
-                                    </span>
-
-                                    <h2 className="mt-2 text-[22px] font-semibold tracking-tight">
+                            {/* Right Column: Order Summary & Info */}
+                            <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+                                {/* Summary Card */}
+                                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                                    <h2 className="text-base font-semibold text-gray-900">
                                         Order Summary
                                     </h2>
 
-                                    <div className="my-7 h-px bg-white/10" />
+                                    <div className="mt-5 space-y-3 text-sm">
+                                        <div className="flex justify-between text-gray-600">
+                                            <span>Products</span>
+                                            <span>{items.length}</span>
+                                        </div>
 
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between text-[13px]">
-                                            <span className="text-white/50">
-                                                Items
-                                            </span>
-
+                                        <div className="flex justify-between text-gray-600">
+                                            <span>Total Quantity</span>
                                             <span>
                                                 {items.reduce(
-                                                    (sum, item) =>
-                                                        sum +
-                                                        getQuantity(item),
+                                                    (sum, item) => sum + getQuantity(item),
                                                     0
                                                 )}
                                             </span>
                                         </div>
 
-                                        <div className="flex items-center justify-between text-[13px]">
-                                            <span className="text-white/50">
-                                                Products
-                                            </span>
-
-                                            <span>
-                                                {items.length}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between text-[13px]">
-                                            <span className="text-white/50">
-                                                Payment
-                                            </span>
-
-                                            <span>
+                                        <div className="flex justify-between text-gray-600">
+                                            <span>Payment Method</span>
+                                            <span className="font-medium text-gray-900">
                                                 {getPaymentMethod()}
                                             </span>
                                         </div>
+
+                                        <div className="border-t border-gray-100 pt-3 flex justify-between text-base font-semibold text-gray-900">
+                                            <span>Total Amount</span>
+                                            <span>Rs. {getOrderTotal().toLocaleString()}</span>
+                                        </div>
                                     </div>
 
-                                    <div className="my-7 h-px bg-white/10" />
+                                    <div className="mt-6 flex flex-col gap-2.5">
+                                        <Link
+                                            to="/orders"
+                                            className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-black py-2.5 text-xs font-medium text-white transition hover:bg-gray-800 shadow-xs"
+                                        >
+                                            <ArrowLeft className="h-3.5 w-3.5" />
+                                            Back to all orders
+                                        </Link>
 
-                                    <div className="flex items-end justify-between">
-                                        <div>
-                                            <span className="text-[10px] uppercase tracking-wider text-white/40">
-                                                Total
-                                            </span>
-
-                                            <p className="mt-1 text-[10px] text-white/40">
-                                                Final order amount
-                                            </p>
-                                        </div>
-
-                                        <span className="text-[25px] font-semibold tracking-tight">
-                                            Rs.
-                                            {getOrderTotal().toLocaleString()}
-                                        </span>
+                                        <Link
+                                            to="/equipment"
+                                            className="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                                        >
+                                            Continue shopping
+                                        </Link>
                                     </div>
-                                </section>
+                                </div>
 
-                                {/* Payment */}
-                                <section className="rounded-3xl bg-white p-6">
-                                    <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                        Payment
-                                    </span>
-
-                                    <div className="mt-4 flex items-center justify-between gap-4">
-                                        <div>
-                                            <p className="text-[13px] font-semibold">
-                                                {getPaymentMethod()}
-                                            </p>
-
-                                            <p className="mt-1 text-[10px] text-[#4c4546]">
-                                                Payment method
-                                            </p>
-                                        </div>
-
+                                {/* Order Meta Info Card */}
+                                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm text-xs space-y-3 text-gray-600">
+                                    <div className="flex justify-between items-center">
+                                        <span>Payment Status</span>
                                         <span
-                                            className={`rounded-full px-3 py-1.5 text-[10px] font-semibold ${String(
-                                                getPaymentStatus()
-                                            ).toLowerCase() ===
-                                                    "paid"
-                                                    ? "bg-[#dff5df] text-[#176b2c]"
-                                                    : "bg-[#eeedf3] text-[#4c4546]"
-                                                }`}
+                                            className={`rounded-full px-2.5 py-0.5 font-medium ${
+                                                getPaymentStatus() === "Paid"
+                                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                                    : getPaymentStatus() === "Failed"
+                                                    ? "bg-red-50 text-red-700 border border-red-200"
+                                                    : "bg-amber-50 text-amber-700 border border-amber-200"
+                                            }`}
                                         >
                                             {getPaymentStatus()}
                                         </span>
                                     </div>
-                                </section>
 
-                                {/* Order Info */}
-                                <section className="rounded-3xl bg-white p-6">
-                                    <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                        Information
-                                    </span>
-
-                                    <div className="mt-5 space-y-4">
-                                        <div className="flex items-start justify-between gap-4">
-                                            <span className="text-[11px] text-[#4c4546]">
-                                                Order ID
-                                            </span>
-
-                                            <span className="max-w-45 break-all text-right text-[11px] font-medium">
-                                                {getOrderNumber()}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between gap-4">
-                                            <span className="text-[11px] text-[#4c4546]">
-                                                Date
-                                            </span>
-
-                                            <span className="text-right text-[11px] font-medium">
-                                                {getOrderDate()}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between gap-4">
-                                            <span className="text-[11px] text-[#4c4546]">
-                                                Status
-                                            </span>
-
-                                            <span className="text-right text-[11px] font-medium">
-                                                {currentStatus}
-                                            </span>
-                                        </div>
+                                    <div className="flex justify-between items-center border-t border-gray-100 pt-3">
+                                        <span>Order Date</span>
+                                        <span className="font-medium text-gray-900">
+                                            {getOrderDate()}
+                                        </span>
                                     </div>
-                                </section>
-
-                                <Link
-                                    to="/orders"
-                                    className="flex h-11 w-full items-center justify-center rounded-full bg-[#eeedf3] text-[12px] font-semibold text-black transition hover:bg-[#e4e2e9]"
-                                >
-                                    ← Back to Orders
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="flex h-11 w-full items-center justify-center rounded-full border border-black/8 bg-white text-[12px] font-semibold text-black transition hover:bg-[#f4f3f8]"
-                                >
-                                    Continue Shopping
-                                </Link>
+                                </div>
                             </aside>
                         </div>
-                    </>
+                    </div>
                 )}
-            </main>
-
-            {/* Footer */}
-            <footer className="hidden w-full bg-[#f4f3f8]">
-                <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
-                    <div className="grid grid-cols-2 gap-8 pb-14 md:grid-cols-4 lg:gap-12">
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Shop by Business
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Coffee Shop
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Bakery
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Restaurant
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Salon
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Services
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Business Kits
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Equipment
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Resale & Trade-in
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Support
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Account
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/cart"
-                                    className="hover:text-black"
-                                >
-                                    Cart
-                                </Link>
-
-                                <Link
-                                    to="/orders"
-                                    className="hover:text-black"
-                                >
-                                    Orders
-                                </Link>
-
-                                <Link
-                                    to="/login"
-                                    className="hover:text-black"
-                                >
-                                    Sign In
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                BizBox
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    About BizBox
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    How It Works
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Privacy
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Terms
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col items-center justify-between gap-4 border-t border-black/6 pt-8 md:flex-row">
-                        <p className="text-center text-[11px] text-[#4c4546] md:text-left">
-                            © 2026 BizBox. Commercial equipment
-                            for growing businesses.
-                        </p>
-
-                        <div className="flex items-center gap-6 text-[11px] text-[#4c4546]">
-                            <span>Nepal</span>
-
-                            <Link
-                                to="/"
-                                className="hover:text-black"
-                            >
-                                Legal
-                            </Link>
-
-                            <Link
-                                to="/"
-                                className="hover:text-black"
-                            >
-                                Site Map
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
+            </div>
+        </main>
     );
 };
 

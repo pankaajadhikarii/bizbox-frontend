@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import bizkitLogo from "../../assets/screen.png";
 import defaultProfileImage from "../../assets/default-profile.png";
+import { ShoppingCart } from "lucide-react";
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -106,7 +107,9 @@ const Navbar = () => {
                             to="/cart"
                             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-black"
                         >
-                            Cart
+                            <ShoppingCart
+                                className="h-5 w-5"
+                            />
                         </Link>
                     )}
 

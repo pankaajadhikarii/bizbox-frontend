@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+    ShoppingBag,
+    ArrowLeft,
+    ArrowRight,
+    CheckCircle2,
+    AlertCircle,
+    Wallet,
+    Truck,
+} from "lucide-react";
 import cartService from "../services/cartService";
 import orderService from "../services/orderService";
 import { resolveImageUrl } from "../utils/imageUrl";
@@ -30,7 +39,6 @@ const CheckoutPage = () => {
             setError("");
 
             const data = await cartService.getCart();
-
             setCart(data);
         } catch (err) {
             setError(
@@ -63,13 +71,11 @@ const CheckoutPage = () => {
 
     const getProductId = (item) => {
         const product = getProduct(item);
-
         return item.productId || product.id;
     };
 
     const getProductName = (item) => {
         const product = getProduct(item);
-
         return (
             product.name ||
             item.productName ||
@@ -89,7 +95,6 @@ const CheckoutPage = () => {
 
     const getProductCategory = (item) => {
         const product = getProduct(item);
-
         return (
             product.category?.name ||
             product.categoryName ||
@@ -99,7 +104,6 @@ const CheckoutPage = () => {
 
     const getPrice = (item) => {
         const product = getProduct(item);
-
         return Number(
             item.unitPrice ??
             item.price ??
@@ -126,6 +130,17 @@ const CheckoutPage = () => {
         0
     );
 
+    const calculateDeliveryFee = (amount) => {
+        if (amount > 2500) return 112;
+        if (amount > 1500) return 70;
+        if (amount > 1000) return 59;
+        if (amount > 800) return 49;
+        return 0;
+    };
+
+    const deliveryFee = calculateDeliveryFee(subtotal);
+    const grandTotal = subtotal + deliveryFee;
+
     const handlePlaceOrder = async (event) => {
         event.preventDefault();
 
@@ -150,13 +165,11 @@ const CheckoutPage = () => {
             setPlacingOrder(true);
 
             const orderData = {
-                shippingAddress:
-                    shippingAddress.trim(),
+                shippingAddress: shippingAddress.trim(),
                 paymentMethod: Number(paymentMethod),
             };
 
-            const response =
-                await orderService.create(orderData);
+            const response = await orderService.create(orderData);
 
             const orderId =
                 response?.id ||
@@ -179,775 +192,323 @@ const CheckoutPage = () => {
         }
     };
 
+    const paymentOptions = [
+        {
+            id: 0,
+            name: "eSewa",
+            description: "Pay online securely using your eSewa wallet",
+            badge: "eS",
+            badgeBg: "bg-emerald-100 text-emerald-800",
+        },
+        {
+            id: 1,
+            name: "Khalti",
+            description: "Pay online with your Khalti digital wallet",
+            badge: "K",
+            badgeBg: "bg-purple-100 text-purple-800",
+        },
+        {
+            id: 2,
+            name: "Cash on Delivery",
+            description: "Pay in cash when your equipment is delivered",
+            badge: "COD",
+            badgeBg: "bg-gray-100 text-gray-800",
+        },
+    ];
+
     return (
-        <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
-            {/* Header */}
-            <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
-                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
+        <main className="min-h-screen bg-gray-50 py-8 sm:py-10">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                {/* Heading */}
+                <div className="mb-6">
                     <Link
-                        to="/"
-                        className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-75"
+                        to="/cart"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-black mb-3"
                     >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
-                            B
-                        </div>
-
-                        <span className="text-[17px] font-semibold tracking-tight">
-                            BizBox
-                        </span>
+                        <ArrowLeft className="h-3.5 w-3.5" />
+                        Back to cart
                     </Link>
-
-                    <nav className="hidden items-center gap-7 xl:flex">
-                        <Link
-                            to="/equipment"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Equipment
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Business Kits
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Resale & Trade-in
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            How It Works
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Support
-                        </Link>
-                    </nav>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            to="/cart"
-                            className="flex h-9 items-center gap-2 rounded-full bg-[#eeedf3] px-3 text-black"
-                        >
-                            <span className="text-[17px]">
-                                🛍
-                            </span>
-
-                            <span className="text-[11px] font-medium">
-                                Cart
-                            </span>
-                        </Link>
-
-                        <Link
-                            to="/orders"
-                            className="hidden h-9 items-center rounded-full bg-black px-4 text-[12px] font-medium text-white sm:flex"
-                        >
-                            Orders
-                        </Link>
-
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm text-white">
-                            U
-                        </div>
-                    </div>
+                    <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+                        Checkout
+                    </h1>
+                    <p className="mt-2 text-sm text-gray-600">
+                        Confirm your delivery details and payment method before placing your order.
+                    </p>
                 </div>
-            </header>
 
-            {/* Main */}
-            <main className="mx-auto max-w-7xl px-6 pb-20 lg:px-12">
-                {/* Page Header */}
-                <section className="pb-10">
-                    <div className="flex items-center gap-3">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e9e7ed] px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-black">
-                            <span className="h-1.5 w-1.5 rounded-full bg-black" />
-                            Checkout
-                        </span>
-
-                        <span className="text-[11px] text-[#cfc4c5]">
-                            •
-                        </span>
-
-                        <span className="text-[11px] text-[#4c4546]">
-                            Complete Your Order
-                        </span>
+                {/* Error Banner */}
+                {(validationError || error) && (
+                    <div className="mb-6 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                        <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+                        <span>{validationError || error}</span>
                     </div>
+                )}
 
-                    <div className="mt-5">
-                        <h1 className="text-[42px] font-semibold leading-[1.05] tracking-[-0.035em] sm:text-[52px]">
-                            Checkout.
-                        </h1>
-
-                        <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#4c4546]">
-                            Confirm your delivery details and
-                            payment method before placing your
-                            order.
-                        </p>
-                    </div>
-                </section>
-
-                {/* Loading */}
+                {/* Loading Skeleton */}
                 {loading ? (
-                    <div className="grid animate-pulse grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">
-                        <div className="rounded-3xl bg-white p-8">
-                            <div className="h-5 w-40 rounded bg-[#eeedf3]" />
-                            <div className="mt-8 h-12 w-full rounded-xl bg-[#eeedf3]" />
-                            <div className="mt-4 h-32 w-full rounded-xl bg-[#eeedf3]" />
-                            <div className="mt-8 h-5 w-40 rounded bg-[#eeedf3]" />
-                            <div className="mt-5 h-20 w-full rounded-2xl bg-[#eeedf3]" />
-                            <div className="mt-3 h-20 w-full rounded-2xl bg-[#eeedf3]" />
-                            <div className="mt-3 h-20 w-full rounded-2xl bg-[#eeedf3]" />
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start animate-pulse">
+                        <div className="lg:col-span-8 space-y-6">
+                            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+                                <div className="h-5 w-40 rounded bg-gray-100" />
+                                <div className="h-24 w-full rounded-xl bg-gray-100" />
+                            </div>
+                            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+                                <div className="h-5 w-40 rounded bg-gray-100" />
+                                <div className="h-16 w-full rounded-xl bg-gray-100" />
+                                <div className="h-16 w-full rounded-xl bg-gray-100" />
+                            </div>
                         </div>
-
-                        <div className="h-105 rounded-3xl bg-white" />
-                    </div>
-                ) : error && items.length === 0 ? (
-                    <div className="rounded-3xl bg-white px-6 py-16 text-center">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#ffdad6] text-2xl">
-                            !
-                        </div>
-
-                        <h2 className="mt-6 text-2xl font-semibold">
-                            Unable to load checkout
-                        </h2>
-
-                        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#4c4546]">
-                            {error}
-                        </p>
-
-                        <Link
-                            to="/cart"
-                            className="mt-7 inline-flex h-11 items-center rounded-full bg-black px-7 text-[12px] font-semibold text-white"
-                        >
-                            Back to Cart
-                        </Link>
+                        <div className="lg:col-span-4 h-96 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
                     </div>
                 ) : items.length === 0 ? (
-                    /* Empty Cart */
-                            <div className="flex min-h-112.5 flex-col items-center justify-center rounded-3xl bg-white px-6 text-center">
-                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#eeedf3] text-3xl">
-                            🛍
+                    /* Empty Cart State */
+                    <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                            <ShoppingBag className="h-8 w-8" />
                         </div>
-
-                        <h2 className="mt-7 text-2xl font-semibold tracking-tight">
+                        <h2 className="mt-4 text-xl font-semibold text-gray-900">
                             Your cart is empty
                         </h2>
-
-                        <p className="mt-3 max-w-md text-[14px] leading-6 text-[#4c4546]">
-                            Add some equipment before continuing
-                            to checkout.
+                        <p className="mt-1.5 max-w-sm text-sm text-gray-500">
+                            Add some equipment before continuing to checkout.
                         </p>
-
                         <Link
                             to="/equipment"
-                            className="mt-7 flex h-11 items-center justify-center rounded-full bg-black px-7 text-[12px] font-semibold text-white transition hover:bg-[#333]"
+                            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
                         >
-                            Browse Equipment →
+                            Browse Equipment
+                            <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
                 ) : (
+                    /* Checkout Form */
                     <form
                         onSubmit={handlePlaceOrder}
-                        className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px] lg:items-start"
+                        className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start"
                     >
-                        {/* Left Side */}
-                        <div className="space-y-6">
-                            {/* Shipping */}
-                            <section className="rounded-3xl bg-white p-7 sm:p-8">
-                                <div className="flex items-start justify-between gap-5">
-                                    <div>
-                                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                            Step 01
-                                        </span>
-
-                                        <h2 className="mt-2 text-[20px] font-semibold tracking-tight">
-                                            Delivery Address
-                                        </h2>
-
-                                        <p className="mt-1 text-[12px] leading-5 text-[#4c4546]">
-                                            Where should we deliver your
-                                            equipment?
-                                        </p>
-                                    </div>
-
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eeedf3] text-sm">
-                                        01
-                                    </div>
+                        {/* Left Side: Address & Payment */}
+                        <div className="lg:col-span-8 space-y-6">
+                            {/* Step 1: Delivery Address */}
+                            <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <div className="flex items-center gap-2.5 mb-1">
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-semibold text-white">
+                                        1
+                                    </span>
+                                    <h2 className="text-base font-semibold text-gray-900">
+                                        Delivery Address
+                                    </h2>
                                 </div>
+                                <p className="text-xs text-gray-500 ml-8.5">
+                                    Where should we deliver your equipment?
+                                </p>
 
-                                <div className="mt-7">
+                                <div className="mt-5">
                                     <label
                                         htmlFor="shippingAddress"
-                                        className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[#4c4546]"
+                                        className="mb-1.5 block text-xs font-medium text-gray-700"
                                     >
-                                        Shipping Address
+                                        Shipping Address <span className="text-red-500">*</span>
                                     </label>
-
                                     <textarea
                                         id="shippingAddress"
                                         value={shippingAddress}
                                         onChange={(event) =>
-                                            setShippingAddress(
-                                                event.target.value
-                                            )
+                                            setShippingAddress(event.target.value)
                                         }
-                                        placeholder="Enter your complete delivery address"
-                                        rows={4}
-                                                    className="w-full resize-none rounded-2xl border border-black/8 bg-[#faf8fe] px-4 py-3.5 text-[13px] outline-none transition placeholder:text-[#9c9697] focus:border-black focus:bg-white"
+                                        placeholder="Enter your complete delivery address (Street, Area, City, Landmarks)"
+                                        rows={3}
+                                        className="w-full rounded-xl border border-gray-300 p-3.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-black focus:ring-1 focus:ring-black"
                                     />
-
-                                    <p className="mt-2 text-[10px] text-[#4c4546]">
-                                        Include your city, area, street,
-                                        and any useful delivery instructions.
+                                    <p className="mt-1.5 text-xs text-gray-400">
+                                        Include your city, street, and any specific delivery instructions.
                                     </p>
                                 </div>
                             </section>
 
-                            {/* Payment */}
-                            <section className="rounded-3xl bg-white p-7 sm:p-8">
-                                <div className="flex items-start justify-between gap-5">
-                                    <div>
-                                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                            Step 02
-                                        </span>
-
-                                        <h2 className="mt-2 text-[20px] font-semibold tracking-tight">
-                                            Payment Method
-                                        </h2>
-
-                                        <p className="mt-1 text-[12px] leading-5 text-[#4c4546]">
-                                            Select how you'd like to pay for
-                                            this order.
-                                        </p>
-                                    </div>
-
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eeedf3] text-sm">
-                                        02
-                                    </div>
+                            {/* Step 2: Payment Method */}
+                            <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <div className="flex items-center gap-2.5 mb-1">
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-semibold text-white">
+                                        2
+                                    </span>
+                                    <h2 className="text-base font-semibold text-gray-900">
+                                        Payment Method
+                                    </h2>
                                 </div>
+                                <p className="text-xs text-gray-500 ml-8.5">
+                                    Select how you would like to pay for this order.
+                                </p>
 
-                                <div className="mt-7 space-y-3">
-                                    {/* eSewa */}
-                                    <label
-                                        className={`flex cursor-pointer items-center gap-4 rounded-2xl border p-4 transition ${Number(paymentMethod) === 0
-                                                ? "border-black bg-[#faf8fe]"
-                                                : "border-black/[0.07] hover:border-black/20"
-                                            }`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="0"
-                                            checked={
-                                                Number(paymentMethod) ===
-                                                0
-                                            }
-                                            onChange={(event) =>
-                                                setPaymentMethod(
-                                                    Number(
-                                                        event.target.value
-                                                    )
-                                                )
-                                            }
-                                            className="h-4 w-4 accent-black"
-                                        />
+                                <div className="mt-5 space-y-3">
+                                    {paymentOptions.map((option) => {
+                                        const isSelected = Number(paymentMethod) === option.id;
 
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eeedf3] text-[11px] font-bold">
-                                            eS
-                                        </div>
+                                        return (
+                                            <label
+                                                key={option.id}
+                                                className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition ${
+                                                    isSelected
+                                                        ? "border-black bg-gray-50/70 shadow-xs"
+                                                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/40"
+                                                }`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="paymentMethod"
+                                                    value={option.id}
+                                                    checked={isSelected}
+                                                    onChange={(event) =>
+                                                        setPaymentMethod(Number(event.target.value))
+                                                    }
+                                                    className="h-4 w-4 accent-black text-black"
+                                                />
 
-                                        <div className="flex-1">
-                                            <p className="text-[13px] font-semibold">
-                                                eSewa
-                                            </p>
+                                                <div
+                                                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${option.badgeBg}`}
+                                                >
+                                                    {option.badge}
+                                                </div>
 
-                                            <p className="mt-0.5 text-[10px] text-[#4c4546]">
-                                                Pay using eSewa
-                                            </p>
-                                        </div>
-                                    </label>
-
-                                    {/* Khalti */}
-                                    <label
-                                        className={`flex cursor-pointer items-center gap-4 rounded-2xl border p-4 transition ${Number(paymentMethod) === 1
-                                                ? "border-black bg-[#faf8fe]"
-                                                : "border-black/[0.07] hover:border-black/20"
-                                            }`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="1"
-                                            checked={
-                                                Number(paymentMethod) ===
-                                                1
-                                            }
-                                            onChange={(event) =>
-                                                setPaymentMethod(
-                                                    Number(
-                                                        event.target.value
-                                                    )
-                                                )
-                                            }
-                                            className="h-4 w-4 accent-black"
-                                        />
-
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eeedf3] text-[11px] font-bold">
-                                            K
-                                        </div>
-
-                                        <div className="flex-1">
-                                            <p className="text-[13px] font-semibold">
-                                                Khalti
-                                            </p>
-
-                                            <p className="mt-0.5 text-[10px] text-[#4c4546]">
-                                                Pay using Khalti
-                                            </p>
-                                        </div>
-                                    </label>
-
-                                    {/* COD */}
-                                    <label
-                                        className={`flex cursor-pointer items-center gap-4 rounded-2xl border p-4 transition ${Number(paymentMethod) === 2
-                                                ? "border-black bg-[#faf8fe]"
-                                                : "border-black/[0.07] hover:border-black/20"
-                                            }`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="2"
-                                            checked={
-                                                Number(paymentMethod) ===
-                                                2
-                                            }
-                                            onChange={(event) =>
-                                                setPaymentMethod(
-                                                    Number(
-                                                        event.target.value
-                                                    )
-                                                )
-                                            }
-                                            className="h-4 w-4 accent-black"
-                                        />
-
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eeedf3] text-[11px] font-bold">
-                                            COD
-                                        </div>
-
-                                        <div className="flex-1">
-                                            <p className="text-[13px] font-semibold">
-                                                Cash on Delivery
-                                            </p>
-
-                                            <p className="mt-0.5 text-[10px] text-[#4c4546]">
-                                                Pay when your order is delivered
-                                            </p>
-                                        </div>
-                                    </label>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-semibold text-gray-900">
+                                                        {option.name}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {option.description}
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        );
+                                    })}
                                 </div>
 
                                 {Number(paymentMethod) === 2 && (
-                                    <div className="mt-5 rounded-2xl bg-[#f4f3f8] px-4 py-3 text-[11px] leading-5 text-[#4c4546]">
-                                        Your payment will remain unpaid
-                                        until the order is delivered.
+                                    <div className="mt-4 flex items-center gap-2 rounded-xl bg-gray-50 p-3 text-xs text-gray-600 border border-gray-100">
+                                        <Truck className="h-4 w-4 shrink-0 text-gray-500" />
+                                        <span>Payment will be collected upon delivery of your equipment.</span>
                                     </div>
                                 )}
                             </section>
-
-                            {/* Error */}
-                            {(validationError || error) && (
-                                <div className="rounded-2xl bg-[#ffdad6] px-5 py-4 text-[12px] leading-5 text-[#93000a]">
-                                    {validationError || error}
-                                </div>
-                            )}
-
-                            {/* Back */}
-                            <Link
-                                to="/cart"
-                                className="inline-flex items-center gap-2 text-[12px] font-semibold text-[#4c4546] transition-colors hover:text-black"
-                            >
-                                ← Back to Cart
-                            </Link>
                         </div>
 
-                        {/* Right Side */}
-                        <aside className="lg:sticky lg:top-24">
-                            <div className="rounded-3xl bg-black p-7 text-white">
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
-                                            Step 03
-                                        </span>
+                        {/* Right Side: Order Summary */}
+                        <aside className="lg:col-span-4 lg:sticky lg:top-24">
+                            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="text-base font-semibold text-gray-900">
+                                    Order Summary
+                                </h2>
 
-                                        <h2 className="mt-2 text-[22px] font-semibold tracking-tight">
-                                            Order Summary
-                                        </h2>
-                                    </div>
-
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm">
-                                        03
-                                    </div>
-                                </div>
-
-                                {/* Items */}
-                                <div className="mt-7 space-y-4">
+                                {/* Items mini-list */}
+                                <div className="mt-4 max-h-60 overflow-y-auto divide-y divide-gray-100 pr-1">
                                     {items.map((item, index) => {
-                                        const productId =
-                                            getProductId(item);
-
-                                        const quantity =
-                                            getQuantity(item);
-
-                                        const price =
-                                            getPrice(item);
+                                        const productId = getProductId(item);
+                                        const quantity = getQuantity(item);
+                                        const price = getPrice(item);
 
                                         return (
                                             <div
-                                                key={
-                                                    item.id ||
-                                                    productId ||
-                                                    index
-                                                }
-                                                className="flex gap-3"
+                                                key={item.id || productId || index}
+                                                className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
                                             >
-                                                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white/10">
+                                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
                                                     <img
-                                                        src={getProductImage(
-                                                            item
-                                                        )}
-                                                        alt={getProductName(
-                                                            item
-                                                        )}
+                                                        src={getProductImage(item)}
+                                                        alt={getProductName(item)}
                                                         className="h-full w-full object-cover"
                                                         onError={(event) => {
-                                                            event.currentTarget.src =
-                                                                fallbackImage;
+                                                            event.currentTarget.src = fallbackImage;
                                                         }}
                                                     />
                                                 </div>
 
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="truncate text-[12px] font-medium">
+                                                    <p className="truncate text-xs font-medium text-gray-900">
                                                         {getProductName(item)}
                                                     </p>
-
-                                                    <p className="mt-1 text-[10px] text-white/50">
-                                                        {getProductCategory(
-                                                            item
-                                                        )}{" "}
-                                                        · Qty {quantity}
+                                                    <p className="text-[11px] text-gray-400">
+                                                        Qty: {quantity} × Rs. {price.toLocaleString()}
                                                     </p>
                                                 </div>
 
-                                                <p className="shrink-0 text-[12px] font-medium">
-                                                    Rs.
-                                                    {(
-                                                        price * quantity
-                                                    ).toLocaleString()}
+                                                <p className="shrink-0 text-xs font-semibold text-gray-900">
+                                                    Rs. {(price * quantity).toLocaleString()}
                                                 </p>
                                             </div>
                                         );
                                     })}
                                 </div>
 
-                                <div className="my-7 h-px bg-white/10" />
+                                <div className="my-5 border-t border-gray-100" />
 
-                                {/* Totals */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between text-[13px]">
-                                        <span className="text-white/50">
-                                            Items
-                                        </span>
-
-                                        <span>
-                                            {totalItems}
+                                {/* Price breakdown */}
+                                <div className="space-y-2.5 text-sm">
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Items ({totalItems})</span>
+                                        <span>Rs. {subtotal.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Delivery</span>
+                                        <span className="text-gray-600">
+                                            {deliveryFee > 0 ? `Rs. ${deliveryFee.toLocaleString()}` : "Free"}
                                         </span>
                                     </div>
-
-                                    <div className="flex items-center justify-between text-[13px]">
-                                        <span className="text-white/50">
-                                            Subtotal
-                                        </span>
-
-                                        <span>
-                                            Rs.
-                                            {subtotal.toLocaleString()}
-                                        </span>
+                                    <div className="border-t border-gray-100 pt-3 flex justify-between text-base font-semibold text-gray-900">
+                                        <span>Total</span>
+                                        <span>Rs. {grandTotal.toLocaleString()}</span>
                                     </div>
-
-                                    <div className="flex items-center justify-between text-[13px]">
-                                        <span className="text-white/50">
-                                            Delivery
-                                        </span>
-
-                                        <span className="text-[11px] text-white/60">
-                                            Calculated separately
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="my-7 h-px bg-white/10" />
-
-                                <div className="flex items-end justify-between gap-4">
-                                    <div>
-                                        <span className="text-[10px] uppercase tracking-wider text-white/40">
-                                            Subtotal
-                                        </span>
-
-                                        <p className="mt-1 text-[10px] text-white/40">
-                                            Final total calculated by
-                                            server
-                                        </p>
-                                    </div>
-
-                                    <span className="text-[25px] font-semibold tracking-tight">
-                                        Rs.
-                                        {subtotal.toLocaleString()}
-                                    </span>
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={placingOrder}
-                                    className="mt-7 flex h-12 w-full items-center justify-center rounded-full bg-white text-[12px] font-semibold text-black transition hover:bg-[#f4f3f8] disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-black py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    {placingOrder
-                                        ? "Placing Order..."
-                                        : "Place Order →"}
+                                    {placingOrder ? (
+                                        <>
+                                            <svg
+                                                className="h-4 w-4 animate-spin"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                />
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                                />
+                                            </svg>
+                                            <span>Placing Order...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Place Order</span>
+                                            <ArrowRight className="h-4 w-4" />
+                                        </>
+                                    )}
                                 </button>
 
-                                <p className="mt-4 text-center text-[10px] leading-5 text-white/35">
-                                    By placing this order, you confirm
-                                    your selected equipment, delivery
-                                    address, and payment method.
-                                </p>
-                            </div>
-
-                            {/* Secure Checkout */}
-                                        <div className="mt-4 rounded-2xl bg-white p-5 ring-1 ring-black/4">
-                                <div className="flex gap-3">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eeedf3] text-sm">
-                                        ✓
+                                <div className="mt-5 rounded-xl bg-gray-50 p-3.5 text-xs text-gray-500 space-y-1.5 border border-gray-100">
+                                    <div className="flex items-center gap-1.5 font-medium text-gray-700">
+                                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                                        <span>Secure Checkout</span>
                                     </div>
-
-                                    <div>
-                                        <p className="text-[12px] font-semibold">
-                                            Secure checkout
-                                        </p>
-
-                                        <p className="mt-1 text-[11px] leading-5 text-[#4c4546]">
-                                            Your order information is processed
-                                            through the BizBox API. No raw card
-                                            details are stored by this page.
-                                        </p>
-                                    </div>
+                                    <p className="leading-relaxed">
+                                        By placing this order, you confirm your delivery address and payment choice.
+                                    </p>
                                 </div>
                             </div>
                         </aside>
                     </form>
                 )}
-            </main>
-
-            {/* Footer */}
-            <footer className="hidden w-full bg-[#f4f3f8]">
-                <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
-                    <div className="grid grid-cols-2 gap-8 pb-14 md:grid-cols-4 lg:gap-12">
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Shop by Business
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Coffee Shop
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Bakery
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Restaurant
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Salon
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    All Equipment
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Services
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Business Kits
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Equipment Purchase
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Resale & Trade-in
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Support
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Account
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/login"
-                                    className="hover:text-black"
-                                >
-                                    Sign In
-                                </Link>
-
-                                <Link
-                                    to="/register"
-                                    className="hover:text-black"
-                                >
-                                    Register
-                                </Link>
-
-                                <Link
-                                    to="/cart"
-                                    className="hover:text-black"
-                                >
-                                    Cart
-                                </Link>
-
-                                <Link
-                                    to="/orders"
-                                    className="hover:text-black"
-                                >
-                                    Orders
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                BizBox
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    About BizBox
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    How It Works
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Privacy
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Terms
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Support
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col items-center justify-between gap-4 border-t border-black/6 pt-8 md:flex-row">
-                        <p className="text-center text-[11px] text-[#4c4546] md:text-left">
-                            © 2026 BizBox. Commercial equipment
-                            for growing businesses.
-                        </p>
-
-                        <div className="flex items-center gap-6 text-[11px] text-[#4c4546]">
-                            <span>Nepal</span>
-
-                            <Link
-                                to="/"
-                                className="hover:text-black"
-                            >
-                                Legal
-                            </Link>
-
-                            <Link
-                                to="/"
-                                className="hover:text-black"
-                            >
-                                Site Map
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
+            </div>
+        </main>
     );
 };
 

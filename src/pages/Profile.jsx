@@ -54,12 +54,12 @@ const Profile = () => {
                             </dd>
                         </div>
 
-                        <div className="grid gap-1 px-5 py-4 sm:grid-cols-[120px_1fr] sm:gap-6">
+                        {/* <div className="grid gap-1 px-5 py-4 sm:grid-cols-[120px_1fr] sm:gap-6">
                             <dt className="text-sm font-medium text-gray-500">
                                 Address
                             </dt>
                             <dd className="text-sm text-gray-900">{address}</dd>
-                        </div>
+                        </div> */}
 
                         <div className="grid gap-1 px-5 py-4 sm:grid-cols-[120px_1fr] sm:gap-6">
                             <dt className="text-sm font-medium text-gray-500">

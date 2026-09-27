@@ -4,6 +4,7 @@ import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { useAuth } from "../context/AuthContext";
 import { resolveImageUrl } from "../utils/imageUrl";
+import { CheckCircle2 } from "lucide-react";
 
 const fallbackImage =
     "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80";
@@ -678,10 +679,11 @@ const ProductDetails = () => {
                 </section>
             </main>
 
-            {/* Cart Message */}
+            {/* Cart Message Toast */}
             {cartMessage && (
-                <div className="fixed bottom-6 left-1/2 z-60 -translate-x-1/2 rounded-full bg-black px-5 py-3 text-[12px] font-medium text-white shadow-xl">
-                    {cartMessage}
+                <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-xl animate-fade-in">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span>{cartMessage}</span>
                 </div>
             )}
 

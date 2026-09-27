@@ -6,6 +6,7 @@ import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { useAuth } from "../context/AuthContext";
 import { resolveImageUrl } from "../utils/imageUrl";
+import { ShoppingCart, CheckCircle2 } from "lucide-react";
 
 const fallbackImages = [
     "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80",
@@ -50,39 +51,80 @@ const Equipment = () => {
             setLoading(true);
             setError("");
 
-            const productRequest = businessTypeId
-                ? businessTypeService.getProducts(businessTypeId)
-                : productService.getAll();
+            if (businessTypeId) {
+                // When filtering by business type, fetch business-type products
+                // + all products (for stock info) + categories + business types in parallel
+                const [btProductsData, allProductsData, categoriesData, businessTypesData] =
+                    await Promise.all([
+                        businessTypeService.getProducts(businessTypeId),
+                        productService.getAll(),
+                        categoryService.getAll(),
+                        businessTypeService.getAll(),
+                    ]);
 
-            const [productsData, categoriesData, businessTypesData] =
-                await Promise.all([
-                productRequest,
-                categoryService.getAll(),
-                businessTypeService.getAll(),
-                ]);
+                // Build a map of productId -> full product data (for stock info)
+                const allProductsList = Array.isArray(allProductsData)
+                    ? allProductsData
+                    : allProductsData?.products || allProductsData?.items || allProductsData?.data || [];
+                const productMap = {};
+                allProductsList.forEach((p) => {
+                    if (p?.id) productMap[p.id] = p;
+                });
 
-            const productList = Array.isArray(productsData)
-                ? productsData
-                : productsData?.products ||
-                productsData?.items ||
-                productsData?.data ||
-                [];
+                // Normalize business-type product objects to the standard shape
+                const btList = Array.isArray(btProductsData)
+                    ? btProductsData
+                    : btProductsData?.products || btProductsData?.items || btProductsData?.data || [];
 
-            setProducts(
-                productList
-                    .map((item) => item.product || item)
-                    .filter(Boolean)
-            );
+                const normalized = btList.map((item) => {
+                    const fullProduct = productMap[item.productId] || {};
+                    return {
+                        // Normalize id / name from business-type response
+                        id: item.productId ?? item.id ?? fullProduct.id,
+                        name: item.productName ?? item.name ?? fullProduct.name,
+                        // Prefer imageUrl from the BT response; fall back to full product
+                        imageUrl: item.imageUrl || fullProduct.imageUrl || fullProduct.image,
+                        // Description from full product (BT endpoint doesn't include it)
+                        description: fullProduct.description || item.description,
+                        price: item.price ?? fullProduct.price,
+                        // Stock from full product data
+                        stockQuantity: fullProduct.stockQuantity ?? fullProduct.stock ?? null,
+                        // Category from full product
+                        categoryId: fullProduct.categoryId,
+                        category: fullProduct.category,
+                        categoryName: fullProduct.categoryName,
+                        // Keep extra BT-specific fields
+                        isRequired: item.isRequired,
+                        recommendedQuantity: item.recommendedQuantity,
+                        displayOrder: item.displayOrder,
+                    };
+                });
 
-            setCategories(
-                Array.isArray(categoriesData) ? categoriesData : []
-            );
+                // Sort by displayOrder if available
+                normalized.sort(
+                    (a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999)
+                );
 
-            setBusinessTypes(
-                Array.isArray(businessTypesData)
-                    ? businessTypesData
-                    : []
-            );
+                setProducts(normalized);
+                setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+                setBusinessTypes(Array.isArray(businessTypesData) ? businessTypesData : []);
+            } else {
+                // Normal path — fetch all products directly
+                const [productsData, categoriesData, businessTypesData] =
+                    await Promise.all([
+                        productService.getAll(),
+                        categoryService.getAll(),
+                        businessTypeService.getAll(),
+                    ]);
+
+                const productList = Array.isArray(productsData)
+                    ? productsData
+                    : productsData?.products || productsData?.items || productsData?.data || [];
+
+                setProducts(productList.map((item) => item.product || item).filter(Boolean));
+                setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+                setBusinessTypes(Array.isArray(businessTypesData) ? businessTypesData : []);
+            }
         } catch (err) {
             setError(
                 err.userMessage ||
@@ -153,6 +195,8 @@ const Equipment = () => {
         if (stockOnly) {
             result = result.filter(
                 (product) =>
+                    product.stockQuantity === null ||
+                    product.stockQuantity === undefined ||
                     Number(product.stockQuantity) > 0
             );
         }
@@ -391,9 +435,6 @@ const Equipment = () => {
                                 )}
                             </div>
 
-                            {/* TODO: Remove this part from the page. */}
-                            {/* ---------------------------------------------------------------------------------------------------- */}
-
                             <div className="flex items-center gap-6">
                                 <div className="flex flex-col">
                                     <span className="text-[17px] font-semibold">
@@ -424,9 +465,9 @@ const Equipment = () => {
                                         {
                                             products.filter(
                                                 (product) =>
-                                                    Number(
-                                                        product.stockQuantity
-                                                    ) > 0
+                                                    product.stockQuantity === null ||
+                                                    product.stockQuantity === undefined ||
+                                                    Number(product.stockQuantity) > 0
                                             ).length
                                         }
                                     </span>
@@ -436,7 +477,6 @@ const Equipment = () => {
                                     </span>
                                 </div>
                             </div>
-                            {/* -------------------------------------------------------------------------------------------------- */}
                         </div>
                     </div>
                 </section>
@@ -523,10 +563,11 @@ const Equipment = () => {
                     </section>
                 )}
 
-                {/* Cart Message */}
+                {/* Cart Message Toast */}
                 {cartMessage && (
-                    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-black px-5 py-3 text-[12px] font-medium text-white shadow-xl">
-                        {cartMessage}
+                    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-xl animate-fade-in">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                        <span>{cartMessage}</span>
                     </div>
                 )}
 
@@ -581,12 +622,15 @@ const Equipment = () => {
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                                 {visibleProducts.map(
                                     (product, index) => {
-                                        const stock =
-                                            Number(
-                                                product.stockQuantity
-                                            ) || 0;
+                                        const stockQuantityKnown =
+                                            product.stockQuantity !== null &&
+                                            product.stockQuantity !== undefined;
+                                        const stock = stockQuantityKnown
+                                            ? Number(product.stockQuantity)
+                                            : null;
 
-                                        const inStock = stock > 0;
+                                        const inStock =
+                                            stock === null || stock > 0;
 
                                         return (
                                             <article
@@ -652,22 +696,15 @@ const Equipment = () => {
                                                         </div>
 
                                                         <div className="flex items-center gap-1.5">
-                                                            <span
-                                                                className={`h-2 w-2 rounded-full ${inStock
-                                                                        ? "bg-[#1b873f]"
-                                                                        : "bg-[#ba1a1a]"
-                                                                    }`}
-                                                            />
-
                                                             <span className="text-[10px] font-medium text-[#4c4546]">
-                                                                {inStock
-                                                                    ? `${stock} in stock`
-                                                                    : "Out of stock"}
+                                                                {!inStock
+                                                                    ? "Out of stock"
+                                                                    : stock === null
+                                                                    ? "Available"
+                                                                    : `${stock} in stock`}
                                                             </span>
                                                         </div>
                                                     </div>
-
-                                                    {/* mt-4 flex h-10 items-center justify-center rounded-lg bg-black text-sm font-medium text-white transition-colors hover:bg-gray-800 */}
 
                                                     <div className="flex gap-2">
                                                         <Link
@@ -708,7 +745,7 @@ const Equipment = () => {
                                                                 {addingProductId ===
                                                                     product.id
                                                                     ? "..."
-                                                                    : "🛒"}
+                                                                    : <ShoppingCart className="w-5 h-5" />}
                                                             </button>
                                                         )}
                                                     </div>

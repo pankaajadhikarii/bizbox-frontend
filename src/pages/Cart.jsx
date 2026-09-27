@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+    ShoppingBag,
+    Trash2,
+    Plus,
+    Minus,
+    ArrowRight,
+    ArrowLeft,
+    CheckCircle2,
+} from "lucide-react";
 import cartService from "../services/cartService";
 import { resolveImageUrl } from "../utils/imageUrl";
 
@@ -27,7 +36,6 @@ const Cart = () => {
             setError("");
 
             const data = await cartService.getCart();
-
             setCart(data);
         } catch (err) {
             setError(
@@ -64,16 +72,11 @@ const Cart = () => {
 
     const getProductId = (item) => {
         const product = getProduct(item);
-
-        return (
-            item.productId ||
-            product.id
-        );
+        return item.productId || product.id;
     };
 
     const getProductName = (item) => {
         const product = getProduct(item);
-
         return (
             product.name ||
             item.productName ||
@@ -130,6 +133,17 @@ const Cart = () => {
         0
     );
 
+    const calculateDeliveryFee = (amount) => {
+        if (amount > 2500) return 112;
+        if (amount > 1500) return 70;
+        if (amount > 1000) return 59;
+        if (amount > 800) return 49;
+        return 0;
+    };
+
+    const deliveryFee = calculateDeliveryFee(subtotal);
+    const estimatedTotal = subtotal + deliveryFee;
+
     const showMessage = (text) => {
         setMessage(text);
 
@@ -145,11 +159,10 @@ const Cart = () => {
         try {
             setUpdatingItemId(itemId);
 
-            const updatedCart =
-                await cartService.updateItem(
-                    itemId,
-                    currentQuantity + 1
-                );
+            const updatedCart = await cartService.updateItem(
+                itemId,
+                currentQuantity + 1
+            );
 
             setCart(updatedCart);
 
@@ -177,11 +190,10 @@ const Cart = () => {
         try {
             setUpdatingItemId(itemId);
 
-            const updatedCart =
-                await cartService.updateItem(
-                    itemId,
-                    currentQuantity - 1
-                );
+            const updatedCart = await cartService.updateItem(
+                itemId,
+                currentQuantity - 1
+            );
 
             setCart(updatedCart);
 
@@ -203,11 +215,8 @@ const Cart = () => {
 
         try {
             setRemovingItemId(itemId);
-
             await cartService.removeItem(itemId);
-
             await loadCart();
-
             showMessage("Item removed from cart.");
         } catch (err) {
             showMessage(
@@ -226,11 +235,8 @@ const Cart = () => {
 
         try {
             setClearingCart(true);
-
             await cartService.clearCart();
-
             await loadCart();
-
             showMessage("Cart cleared.");
         } catch (err) {
             showMessage(
@@ -243,760 +249,247 @@ const Cart = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
-            {/* Header */}
-            <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
-                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
-                    <Link
-                        to="/"
-                        className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-75"
-                    >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
-                            B
-                        </div>
-
-                        <span className="text-[17px] font-semibold tracking-tight">
-                            BizBox
-                        </span>
-                    </Link>
-
-                    <nav className="hidden items-center gap-7 xl:flex">
-                        <Link
-                            to="/equipment"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Equipment
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Business Kits
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Resale & Trade-in
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            How It Works
-                        </Link>
-
-                        <Link
-                            to="/"
-                            className="text-[12px] font-medium text-[#4c4546] transition-colors hover:text-black"
-                        >
-                            Support
-                        </Link>
-                    </nav>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            to="/cart"
-                            className="flex h-9 items-center gap-2 rounded-full bg-[#eeedf3] px-3 text-black"
-                        >
-                            <span className="text-[18px]">
-                                🛍
-                            </span>
-
-                            <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] font-semibold">
-                                Cart
-                            </span>
-                        </Link>
-
-                        <Link
-                            to="/orders"
-                            className="hidden h-9 items-center rounded-full bg-black px-4 text-[12px] font-medium text-white sm:flex"
-                        >
-                            Orders
-                        </Link>
-
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm text-white">
-                            U
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            {/* Main */}
-            <main className="mx-auto max-w-7xl px-6 pb-20 lg:px-12">
+        <main className="min-h-screen bg-gray-50 py-8 sm:py-10">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Heading */}
-                <section className="pb-10">
-                    <div className="flex items-center gap-3">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e9e7ed] px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-black">
-                            <span className="h-1.5 w-1.5 rounded-full bg-black" />
-                            Your Selection
-                        </span>
-
-                        <span className="text-[11px] text-[#cfc4c5]">
-                            •
-                        </span>
-
-                        <span className="text-[11px] text-[#4c4546]">
-                            BizBox Cart
-                        </span>
+                <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+                            Shopping cart
+                        </h1>
+                        <p className="mt-2 text-sm text-gray-600">
+                            {items.length > 0
+                                ? `You have ${totalItems} ${totalItems === 1 ? "item" : "items"} in your cart.`
+                                : "Review your equipment before checkout."}
+                        </p>
                     </div>
 
-                    <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                        <div>
-                            <h1 className="text-[42px] font-semibold leading-[1.05] tracking-[-0.035em] sm:text-[52px]">
-                                Your Cart.
-                            </h1>
+                    {!loading && items.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={handleClearCart}
+                            disabled={clearingCart}
+                            className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-lg px-3 py-1.5 text-xs font-medium text-gray-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                        >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            {clearingCart ? "Clearing..." : "Clear cart"}
+                        </button>
+                    )}
+                </div>
 
-                            <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#4c4546]">
-                                Review your equipment selection before
-                                placing your order.
-                            </p>
-                        </div>
-
-                        {!loading && items.length > 0 && (
-                            <div className="flex items-center gap-6">
-                                <div className="flex flex-col">
-                                    <span className="text-[17px] font-semibold">
-                                        {totalItems}
-                                    </span>
-
-                                    <span className="text-[11px] text-[#4c4546]">
-                                        Items
-                                    </span>
-                                </div>
-
-                                <div className="h-8 w-px bg-[#e3e2e7]" />
-
-                                <div className="flex flex-col">
-                                    <span className="text-[17px] font-semibold">
-                                        {items.length}
-                                    </span>
-
-                                    <span className="text-[11px] text-[#4c4546]">
-                                        Products
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </section>
-
-                {/* Error */}
+                {/* Error Banner */}
                 {error && (
-                    <div className="mb-8 rounded-2xl bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">
+                    <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                         {error}
                     </div>
                 )}
 
-                {/* Loading */}
+                {/* Loading Skeleton */}
                 {loading ? (
-                    <section className="grid animate-pulse grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">
-                        <div className="rounded-3xl bg-white p-6">
-                            {Array.from({ length: 3 }).map(
-                                (_, index) => (
-                                    <div
-                                        key={index}
-                                        className={`flex gap-5 py-6 ${index !== 0
-                                            ? "border-t border-black/5"
-                                                : ""
-                                            }`}
-                                    >
-                                        <div className="h-28 w-28 shrink-0 rounded-2xl bg-[#eeedf3]" />
-
-                                        <div className="flex flex-1 flex-col justify-between">
-                                            <div>
-                                                <div className="h-3 w-20 rounded bg-[#eeedf3]" />
-
-                                                <div className="mt-3 h-5 w-48 rounded bg-[#eeedf3]" />
-
-                                                <div className="mt-2 h-3 w-28 rounded bg-[#eeedf3]" />
-                                            </div>
-
-                                            <div className="h-8 w-28 rounded-full bg-[#eeedf3]" />
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start animate-pulse">
+                        <div className="lg:col-span-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm divide-y divide-gray-100">
+                            {Array.from({ length: 3 }).map((_, idx) => (
+                                <div key={idx} className="flex gap-4 py-4 first:pt-0 last:pb-0">
+                                    <div className="h-20 w-20 shrink-0 rounded-xl bg-gray-100" />
+                                    <div className="flex flex-1 flex-col justify-between py-1">
+                                        <div className="space-y-2">
+                                            <div className="h-4 w-40 rounded bg-gray-100" />
+                                            <div className="h-3 w-24 rounded bg-gray-100" />
                                         </div>
+                                        <div className="h-4 w-28 rounded bg-gray-100" />
                                     </div>
-                                )
-                            )}
+                                </div>
+                            ))}
                         </div>
-
-                        <div className="h-80 rounded-3xl bg-white" />
-                    </section>
+                        <div className="lg:col-span-4 h-64 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
+                    </div>
                 ) : items.length === 0 ? (
-                    /* Empty Cart */
-                        <section className="flex min-h-125 flex-col items-center justify-center rounded-3xl bg-white px-6 text-center">
-                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#eeedf3] text-3xl">
-                            🛍
+                    /* Empty State */
+                    <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                            <ShoppingBag className="h-8 w-8" />
                         </div>
-
-                        <h2 className="mt-7 text-2xl font-semibold tracking-tight">
+                        <h2 className="mt-4 text-xl font-semibold text-gray-900">
                             Your cart is empty
                         </h2>
-
-                        <p className="mt-3 max-w-md text-[14px] leading-6 text-[#4c4546]">
-                            You haven't added any equipment yet.
-                            Explore the BizBox catalog and start
-                            building your business setup.
+                        <p className="mt-1.5 max-w-sm text-sm text-gray-500">
+                            Looks like you haven't added any equipment to your cart yet. Explore our catalog to find what you need.
                         </p>
-
                         <Link
                             to="/equipment"
-                            className="mt-7 flex h-11 items-center justify-center rounded-full bg-black px-7 text-[12px] font-semibold text-white transition hover:bg-[#333]"
+                            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
                         >
-                            Browse Equipment →
+                            Browse Equipment
+                            <ArrowRight className="h-4 w-4" />
                         </Link>
-                    </section>
+                    </div>
                 ) : (
-                    /* Cart Content */
-                    <section className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
-                        {/* Cart Items */}
-                        <div className="rounded-3xl bg-white px-6 sm:px-8">
-                                    <div className="flex items-center justify-between border-b border-black/5 py-6">
-                                <div>
-                                    <h2 className="text-[15px] font-semibold">
-                                        Equipment Selection
-                                    </h2>
-
-                                    <p className="mt-1 text-[11px] text-[#4c4546]">
-                                        {totalItems}{" "}
-                                        {totalItems === 1
-                                            ? "item"
-                                            : "items"}{" "}
-                                        in your cart
-                                    </p>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={handleClearCart}
-                                    disabled={clearingCart}
-                                    className="text-[11px] font-medium text-[#4c4546] underline underline-offset-2 transition-colors hover:text-black disabled:opacity-40"
-                                >
-                                    {clearingCart
-                                        ? "Clearing..."
-                                        : "Clear Cart"}
-                                </button>
-                            </div>
-
-                            <div>
-                                {items.map((item, index) => {
+                    /* Cart Content Grid */
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
+                        {/* Cart Items List */}
+                        <div className="lg:col-span-8 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+                            <div className="divide-y divide-gray-100">
+                                {items.map((item) => {
                                     const itemId = getItemId(item);
-                                    const productId =
-                                        getProductId(item);
-
-                                    const itemPrice =
-                                        getPrice(item);
-
-                                    const itemQuantity =
-                                        getQuantity(item);
-
-                                    const itemTotal =
-                                        itemPrice * itemQuantity;
-
-                                    const isUpdating =
-                                        updatingItemId === itemId;
-
-                                    const isRemoving =
-                                        removingItemId === itemId;
+                                    const productId = getProductId(item);
+                                    const itemPrice = getPrice(item);
+                                    const itemQuantity = getQuantity(item);
+                                    const itemTotal = itemPrice * itemQuantity;
+                                    const isUpdating = updatingItemId === itemId;
+                                    const isRemoving = removingItemId === itemId;
 
                                     return (
                                         <div
                                             key={itemId || productId}
-                                            className={`flex flex-col gap-5 py-7 sm:flex-row ${index !== 0
-                                                ? "border-t border-black/5"
-                                                    : ""
-                                                }`}
+                                            className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-6"
                                         >
-                                            {/* Image */}
+                                            {/* Thumbnail */}
                                             <Link
                                                 to={`/products/${productId}`}
-                                                className="relative h-32 w-full shrink-0 overflow-hidden rounded-2xl bg-[#f4f3f8] sm:h-32 sm:w-32"
+                                                className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50"
                                             >
                                                 <img
                                                     src={getProductImage(item)}
                                                     alt={getProductName(item)}
                                                     className="h-full w-full object-cover"
                                                     onError={(event) => {
-                                                        event.currentTarget.src =
-                                                            fallbackImage;
+                                                        event.currentTarget.src = fallbackImage;
                                                     }}
                                                 />
                                             </Link>
 
-                                            {/* Info */}
-                                            <div className="flex min-w-0 flex-1 flex-col justify-between gap-5">
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div className="min-w-0">
-                                                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                                            {getProductCategory(
-                                                                item
-                                                            )}
-                                                        </span>
+                                            {/* Details */}
+                                            <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                                <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                                                    {getProductCategory(item)}
+                                                </span>
+                                                <Link
+                                                    to={`/products/${productId}`}
+                                                    className="font-medium text-gray-900 transition hover:text-gray-600 line-clamp-1"
+                                                >
+                                                    {getProductName(item)}
+                                                </Link>
+                                                <p className="text-xs text-gray-500">
+                                                    Rs. {itemPrice.toLocaleString()} per unit
+                                                </p>
+                                            </div>
 
-                                                        <Link
-                                                            to={`/products/${productId}`}
-                                                            className="mt-1 block text-[17px] font-semibold leading-6 tracking-tight text-black transition-colors hover:text-[#4c4546]"
-                                                        >
-                                                            {getProductName(
-                                                                item
-                                                            )}
-                                                        </Link>
-
-                                                        <p className="mt-1 text-[11px] text-[#4c4546]">
-                                                            Rs.
-                                                            {itemPrice.toLocaleString()}{" "}
-                                                            per unit
-                                                        </p>
-                                                    </div>
-
-                                                    <div className="shrink-0 text-right">
-                                                        <p className="text-[16px] font-semibold">
-                                                            Rs.
-                                                            {itemTotal.toLocaleString()}
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center justify-between gap-4">
-                                                    {/* Quantity */}
-                                                    <div className="flex h-9 items-center overflow-hidden rounded-full bg-[#f4f3f8]">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                handleDecrease(
-                                                                    item
-                                                                )
-                                                            }
-                                                            disabled={
-                                                                itemQuantity <=
-                                                                1 ||
-                                                                isUpdating ||
-                                                                isRemoving
-                                                            }
-                                                            className="flex h-9 w-9 items-center justify-center text-base transition-colors hover:bg-[#eeedf3] disabled:cursor-not-allowed disabled:opacity-30"
-                                                        >
-                                                            −
-                                                        </button>
-
-                                                        <span className="flex w-8 items-center justify-center text-[12px] font-semibold">
-                                                            {isUpdating
-                                                                ? "..."
-                                                                : itemQuantity}
-                                                        </span>
-
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                handleIncrease(
-                                                                    item
-                                                                )
-                                                            }
-                                                            disabled={
-                                                                isUpdating ||
-                                                                isRemoving
-                                                            }
-                                                            className="flex h-9 w-9 items-center justify-center text-base transition-colors hover:bg-[#eeedf3] disabled:cursor-not-allowed disabled:opacity-30"
-                                                        >
-                                                            +
-                                                        </button>
-                                                    </div>
-
-                                                    {/* Remove */}
+                                            {/* Actions & Price */}
+                                            <div className="flex items-center justify-between gap-4 sm:justify-end sm:gap-6">
+                                                {/* Quantity Adjuster */}
+                                                <div className="flex items-center rounded-lg border border-gray-200 bg-gray-50">
                                                     <button
                                                         type="button"
-                                                        onClick={() =>
-                                                            handleRemove(item)
-                                                        }
-                                                        disabled={
-                                                            isRemoving ||
-                                                            isUpdating
-                                                        }
-                                                        className="text-[11px] font-medium text-[#4c4546] transition-colors hover:text-[#ba1a1a] disabled:opacity-40"
+                                                        onClick={() => handleDecrease(item)}
+                                                        disabled={itemQuantity <= 1 || isUpdating || isRemoving}
+                                                        className="flex h-8 w-8 items-center justify-center text-gray-600 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-30 rounded-l-lg"
+                                                        aria-label="Decrease quantity"
                                                     >
-                                                        {isRemoving
-                                                            ? "Removing..."
-                                                            : "Remove"}
+                                                        <Minus className="h-3.5 w-3.5" />
+                                                    </button>
+                                                    <span className="flex w-8 items-center justify-center text-xs font-semibold text-gray-900">
+                                                        {isUpdating ? "..." : itemQuantity}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleIncrease(item)}
+                                                        disabled={isUpdating || isRemoving}
+                                                        className="flex h-8 w-8 items-center justify-center text-gray-600 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-30 rounded-r-lg"
+                                                        aria-label="Increase quantity"
+                                                    >
+                                                        <Plus className="h-3.5 w-3.5" />
                                                     </button>
                                                 </div>
+
+                                                {/* Item Subtotal */}
+                                                <div className="w-24 text-right">
+                                                    <span className="text-sm font-semibold text-gray-900">
+                                                        Rs. {itemTotal.toLocaleString()}
+                                                    </span>
+                                                </div>
+
+                                                {/* Delete Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemove(item)}
+                                                    disabled={isRemoving || isUpdating}
+                                                    className="p-1.5 text-gray-400 transition hover:text-red-600 disabled:opacity-30"
+                                                    aria-label="Remove item"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            {/* Continue Shopping */}
-                                    <div className="border-t border-black/5 py-6">
+                            {/* Card Footer: Continue shopping */}
+                            <div className="border-t border-gray-100 bg-gray-50/50 px-5 py-3.5">
                                 <Link
                                     to="/equipment"
-                                    className="inline-flex items-center gap-2 text-[12px] font-semibold text-black transition-colors hover:text-[#4c4546]"
+                                    className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 transition hover:text-black"
                                 >
-                                    ← Continue Shopping
+                                    <ArrowLeft className="h-3.5 w-3.5" />
+                                    Continue shopping
                                 </Link>
                             </div>
                         </div>
 
-                        {/* Summary */}
-                        <aside className="lg:sticky lg:top-24">
-                            <div className="rounded-3xl bg-black p-7 text-white">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <span className="text-[10px] font-medium uppercase tracking-wider text-white/60">
-                                            Order Summary
-                                        </span>
+                        {/* Order Summary Sidebar */}
+                        <aside className="lg:col-span-4 lg:sticky lg:top-24">
+                            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="text-base font-semibold text-gray-900">
+                                    Order Summary
+                                </h2>
 
-                                        <h2 className="mt-2 text-[22px] font-semibold tracking-tight">
-                                            Your Order
-                                        </h2>
+                                <div className="mt-5 space-y-3 text-sm">
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Items ({totalItems})</span>
+                                        <span>Rs. {subtotal.toLocaleString()}</span>
                                     </div>
-
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">
-                                        🛍
-                                    </div>
-                                </div>
-
-                                <div className="my-7 h-px bg-white/10" />
-
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex items-center justify-between text-[13px]">
-                                        <span className="text-white/60">
-                                            Items
-                                        </span>
-
-                                        <span>
-                                            {totalItems}
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Delivery</span>
+                                        <span className="font-medium text-gray-900">
+                                            {deliveryFee > 0 ? `Rs. ${deliveryFee.toLocaleString()}` : "Free"}
                                         </span>
                                     </div>
-
-                                    <div className="flex items-center justify-between text-[13px]">
-                                        <span className="text-white/60">
-                                            Products
-                                        </span>
-
-                                        <span>
-                                            {items.length}
-                                        </span>
+                                    <div className="border-t border-gray-100 pt-3 flex justify-between text-base font-semibold text-gray-900">
+                                        <span>Estimated Total</span>
+                                        <span>Rs. {estimatedTotal.toLocaleString()}</span>
                                     </div>
-
-                                    <div className="flex items-center justify-between text-[13px]">
-                                        <span className="text-white/60">
-                                            Subtotal
-                                        </span>
-
-                                        <span>
-                                            Rs.
-                                            {subtotal.toLocaleString()}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center justify-between text-[13px]">
-                                        <span className="text-white/60">
-                                            Delivery
-                                        </span>
-
-                                        <span className="text-white/70">
-                                            Calculated at checkout
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="my-7 h-px bg-white/10" />
-
-                                <div className="flex items-end justify-between gap-4">
-                                    <div>
-                                        <span className="text-[10px] uppercase tracking-wider text-white/50">
-                                            Estimated Subtotal
-                                        </span>
-
-                                        <p className="mt-1 text-[11px] text-white/50">
-                                            Before delivery and final
-                                            charges
-                                        </p>
-                                    </div>
-
-                                    <span className="text-[24px] font-semibold tracking-tight">
-                                        Rs.
-                                        {subtotal.toLocaleString()}
-                                    </span>
                                 </div>
 
                                 <Link
                                     to="/checkout"
-                                    className="mt-7 flex h-12 w-full items-center justify-center rounded-full bg-white text-[12px] font-semibold text-black transition hover:bg-[#f4f3f8]"
+                                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-black py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800"
                                 >
-                                    Proceed to Checkout →
+                                    Proceed to Checkout
+                                    <ArrowRight className="h-4 w-4" />
                                 </Link>
 
-                                <p className="mt-4 text-center text-[10px] leading-5 text-white/40">
-                                    Your final order total will be
-                                    calculated using current product,
-                                    delivery, and payment information.
-                                </p>
-                            </div>
-
-                            {/* Secure Note */}
-                                    <div className="mt-4 rounded-2xl bg-white p-5 ring-1 ring-black/4">
-                                <div className="flex gap-3">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eeedf3] text-sm">
-                                        ✓
+                                <div className="mt-5 rounded-xl bg-gray-50 p-3.5 text-xs text-gray-500 space-y-1.5">
+                                    <div className="flex items-center gap-1.5 font-medium text-gray-700">
+                                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                                        <span>Secure Checkout</span>
                                     </div>
-
-                                    <div>
-                                        <p className="text-[12px] font-semibold">
-                                            Ready when you are
-                                        </p>
-
-                                        <p className="mt-1 text-[11px] leading-5 text-[#4c4546]">
-                                            Review your equipment and
-                                            continue to checkout when
-                                            you're ready to place the
-                                            order.
-                                        </p>
-                                    </div>
+                                    <p className="leading-relaxed">
+                                        Review delivery details and payment options on the next step.
+                                    </p>
                                 </div>
                             </div>
                         </aside>
-                    </section>
+                    </div>
                 )}
+            </div>
 
-                {/* Bottom CTA */}
-                {!loading && items.length > 0 && (
-                    <section className="mt-16">
-                        <div className="relative overflow-hidden rounded-3xl bg-[#f4f3f8] p-8 md:p-10">
-                            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                                <div>
-                                    <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
-                                        BizBox Equipment
-                                    </span>
-
-                                    <h2 className="mt-2 text-[24px] font-semibold tracking-tight">
-                                        Need something else?
-                                    </h2>
-
-                                    <p className="mt-2 max-w-xl text-[13px] leading-6 text-[#4c4546]">
-                                        Browse the equipment catalog and
-                                        add more products to your business
-                                        setup.
-                                    </p>
-                                </div>
-
-                                <Link
-                                    to="/equipment"
-                                    className="flex h-11 shrink-0 items-center justify-center rounded-full bg-black px-6 text-[12px] font-semibold text-white transition hover:bg-[#333]"
-                                >
-                                    Browse Equipment →
-                                </Link>
-                            </div>
-                        </div>
-                    </section>
-                )}
-            </main>
-
-            {/* Message */}
+            {/* Notification Toast */}
             {message && (
-                <div className="fixed bottom-6 left-1/2 z-60 -translate-x-1/2 rounded-full bg-black px-5 py-3 text-[12px] font-medium text-white shadow-xl">
+                <div className="fixed bottom-6 right-6 z-50 rounded-xl bg-gray-900 px-4 py-2.5 text-xs font-medium text-white shadow-xl">
                     {message}
                 </div>
             )}
-
-            {/* Footer */}
-            <footer className="hidden w-full bg-[#f4f3f8]">
-                <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
-                    <div className="grid grid-cols-2 gap-8 pb-14 md:grid-cols-4 lg:gap-12">
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Shop by Business
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Coffee Shop
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Bakery
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Restaurant
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Salon
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    All Equipment
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Services
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Business Kits
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Equipment Purchase
-                                </Link>
-
-                                <Link
-                                    to="/equipment"
-                                    className="hover:text-black"
-                                >
-                                    Equipment Catalog
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Resale & Trade-in
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Support
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                Account
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/login"
-                                    className="hover:text-black"
-                                >
-                                    Sign In
-                                </Link>
-
-                                <Link
-                                    to="/register"
-                                    className="hover:text-black"
-                                >
-                                    Register
-                                </Link>
-
-                                <Link
-                                    to="/cart"
-                                    className="hover:text-black"
-                                >
-                                    Cart
-                                </Link>
-
-                                <Link
-                                    to="/orders"
-                                    className="hover:text-black"
-                                >
-                                    Orders
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3.5">
-                            <h4 className="text-[11px] font-semibold uppercase tracking-wider">
-                                BizBox
-                            </h4>
-
-                            <div className="flex flex-col gap-2.5 text-[13px] text-[#4c4546]">
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    About BizBox
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    How It Works
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Privacy
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Terms
-                                </Link>
-
-                                <Link
-                                    to="/"
-                                    className="hover:text-black"
-                                >
-                                    Support
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col items-center justify-between gap-4 border-t border-black/6 pt-8 md:flex-row">
-                        <p className="text-center text-[11px] text-[#4c4546] md:text-left">
-                            © 2026 BizBox. Commercial equipment
-                            for growing businesses.
-                        </p>
-
-                        <div className="flex items-center gap-6 text-[11px] text-[#4c4546]">
-                            <span>Nepal</span>
-
-                            <Link
-                                to="/"
-                                className="hover:text-black"
-                            >
-                                Legal
-                            </Link>
-
-                            <Link
-                                to="/"
-                                className="hover:text-black"
-                            >
-                                Site Map
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
+        </main>
     );
 };
 

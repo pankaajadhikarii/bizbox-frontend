@@ -9,6 +9,14 @@ const statuses = [
     "Cancelled",
 ];
 
+const ORDER_STATUS_MAP = {
+    Pending: 0,
+    Processing: 1,
+    Shipped: 2,
+    Delivered: 3,
+    Cancelled: 4,
+};
+
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,7 +34,15 @@ const AdminOrders = () => {
             setError("");
 
             const response = await api.get("/orders/admin");
-            setOrders(response.data || []);
+            const raw = response.data;
+            const list = Array.isArray(raw)
+                ? raw
+                : raw?.orders ||
+                  raw?.items ||
+                  raw?.data ||
+                  [];
+            setOrders(list);
+            console.log("[AdminOrders] Loaded orders from API:", list);
         } catch (err) {
             setError(err.userMessage || "Failed to load orders.");
         } finally {
@@ -35,29 +51,67 @@ const AdminOrders = () => {
     };
 
     const getCustomerName = (order) => {
-        return (
-            order.customerName ||
-            order.customer?.name ||
-            order.customer?.fullName ||
-            "Unknown Customer"
-        );
+        const candidates = [
+            order?.customerName,
+            order?.CustomerName,
+            order?.customer?.fullName,
+            order?.customer?.userName,
+            order?.customer?.name,
+            order?.userName,
+            order?.user?.fullName,
+            order?.user?.userName,
+            order?.user?.name,
+            order?.buyerName,
+            order?.customerEmail,
+            order?.CustomerEmail,
+            order?.customer?.email,
+            order?.user?.email,
+        ];
+
+        for (const candidate of candidates) {
+            if (typeof candidate === "string" && candidate.trim().length > 0) {
+                return candidate.trim();
+            }
+        }
+
+        return "Unknown Customer";
     };
 
     const getCustomerEmail = (order) => {
-        return (
-            order.customerEmail ||
-            order.customer?.email ||
-            "—"
-        );
+        const candidates = [
+            order?.customerEmail,
+            order?.CustomerEmail,
+            order?.customer?.email,
+            order?.user?.email,
+            order?.email,
+        ];
+
+        for (const candidate of candidates) {
+            if (typeof candidate === "string" && candidate.trim().length > 0) {
+                return candidate.trim();
+            }
+        }
+
+        return "—";
     };
 
     const getCustomerPhone = (order) => {
-        return (
-            order.customerPhone ||
-            order.customer?.phoneNumber ||
-            order.customer?.phone ||
-            "—"
-        );
+        const candidates = [
+            order?.customerPhone,
+            order?.CustomerPhone,
+            order?.shippingPhone,
+            order?.phoneNumber,
+            order?.customer?.phoneNumber,
+            order?.customer?.phone,
+        ];
+
+        for (const candidate of candidates) {
+            if (typeof candidate === "string" && candidate.trim().length > 0) {
+                return candidate.trim();
+            }
+        }
+
+        return "—";
     };
 
     const getOrderTotal = (order) => {
@@ -88,16 +142,67 @@ const AdminOrders = () => {
         return order.orderNumber || `#${order.id}`;
     };
 
+    const STATUS_DISPLAY_MAP = {
+        0: "Pending",
+        1: "Processing",
+        2: "Shipped",
+        3: "Delivered",
+        4: "Cancelled",
+        "0": "Pending",
+        "1": "Processing",
+        "2": "Shipped",
+        "3": "Delivered",
+        "4": "Cancelled",
+        Pending: "Pending",
+        Processing: "Processing",
+        Shipped: "Shipped",
+        Delivered: "Delivered",
+        Cancelled: "Cancelled",
+    };
+
     const getStatus = (order) => {
-        return order.status || "Pending";
+        const raw = order?.status;
+        if (raw === null || raw === undefined) return "Pending";
+        if (STATUS_DISPLAY_MAP[raw] !== undefined) {
+            return STATUS_DISPLAY_MAP[raw];
+        }
+        return String(raw);
+    };
+
+    const PAYMENT_METHOD_MAP = {
+        0: "eSewa",
+        1: "Khalti",
+        2: "COD",
+        3: "COD",
+        "0": "eSewa",
+        "1": "Khalti",
+        "2": "COD",
+        "3": "COD",
+        Esewa: "eSewa",
+        Khalti: "Khalti",
+        CashOnDelivery: "COD",
+        COD: "COD",
     };
 
     const getPaymentMethod = (order) => {
-        return (
-            order.paymentMethod ||
-            order.payment?.paymentMethod ||
-            "—"
-        );
+        const raw =
+            order.paymentMethod ??
+            order.payments?.[0]?.paymentMethod ??
+            order.payment?.paymentMethod ??
+            null;
+
+        if (raw === null || raw === undefined) return "—";
+
+        // Map numeric IDs to names
+        if (PAYMENT_METHOD_MAP[raw] !== undefined) {
+            return PAYMENT_METHOD_MAP[raw];
+        }
+
+        // If it's a string like "Khalti" or "COD", return as-is
+        const str = String(raw).trim();
+        if (str === "" || (!isNaN(Number(str)) && str !== "")) return "—";
+
+        return str;
     };
 
     const formatPrice = (amount) => {
@@ -135,15 +240,20 @@ const AdminOrders = () => {
             setError("");
             setSuccess("");
 
-            await api.patch(`/orders/admin/${orderId}/status`, {
-                status,
+            const statusValue = ORDER_STATUS_MAP[status] ?? ORDER_STATUS_MAP[status] ?? status;
+
+            const response = await api.patch(`/orders/admin/${orderId}/status`, {
+                status: statusValue,
             });
+
+            const updatedOrder = response?.data;
 
             setOrders((currentOrders) =>
                 currentOrders.map((order) =>
                     order.id === orderId
                         ? {
                             ...order,
+                            ...(updatedOrder && typeof updatedOrder === "object" ? updatedOrder : {}),
                             status,
                         }
                         : order
@@ -253,8 +363,33 @@ const AdminOrders = () => {
                     </div>
 
                     {loading ? (
-                        <div className="px-6 py-12 text-center text-sm text-gray-500">
-                            Loading orders...
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[1100px]">
+                                <thead className="bg-gray-50">
+                                    <tr className="border-b border-gray-200 text-left">
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Order</th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Customer</th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Date</th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Total</th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Payment</th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
+                                        <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Update</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 animate-pulse">
+                                    {[...Array(5)].map((_, i) => (
+                                        <tr key={i}>
+                                            <td className="px-6 py-5"><div className="h-4 w-20 rounded bg-gray-100" /></td>
+                                            <td className="px-6 py-5"><div className="h-4 w-28 rounded bg-gray-100" /></td>
+                                            <td className="px-6 py-5"><div className="h-4 w-24 rounded bg-gray-100" /></td>
+                                            <td className="px-6 py-5"><div className="h-4 w-20 rounded bg-gray-100" /></td>
+                                            <td className="px-6 py-5"><div className="h-4 w-24 rounded bg-gray-100" /></td>
+                                            <td className="px-6 py-5"><div className="h-6 w-20 rounded-full bg-gray-100" /></td>
+                                            <td className="px-6 py-5 text-right"><div className="ml-auto h-9 w-32 rounded-lg bg-gray-100" /></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     ) : orders.length === 0 ? (
                         <div className="px-6 py-12 text-center text-sm text-gray-500">
@@ -309,48 +444,24 @@ const AdminOrders = () => {
                                                 className="transition hover:bg-gray-50"
                                             >
 
-                                                <td className="px-6 py-5">
-                                                    <div>
-                                                        <p className="font-medium text-gray-900">
-                                                            {getOrderNumber(order)}
-                                                        </p>
-
-                                                        <p className="mt-1 text-xs text-gray-400">
-                                                            ID: {order.id}
-                                                        </p>
-                                                    </div>
+                                                <td className="px-6 py-5 text-sm text-gray-700">
+                                                    #{getOrderNumber(order)}
                                                 </td>
 
-                                                <td className="px-6 py-5">
-                                                    <div>
-                                                        <p className="font-medium text-gray-900">
-                                                            {getCustomerName(order)}
-                                                        </p>
-
-                                                        <p className="mt-1 text-sm text-gray-500">
-                                                            {getCustomerEmail(order)}
-                                                        </p>
-
-                                                        <p className="mt-1 text-xs text-gray-400">
-                                                            {getCustomerPhone(order)}
-                                                        </p>
-                                                    </div>
+                                                <td className="px-6 py-5 text-sm text-gray-700">
+                                                    {getCustomerName(order)}
                                                 </td>
 
-                                                <td className="px-6 py-5 text-sm text-gray-600">
+                                                <td className="px-6 py-5 text-sm text-gray-700">
                                                     {getOrderDate(order)}
                                                 </td>
 
-                                                <td className="px-6 py-5">
-                                                    <p className="font-medium text-gray-900">
-                                                        {formatPrice(getOrderTotal(order))}
-                                                    </p>
+                                                <td className="px-6 py-5 text-sm text-gray-700">
+                                                    {formatPrice(getOrderTotal(order))}
                                                 </td>
 
-                                                <td className="px-6 py-5">
-                                                    <span className="text-sm text-gray-600">
-                                                        {getPaymentMethod(order)}
-                                                    </span>
+                                                <td className="px-6 py-5 text-sm text-gray-700">
+                                                    {getPaymentMethod(order)}
                                                 </td>
 
                                                 <td className="px-6 py-5">

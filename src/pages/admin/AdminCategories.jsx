@@ -245,45 +245,101 @@ const AdminCategories = () => {
         </div>
 
         {loading ? (
-          <div className="px-6 py-12 text-center text-sm text-gray-500">
-            Loading categories...
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr className="border-b border-gray-200 text-left">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500 w-1/4">
+                    Category
+                  </th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Description
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500 w-36">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 animate-pulse">
+                {[...Array(4)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-32 rounded bg-gray-100" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-3/4 max-w-md rounded bg-gray-100" />
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="h-8 w-14 rounded-lg bg-gray-100" />
+                        <div className="h-8 w-16 rounded-lg bg-gray-100" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : categories.length === 0 ? (
           <div className="px-6 py-12 text-center text-sm text-gray-500">
             No categories found.
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="flex flex-col gap-5 px-6 py-5 lg:flex-row lg:items-center lg:justify-between"
-              >
-                <div>
-                  <h3 className="font-medium text-gray-900">{category.name}</h3>
-
-                  <p className="mt-1 text-sm text-gray-500">
-                    {category.description || "No description provided."}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => handleEdit(category)}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr className="border-b border-gray-200 text-left">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500 w-1/4">
+                    Category
+                  </th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Description
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500 w-36">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {categories.map((category) => (
+                  <tr
+                    key={category.id}
+                    className="transition hover:bg-gray-50"
                   >
-                    Edit
-                  </button>
+                    <td className="px-6 py-4 align-top font-medium text-gray-900 whitespace-nowrap">
+                      {category.name}
+                    </td>
 
-                  <button
-                    onClick={() => handleDelete(category.id)}
-                    className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+                    <td className="px-6 py-4 align-top text-sm text-gray-600">
+                      <p
+                        className="line-clamp-2 max-w-xl break-words"
+                        title={category.description}
+                      >
+                        {category.description || "No description provided."}
+                      </p>
+                    </td>
+
+                    <td className="px-6 py-4 align-top text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleEdit(category)}
+                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(category.id)}
+                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

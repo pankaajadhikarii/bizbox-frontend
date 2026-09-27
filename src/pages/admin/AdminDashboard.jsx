@@ -153,21 +153,93 @@ const AdminDashboard = () => {
     };
 
     const getCustomerName = (order) => {
-        return (
-            order?.customerName ||
-            order?.customer?.fullName ||
-            order?.customer?.name ||
-            order?.userName ||
-            "Customer"
-        );
+        const candidates = [
+            order?.customerName,
+            order?.CustomerName,
+            order?.customer?.fullName,
+            order?.customer?.userName,
+            order?.customer?.name,
+            order?.userName,
+            order?.user?.fullName,
+            order?.user?.userName,
+            order?.user?.name,
+            order?.buyerName,
+            order?.customerEmail,
+            order?.CustomerEmail,
+            order?.customer?.email,
+            order?.user?.email,
+        ];
+
+        for (const candidate of candidates) {
+            if (typeof candidate === "string" && candidate.trim().length > 0) {
+                return candidate.trim();
+            }
+        }
+
+        return "Customer";
+    };
+
+    const PAYMENT_METHOD_MAP = {
+        0: "eSewa",
+        1: "Khalti",
+        2: "COD",
+        3: "COD",
+        "0": "eSewa",
+        "1": "Khalti",
+        "2": "COD",
+        "3": "COD",
+        Esewa: "eSewa",
+        Khalti: "Khalti",
+        CashOnDelivery: "COD",
+        COD: "COD",
+    };
+
+    const ORDER_STATUS_MAP = {
+        0: "Pending",
+        1: "Processing",
+        2: "Shipped",
+        3: "Delivered",
+        4: "Cancelled",
+        "0": "Pending",
+        "1": "Processing",
+        "2": "Shipped",
+        "3": "Delivered",
+        "4": "Cancelled",
+        Pending: "Pending",
+        Processing: "Processing",
+        Shipped: "Shipped",
+        Delivered: "Delivered",
+        Cancelled: "Cancelled",
+    };
+
+    const getPaymentMethod = (order) => {
+        const raw =
+            order?.paymentMethod ??
+            order?.payments?.[0]?.paymentMethod ??
+            order?.payment?.paymentMethod ??
+            null;
+
+        if (raw === null || raw === undefined) return "—";
+
+        // Map numeric IDs to names
+        if (PAYMENT_METHOD_MAP[raw] !== undefined) {
+            return PAYMENT_METHOD_MAP[raw];
+        }
+
+        // If it's a string like "Khalti" or "COD", return as-is
+        const str = String(raw).trim();
+        if (str === "" || (!isNaN(Number(str)) && str !== "")) return "—";
+
+        return str;
     };
 
     const getOrderStatus = (order) => {
-        return (
-            order?.status ||
-            order?.orderStatus ||
-            "Pending"
-        );
+        const raw = order?.status ?? order?.orderStatus;
+        if (raw === null || raw === undefined) return "Pending";
+        if (ORDER_STATUS_MAP[raw] !== undefined) {
+            return ORDER_STATUS_MAP[raw];
+        }
+        return String(raw);
     };
 
     const getOrderTotal = (order) => {
@@ -402,6 +474,10 @@ const AdminDashboard = () => {
                                                 order.createdAt ||
                                                 order.date
                                             )}
+                                            {" • "}
+                                            <span>
+                                                {getPaymentMethod(order)}
+                                            </span>
                                         </p>
                                     </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Package, ArrowRight, RotateCcw, AlertCircle } from "lucide-react";
 import orderService from "../services/orderService";
 
 const Orders = () => {
@@ -30,17 +31,17 @@ const Orders = () => {
     const getStatusClass = (status) => {
         switch (status) {
             case "Pending":
-                return "bg-yellow-100 text-yellow-700";
+                return "bg-amber-50 text-amber-700 border border-amber-200/60";
             case "Processing":
-                return "bg-blue-100 text-blue-700";
+                return "bg-blue-50 text-blue-700 border border-blue-200/60";
             case "Shipped":
-                return "bg-purple-100 text-purple-700";
+                return "bg-purple-50 text-purple-700 border border-purple-200/60";
             case "Delivered":
-                return "bg-green-100 text-green-700";
+                return "bg-emerald-50 text-emerald-700 border border-emerald-200/60";
             case "Cancelled":
-                return "bg-red-100 text-red-700";
+                return "bg-red-50 text-red-700 border border-red-200/60";
             default:
-                return "bg-gray-100 text-gray-700";
+                return "bg-gray-100 text-gray-700 border border-gray-200";
         }
     };
 
@@ -54,107 +55,109 @@ const Orders = () => {
         });
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-white px-6 py-12">
-                <div className="mx-auto max-w-6xl">
-                    <div className="animate-pulse">
-                        <div className="mb-8 h-8 w-40 rounded bg-gray-200" />
-                        <div className="h-20 rounded-xl bg-gray-100" />
-                        <div className="mt-4 h-20 rounded-xl bg-gray-100" />
-                        <div className="mt-4 h-20 rounded-xl bg-gray-100" />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-6xl">
-                <div className="mb-10">
-                    <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-                        My Orders
+        <main className="min-h-screen bg-gray-50 py-8 sm:py-10">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                {/* Heading */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+                        My orders
                     </h1>
-                    <p className="mt-2 text-sm text-gray-500">
-                        View and track your orders.
+                    <p className="mt-2 text-sm text-gray-600">
+                        Track and review your recent equipment purchases.
                     </p>
                 </div>
 
+                {/* Error Banner */}
                 {error && (
-                    <div className="mb-6 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                        <span>{error}</span>
+                    <div className="mb-6 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                        <div className="flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+                            <span>{error}</span>
+                        </div>
 
                         <button
+                            type="button"
                             onClick={fetchOrders}
-                            className="font-medium underline hover:no-underline"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 underline hover:no-underline"
                         >
+                            <RotateCcw className="h-3.5 w-3.5" />
                             Retry
                         </button>
                     </div>
                 )}
 
-                {!error && orders.length === 0 ? (
-                    <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-16 text-center">
-                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm">
-                            <svg
-                                className="h-7 w-7"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1.5}
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"
-                                />
-                            </svg>
+                {/* Loading Skeleton */}
+                {loading ? (
+                    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm animate-pulse">
+                        <div className="h-12 border-b border-gray-100 bg-gray-50" />
+                        <div className="divide-y divide-gray-100 p-6 space-y-4">
+                            {Array.from({ length: 4 }).map((_, idx) => (
+                                <div key={idx} className="flex items-center justify-between pt-4 first:pt-0">
+                                    <div className="space-y-2">
+                                        <div className="h-4 w-32 rounded bg-gray-100" />
+                                        <div className="h-3 w-20 rounded bg-gray-100" />
+                                    </div>
+                                    <div className="h-6 w-20 rounded-full bg-gray-100" />
+                                    <div className="h-4 w-24 rounded bg-gray-100" />
+                                    <div className="h-8 w-24 rounded-lg bg-gray-100" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : !error && orders.length === 0 ? (
+                    /* Empty State */
+                    <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                            <Package className="h-8 w-8" />
                         </div>
 
-                        <h2 className="mt-5 text-lg font-medium text-gray-900">
-                            No orders yet
+                        <h2 className="mt-4 text-xl font-semibold text-gray-900">
+                            No orders found
                         </h2>
 
-                        <p className="mt-2 text-sm text-gray-500">
-                            Your completed purchases will appear here.
+                        <p className="mt-1.5 max-w-sm text-sm text-gray-500">
+                            You haven't placed any equipment orders yet. When you complete a purchase, it will appear here.
                         </p>
 
                         <Link
-                            to="/"
-                            className="mt-6 inline-flex rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
+                            to="/equipment"
+                            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
                         >
-                            Start Shopping
+                            Browse Equipment
+                            <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
                 ) : (
-                    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                    /* Orders Table / Cards */
+                    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                        {/* Desktop Table View */}
                         <div className="hidden overflow-x-auto md:block">
                             <table className="w-full text-left">
-                                <thead className="border-b border-gray-200 bg-gray-50">
+                                <thead className="border-b border-gray-200 bg-gray-50/75">
                                     <tr>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
                                             Order
                                         </th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
                                             Date
                                         </th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
                                             Items
                                         </th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
                                             Total
                                         </th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
                                             Status
                                         </th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        <th className="px-6 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
                                             Action
                                         </th>
                                     </tr>
                                 </thead>
 
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className="divide-y divide-gray-100 text-sm">
                                     {orders.map((order) => {
                                         const orderId = order.id;
                                         const orderNumber =
@@ -181,33 +184,32 @@ const Orders = () => {
                                         return (
                                             <tr
                                                 key={orderId}
-                                                className="transition hover:bg-gray-50"
+                                                className="transition hover:bg-gray-50/60"
                                             >
-                                                <td className="px-6 py-5">
-                                                    <div className="font-medium text-gray-900">
+                                                <td className="px-6 py-4.5">
+                                                    <div className="font-semibold text-gray-900">
                                                         {orderNumber}
                                                     </div>
-
-                                                    <div className="mt-1 text-xs text-gray-400">
+                                                    <div className="mt-0.5 text-xs text-gray-400">
                                                         ID: {orderId}
                                                     </div>
                                                 </td>
 
-                                                <td className="px-6 py-5 text-sm text-gray-600">
+                                                <td className="px-6 py-4.5 text-gray-600">
                                                     {formatDate(date)}
                                                 </td>
 
-                                                <td className="px-6 py-5 text-sm text-gray-600">
-                                                    {items.length}
+                                                <td className="px-6 py-4.5 text-gray-600">
+                                                    {items.length} {items.length === 1 ? "item" : "items"}
                                                 </td>
 
-                                                <td className="px-6 py-5 text-sm font-medium text-gray-900">
+                                                <td className="px-6 py-4.5 font-semibold text-gray-900">
                                                     Rs. {Number(total).toLocaleString()}
                                                 </td>
 
-                                                <td className="px-6 py-5">
+                                                <td className="px-6 py-4.5">
                                                     <span
-                                                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(
+                                                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getStatusClass(
                                                             status
                                                         )}`}
                                                     >
@@ -215,12 +217,12 @@ const Orders = () => {
                                                     </span>
                                                 </td>
 
-                                                <td className="px-6 py-5">
+                                                <td className="px-6 py-4.5 text-right">
                                                     <Link
                                                         to={`/orders/${orderId}`}
-                                                        className="text-sm font-medium text-gray-900 underline underline-offset-4 hover:text-gray-600"
+                                                        className="inline-flex underline items-center gap-1 text-xs font-medium text-black transition hover:text-gray-600"
                                                     >
-                                                        View Details
+                                                        View details
                                                     </Link>
                                                 </td>
                                             </tr>
@@ -230,10 +232,10 @@ const Orders = () => {
                             </table>
                         </div>
 
+                        {/* Mobile Card View */}
                         <div className="divide-y divide-gray-100 md:hidden">
                             {orders.map((order) => {
                                 const orderId = order.id;
-
                                 const orderNumber =
                                     order.orderNumber || `#${order.id}`;
 
@@ -259,17 +261,16 @@ const Orders = () => {
                                     <div key={orderId} className="p-5">
                                         <div className="flex items-start justify-between gap-4">
                                             <div>
-                                                <p className="font-medium text-gray-900">
+                                                <p className="font-semibold text-gray-900">
                                                     {orderNumber}
                                                 </p>
-
-                                                <p className="mt-1 text-xs text-gray-400">
+                                                <p className="mt-0.5 text-xs text-gray-400">
                                                     {formatDate(date)}
                                                 </p>
                                             </div>
 
                                             <span
-                                                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(
+                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getStatusClass(
                                                     status
                                                 )}`}
                                             >
@@ -277,27 +278,21 @@ const Orders = () => {
                                             </span>
                                         </div>
 
-                                        <div className="mt-5 grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-xs text-gray-400">Items</p>
-                                                <p className="mt-1 text-sm font-medium text-gray-900">
-                                                    {items.length}
-                                                </p>
-                                            </div>
-
-                                            <div>
-                                                <p className="text-xs text-gray-400">Total</p>
-                                                <p className="mt-1 text-sm font-medium text-gray-900">
-                                                    Rs. {Number(total).toLocaleString()}
-                                                </p>
-                                            </div>
+                                        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 text-sm">
+                                            <span className="text-gray-500">
+                                                {items.length} {items.length === 1 ? "item" : "items"}
+                                            </span>
+                                            <span className="font-semibold text-gray-900">
+                                                Rs. {Number(total).toLocaleString()}
+                                            </span>
                                         </div>
 
                                         <Link
                                             to={`/orders/${orderId}`}
-                                            className="mt-5 block rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-900 transition hover:bg-gray-50"
+                                            className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white py-2 text-xs font-medium text-gray-900 transition hover:bg-gray-50 shadow-xs"
                                         >
-                                            View Order
+                                            View details
+                                            <ArrowRight className="h-3.5 w-3.5" />
                                         </Link>
                                     </div>
                                 );
@@ -306,7 +301,7 @@ const Orders = () => {
                     </div>
                 )}
             </div>
-        </div>
+        </main>
     );
 };
 
