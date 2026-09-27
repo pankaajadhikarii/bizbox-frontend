@@ -724,14 +724,14 @@ const OrderDetails = () => {
                                                                     </div>
 
                                                                     <span className="shrink-0 text-[15px] font-semibold">
-                                                                        $
+                                                                        Rs.
                                                                         {itemTotal.toLocaleString()}
                                                                     </span>
                                                                 </div>
 
                                                                 <div className="flex items-center justify-between gap-4 text-[11px] text-[#4c4546]">
                                                                     <span>
-                                                                        $
+                                                                        Rs.
                                                                         {unitPrice.toLocaleString()}{" "}
                                                                         × {quantity}
                                                                     </span>
@@ -847,7 +847,7 @@ const OrderDetails = () => {
                                         </div>
 
                                         <span className="text-[25px] font-semibold tracking-tight">
-                                            $
+                                            Rs.
                                             {getOrderTotal().toLocaleString()}
                                         </span>
                                     </div>

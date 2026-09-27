@@ -461,7 +461,7 @@ const ProductDetails = () => {
 
                         <div className="mt-6">
                             <span className="text-2xl font-semibold tracking-tight">
-                                $
+                                Rs.
                                 {Number(
                                     product.price || 0
                                 ).toLocaleString()}

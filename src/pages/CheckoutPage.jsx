@@ -650,7 +650,7 @@ const CheckoutPage = () => {
                                                 </div>
 
                                                 <p className="shrink-0 text-[12px] font-medium">
-                                                    $
+                                                    Rs.
                                                     {(
                                                         price * quantity
                                                     ).toLocaleString()}
@@ -680,7 +680,7 @@ const CheckoutPage = () => {
                                         </span>
 
                                         <span>
-                                            $
+                                            Rs.
                                             {subtotal.toLocaleString()}
                                         </span>
                                     </div>
@@ -711,7 +711,7 @@ const CheckoutPage = () => {
                                     </div>
 
                                     <span className="text-[25px] font-semibold tracking-tight">
-                                        $
+                                        Rs.
                                         {subtotal.toLocaleString()}
                                     </span>
                                 </div>

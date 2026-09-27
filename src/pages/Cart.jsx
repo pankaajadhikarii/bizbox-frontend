@@ -545,7 +545,7 @@ const Cart = () => {
                                                         </Link>
 
                                                         <p className="mt-1 text-[11px] text-[#4c4546]">
-                                                            $
+                                                            Rs.
                                                             {itemPrice.toLocaleString()}{" "}
                                                             per unit
                                                         </p>
@@ -553,7 +553,7 @@ const Cart = () => {
 
                                                     <div className="shrink-0 text-right">
                                                         <p className="text-[16px] font-semibold">
-                                                            $
+                                                            Rs.
                                                             {itemTotal.toLocaleString()}
                                                         </p>
                                                     </div>
@@ -685,7 +685,7 @@ const Cart = () => {
                                         </span>
 
                                         <span>
-                                            $
+                                            Rs.
                                             {subtotal.toLocaleString()}
                                         </span>
                                     </div>
@@ -716,7 +716,7 @@ const Cart = () => {
                                     </div>
 
                                     <span className="text-[24px] font-semibold tracking-tight">
-                                        $
+                                        Rs.
                                         {subtotal.toLocaleString()}
                                     </span>
                                 </div>

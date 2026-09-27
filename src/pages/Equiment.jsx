@@ -391,6 +391,9 @@ const Equipment = () => {
                                 )}
                             </div>
 
+                            {/* TODO: Remove this part from the page. */}
+                            {/* ---------------------------------------------------------------------------------------------------- */}
+
                             <div className="flex items-center gap-6">
                                 <div className="flex flex-col">
                                     <span className="text-[17px] font-semibold">
@@ -433,6 +436,7 @@ const Equipment = () => {
                                     </span>
                                 </div>
                             </div>
+                            {/* -------------------------------------------------------------------------------------------------- */}
                         </div>
                     </div>
                 </section>
@@ -587,14 +591,14 @@ const Equipment = () => {
                                         return (
                                             <article
                                                 key={product.id}
-                                                className="relative flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 hover:border-gray-300 hover:bg-gray-50"
+                                                className="relative flex flex-col justify-between rounded-lg border border-gray-200 bg-gray-50 p-2 hover:border-gray-300 hover:bg-gray-100"
                                             >
                                                 <div>
                                                     <Link
                                                         to={`/products/${product.id}`}
                                                         className="block"
                                                     >
-                                                        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-[#f4f3f8]">
+                                                        <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-[#f4f3f8]">
                                                             <img
                                                                 src={getProductImage(
                                                                     product,
@@ -614,12 +618,6 @@ const Equipment = () => {
                                                                         ];
                                                                 }}
                                                             />
-
-                                                            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-medium text-black backdrop-blur-md">
-                                                                {getCategoryName(
-                                                                    product
-                                                                )}
-                                                            </span>
                                                         </div>
 
                                                         <div className="flex flex-col gap-1.5 pt-4">
@@ -645,16 +643,11 @@ const Equipment = () => {
                                                     <div className="flex items-center justify-between gap-3">
                                                         <div className="flex flex-col">
                                                             <span className="text-[17px] font-semibold text-black">
-                                                                $
+                                                                Rs.
                                                                 {Number(
                                                                     product.price ||
                                                                     0
                                                                 ).toLocaleString()}
-                                                            </span>
-
-                                                            <span className="text-[10px] text-[#4c4546]">
-                                                                Available for
-                                                                purchase
                                                             </span>
                                                         </div>
 
@@ -674,10 +667,12 @@ const Equipment = () => {
                                                         </div>
                                                     </div>
 
+                                                    {/* mt-4 flex h-10 items-center justify-center rounded-lg bg-black text-sm font-medium text-white transition-colors hover:bg-gray-800 */}
+
                                                     <div className="flex gap-2">
                                                         <Link
                                                             to={`/products/${product.id}`}
-                                                            className="flex h-10 flex-1 items-center justify-center gap-1 rounded-lg bg-[#f4f3f8] text-[12px] font-medium text-black hover:bg-gray-200"
+                                                            className="flex h-10 flex-1 items-center justify-center gap-1 rounded-lg bg-black text-[12px] font-medium text-white hover:bg-gray-800"
                                                         >
                                                             View Product
                                                         </Link>

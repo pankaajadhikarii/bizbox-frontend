@@ -496,10 +496,6 @@ const AdminBusinessTypes = () => {
                                             <p className="mt-1 text-sm text-gray-500">
                                                 {businessType.description || "No description provided."}
                                             </p>
-
-                                            <p className="mt-2 text-xs text-gray-400">
-                                                ID: {businessType.id}
-                                            </p>
                                         </div>
                                     </div>
 

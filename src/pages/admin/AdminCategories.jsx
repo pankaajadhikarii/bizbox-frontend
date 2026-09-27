@@ -265,10 +265,6 @@ const AdminCategories = () => {
                   <p className="mt-1 text-sm text-gray-500">
                     {category.description || "No description provided."}
                   </p>
-
-                  <p className="mt-2 text-xs text-gray-400">
-                    ID: {category.id}
-                  </p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
