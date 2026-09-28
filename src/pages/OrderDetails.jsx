@@ -288,22 +288,16 @@ const OrderDetails = () => {
       return "eSewa";
     }
 
-    if (method === 1 || method === "1" || method === "Khalti") {
-      return "Khalti";
-    }
-
     if (
-      method === 2 ||
-      method === "2" ||
-      method === 3 ||
-      method === "3" ||
+      method === 1 ||
+      method === "1" ||
       method === "CashOnDelivery" ||
       method === "COD"
     ) {
       return "COD";
     }
 
-    if (typeof method === "string") {
+    if (typeof method === "string" && method.trim()) {
       return method;
     }
 
@@ -311,11 +305,16 @@ const OrderDetails = () => {
   };
 
   const getPaymentStatus = () => {
-    const rawStatus = order?.status;
-    const orderStatus = statusAliases[rawStatus] ?? rawStatus;
+
     const paymentMethod = getPaymentMethod();
 
-    if (orderStatus === "Delivered" && paymentMethod === "COD") {
+    // COD orders are considered paid once the order is delivered.
+    if (
+      paymentMethod === "COD" &&
+      (order?.status === 3 ||
+        order?.status === "3" ||
+        order?.status === "Delivered")
+    ) {
       return "Paid";
     }
 

@@ -1,9 +1,12 @@
 import api from "./api";
 
 const businessTypeService = {
-    // Get all active business types
-    async getAll() {
-        const response = await api.get("/business-types");
+    // Get all active business types or search business types
+    async getAll(search = "") {
+        const response = await api.get("/business-types", {
+            params: search.trim() ? { search: search.trim() } : {},
+        });
+
         return response.data;
     },
 
