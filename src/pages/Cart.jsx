@@ -436,11 +436,6 @@ const Cart = () => {
                 </Link>
 
                 <div className="mt-5 space-y-1.5 rounded-xl bg-gray-50 p-3.5 text-xs text-gray-500">
-                  <div className="flex items-center gap-1.5 font-medium text-gray-700">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
-                    <span>Secure Checkout</span>
-                  </div>
-
                   <p className="leading-relaxed">
                     Review delivery details and payment options on the next
                     step.
@@ -453,8 +448,22 @@ const Cart = () => {
       </div>
 
       {message && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-xl bg-gray-900 px-4 py-2.5 text-xs font-medium text-white shadow-xl">
-          {message}
+        <div
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-medium shadow-xl ${
+            messageType === "error"
+              ? "border border-red-200 bg-red-50 text-red-700"
+              : "bg-gray-900 text-white"
+          }`}
+        >
+          {messageType === "error" && (
+            <span className="h-2 w-2 rounded-full bg-red-500" />
+          )}
+
+          {messageType === "success" && (
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+          )}
+
+          <span>{message}</span>
         </div>
       )}
     </main>

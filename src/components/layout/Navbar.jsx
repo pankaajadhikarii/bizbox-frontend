@@ -80,7 +80,7 @@ const Navbar = () => {
                         className="relative ml-auto w-full max-w-xs"
                     >
                         <label className="sr-only" htmlFor="navbar-search">
-                            Search equipment
+                            Search business
                         </label>
 
                         <input
@@ -90,7 +90,7 @@ const Navbar = () => {
                             onChange={(event) =>
                                 setSearchTerm(event.target.value)
                             }
-                            placeholder="Search equipment"
+                            placeholder="Search business"
                             className="h-10 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 pr-20 text-sm text-black outline-none placeholder:text-gray-400 focus:border-black focus:bg-white"
                         />
 

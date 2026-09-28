@@ -311,39 +311,65 @@ const OrderDetails = () => {
   };
 
   const getPaymentStatus = () => {
-    // For COD orders that have been Delivered — payment is collected on delivery,
-    // so always treat them as Paid regardless of what numeric value the backend sends.
     const rawStatus = order?.status;
     const orderStatus = statusAliases[rawStatus] ?? rawStatus;
     const paymentMethod = getPaymentMethod();
+
     if (orderStatus === "Delivered" && paymentMethod === "COD") {
       return "Paid";
     }
 
     const status = order?.paymentStatus ?? order?.payment?.status;
 
-    // 0 = Unpaid/Pending
+    // OrderPaymentStatus:
+    // 0 = Unpaid
+    // 1 = Pending
+    // 2 = Paid
+    // 3 = Failed
+    // 4 = Refunded
+
+    if (
+      status === 2 ||
+      status === "2" ||
+      status === "Paid" ||
+      status === "PAID"
+    ) {
+      return "Paid";
+    }
+
     if (
       status === 0 ||
       status === "0" ||
       status === "Unpaid" ||
-      status === "Pending"
+      status === "UNPAID"
     ) {
       return "Unpaid";
     }
 
-    // 1 = Paid
-    if (status === 1 || status === "1" || status === "Paid") {
-      return "Paid";
+    if (
+      status === 1 ||
+      status === "1" ||
+      status === "Pending" ||
+      status === "PENDING"
+    ) {
+      return "Pending";
     }
 
-    // 2 = Failed (but for COD delivered this is already handled above)
-    if (status === 2 || status === "2" || status === "Failed") {
+    if (
+      status === 3 ||
+      status === "3" ||
+      status === "Failed" ||
+      status === "FAILED"
+    ) {
       return "Failed";
     }
 
-    // 3 = Refunded
-    if (status === 3 || status === "3" || status === "Refunded") {
+    if (
+      status === 4 ||
+      status === "4" ||
+      status === "Refunded" ||
+      status === "REFUNDED"
+    ) {
       return "Refunded";
     }
 

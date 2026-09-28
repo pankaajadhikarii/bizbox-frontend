@@ -19,7 +19,10 @@ const Login = () => {
     const [serverError, setServerError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const from = location.state?.from?.pathname || null;
+    const fromLocation = location.state?.from;
+    const from = fromLocation
+        ? `${fromLocation.pathname || ""}${fromLocation.search || ""}`
+        : null;
 
     if (isAuthenticated) {
         if (from) {
@@ -86,9 +89,12 @@ const Login = () => {
                 formData.password
             );
 
-            const destination =
-                location.state?.from?.pathname ||
-                (isAdmin ? "/admin" : "/");
+            const from = location.state?.from;
+            const destination = from
+                ? `${from.pathname || ""}${from.search || ""}`
+                : isAdmin
+                  ? "/admin"
+                  : "/";
 
             navigate(destination, { replace: true });
         } catch (error) {

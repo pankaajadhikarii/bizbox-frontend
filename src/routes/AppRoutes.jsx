@@ -11,6 +11,8 @@ import ProductDetails from "../pages/ProductDetails";
 
 import Cart from "../pages/Cart";
 import CheckoutPage from "../pages/CheckoutPage";
+import EsewaSuccess from "../pages/EsewaSuccess";
+import EsewaFailure from "../pages/EsewaFailure";
 import OrderDetails from "../pages/OrderDetails";
 import Orders from "../pages/Orders";
 import Profile from "../pages/Profile";
@@ -45,6 +47,8 @@ const AppRoutes = () => {
                     <Route element={<ProtectedRoute />}>
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
+                        <Route path="/payment/esewa/success" element={<EsewaSuccess />} />
+                        <Route path="/payment/esewa/failure" element={<EsewaFailure />} />
                         <Route path="/orders" element={<Orders />} />
                         <Route path="/orders/:id" element={<OrderDetails />} />
                         <Route path="/profile" element={<Profile />} />

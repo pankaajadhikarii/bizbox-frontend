@@ -11,7 +11,23 @@ import {
 } from "lucide-react";
 import cartService from "../services/cartService";
 import orderService from "../services/orderService";
+import paymentService, { postToEsewa } from "../services/paymentService";
 import { resolveImageUrl } from "../utils/imageUrl";
+
+const PAYMENT_METHOD = {
+  ESEWA: 0,
+  COD: 1,
+};
+
+const persistEsewaOrder = (order) => {
+  if (!order?.id) return;
+
+  sessionStorage.setItem("esewaOrderId", String(order.id));
+
+  if (order.orderNumber) {
+    sessionStorage.setItem("esewaOrderNumber", String(order.orderNumber));
+  }
+};
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -21,7 +37,7 @@ const CheckoutPage = () => {
   const [placingOrder, setPlacingOrder] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState(2);
+  const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.COD);
 
   const [error, setError] = useState("");
   const [validationError, setValidationError] = useState("");
@@ -134,27 +150,32 @@ const CheckoutPage = () => {
     try {
       setPlacingOrder(true);
 
-      const orderData = {
+      const method = Number(paymentMethod);
+
+      const order = await orderService.create({
         shippingAddress: shippingAddress.trim(),
-        paymentMethod: Number(paymentMethod),
-      };
+        paymentMethod: method,
+      });
 
-      const response = await orderService.create(orderData);
-
-      const orderId =
-        response?.id ||
-        response?.orderId ||
-        response?.data?.id ||
-        response?.data?.orderId;
-
-      if (orderId) {
-        navigate(`/orders/${orderId}`);
-      } else {
-        navigate("/orders");
+      if (!order?.id) {
+        throw new Error("Order was created but no order id was returned.");
       }
+
+      if (method === PAYMENT_METHOD.COD) {
+        window.dispatchEvent(new Event("cart-updated"));
+        navigate(`/orders/${order.id}`);
+        return;
+      }
+
+      persistEsewaOrder(order);
+
+      const { paymentUrl, fields } = await paymentService.initiateEsewa(order.id);
+      postToEsewa(paymentUrl, fields);
     } catch (err) {
       setError(
-        err.userMessage || "Unable to place your order. Please try again.",
+        err.userMessage ||
+          err.message ||
+          "Unable to place your order. Please try again.",
       );
     } finally {
       setPlacingOrder(false);
@@ -169,15 +190,15 @@ const CheckoutPage = () => {
       badge: "eS",
       badgeBg: "bg-emerald-100 text-emerald-800",
     },
+    // {
+    //   id: 1,
+    //   name: "Khalti",
+    //   description: "Pay online with your Khalti digital wallet",
+    //   badge: "K",
+    //   badgeBg: "bg-purple-100 text-purple-800",
+    // },
     {
-      id: 1,
-      name: "Khalti",
-      description: "Pay online with your Khalti digital wallet",
-      badge: "K",
-      badgeBg: "bg-purple-100 text-purple-800",
-    },
-    {
-      id: 2,
+      id: PAYMENT_METHOD.COD,
       name: "Cash on Delivery",
       description: "Pay in cash when your equipment is delivered",
       badge: "COD",
@@ -357,12 +378,29 @@ const CheckoutPage = () => {
                   })}
                 </div>
 
-                {Number(paymentMethod) === 2 && (
+                {Number(paymentMethod) === PAYMENT_METHOD.COD && (
                   <div className="mt-4 flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs text-gray-600">
                     <Truck className="h-4 w-4 shrink-0 text-gray-500" />
                     <span>
                       Payment will be collected upon delivery of your equipment.
                     </span>
+                  </div>
+                )}
+
+                {Number(paymentMethod) === PAYMENT_METHOD.ESEWA && (
+                  <div className="mt-4 flex items-start gap-2 rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-800">
+                    <Wallet className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+                    <div className="space-y-1">
+                      <p>
+                        You will leave this site and sign in on eSewa&apos;s sandbox
+                        (rc-epay.esewa.com.np). Use a UAT test wallet, not a real
+                        eSewa account or your Bizkit login.
+                      </p>
+                      <p>
+                        Test ID: 9806800001 (or 0002–0005) · Password: Nepal@123 ·
+                        MPIN: 123456
+                      </p>
+                    </div>
                   </div>
                 )}
               </section>
@@ -471,7 +509,11 @@ const CheckoutPage = () => {
                         />
                       </svg>
 
-                      <span>Placing Order...</span>
+                      <span>
+                        {Number(paymentMethod) === PAYMENT_METHOD.ESEWA
+                          ? "Redirecting to eSewa..."
+                          : "Placing Order..."}
+                      </span>
                     </>
                   ) : (
                     <>
@@ -483,11 +525,6 @@ const CheckoutPage = () => {
                 </button>
 
                 <div className="mt-5 space-y-1.5 rounded-xl border border-gray-100 bg-gray-50 p-3.5 text-xs text-gray-500">
-                  <div className="flex items-center gap-1.5 font-medium text-gray-700">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
-                    <span>Secure Checkout</span>
-                  </div>
-
                   <p className="leading-relaxed">
                     By placing this order, you confirm your delivery address and
                     payment choice.

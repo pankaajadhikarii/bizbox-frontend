@@ -382,7 +382,7 @@ const Equipment = () => {
       {/* Main */}
       <main className="flex min-h-screen flex-1 flex-col">
         {/* Page Heading */}
-        <section className="mx-auto w-full max-w-7xl px-5 pb-6 pt-8 sm:px-6 lg:px-8">
+        <section className="mx-auto w-full max-w-7xl px-5 pb-6 pt-8 sm:px-6 lg:px-12">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -401,49 +401,41 @@ const Equipment = () => {
                 )}
               </div>
 
-              <div className="flex items-center gap-6">
-                <div className="flex flex-col">
-                  <span className="text-[17px] font-semibold">
-                    {products.length}
-                  </span>
+              <div className="flex shrink-0 flex-wrap items-center gap-3 mb-6">
+                <button
+                  type="button"
+                  onClick={handleStockToggle}
+                  className={`flex h-10 items-center gap-2 rounded-lg px-4 text-[12px] font-medium ${
+                    stockOnly
+                      ? "bg-black text-white"
+                      : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
+                  }`}
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      stockOnly ? "bg-white" : "bg-[#cfc4c5]"
+                    }`}
+                  />
+                  In Stock Only
+                </button>
 
-                  <span className="text-[11px] text-[#4c4546]">Products</span>
-                </div>
-
-                <div className="h-8 w-px bg-[#e3e2e7]" />
-
-                <div className="flex flex-col">
-                  <span className="text-[17px] font-semibold">
-                    {categories.length}
-                  </span>
-
-                  <span className="text-[11px] text-[#4c4546]">Categories</span>
-                </div>
-
-                <div className="h-8 w-px bg-[#e3e2e7]" />
-
-                <div className="flex flex-col">
-                  <span className="text-[17px] font-semibold">
-                    {
-                      products.filter(
-                        (product) =>
-                          product.stockQuantity === null ||
-                          product.stockQuantity === undefined ||
-                          Number(product.stockQuantity) > 0,
-                      ).length
-                    }
-                  </span>
-
-                  <span className="text-[11px] text-[#4c4546]">Available</span>
-                </div>
+                <select
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  className="h-10 cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-gray-50"
+                >
+                  <option value="featured">Sort: Featured</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="name">Name: A-Z</option>
+                </select>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Filters */}
         <section className="mx-auto w-full max-w-7xl px-6 pb-8 lg:px-12">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Categories */}
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               <button
@@ -472,36 +464,6 @@ const Equipment = () => {
                   {category}
                 </button>
               ))}
-            </div>
-
-            <div className="flex shrink-0 items-center gap-3">
-              <button
-                type="button"
-                onClick={handleStockToggle}
-                className={`flex h-10 items-center gap-2 rounded-lg px-4 text-[12px] font-medium ${
-                  stockOnly
-                    ? "bg-black text-white"
-                    : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
-                }`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    stockOnly ? "bg-white" : "bg-[#cfc4c5]"
-                  }`}
-                />
-                In Stock Only
-              </button>
-
-              <select
-                value={sortBy}
-                onChange={handleSortChange}
-                className="h-10 cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-gray-50"
-              >
-                <option value="featured">Sort: Featured</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="name">Name: A-Z</option>
-              </select>
             </div>
           </div>
         </section>
