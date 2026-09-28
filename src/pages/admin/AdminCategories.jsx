@@ -186,7 +186,7 @@ const AdminCategories = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Coffee Machines"
+                  placeholder="e.g. Coffee Machines"
                   required
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
                 />
