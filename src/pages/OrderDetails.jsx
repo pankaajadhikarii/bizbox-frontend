@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams, useLocation } from "react-router-dom";
 import {
     ArrowLeft,
     CheckCircle2,
@@ -44,15 +44,32 @@ const statusSteps = [
 ];
 
 const statusAliases = {
+    0: "Pending",
+    1: "Processing",
+    2: "Shipped",
+    3: "Delivered",
+    4: "Cancelled",
+    "0": "Pending",
+    "1": "Processing",
+    "2": "Shipped",
+    "3": "Delivered",
+    "4": "Cancelled",
     pending: "Pending",
     processing: "Processing",
     shipped: "Shipped",
     delivered: "Delivered",
     cancelled: "Cancelled",
+    Pending: "Pending",
+    Processing: "Processing",
+    Shipped: "Shipped",
+    Delivered: "Delivered",
+    Cancelled: "Cancelled",
 };
 
 const OrderDetails = () => {
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
 
     const [order, setOrder] = useState(null);
     const [productsMap, setProductsMap] = useState({});
@@ -110,8 +127,12 @@ const OrderDetails = () => {
     };
 
     const normalizeStatus = (status) => {
-        if (!status) {
+        if (status === null || status === undefined || status === "") {
             return "Pending";
+        }
+
+        if (statusAliases[status] !== undefined) {
+            return statusAliases[status];
         }
 
         const value = String(status).toLowerCase();
@@ -135,6 +156,17 @@ const OrderDetails = () => {
     };
 
     const items = getItems();
+
+    const isResale = Boolean(
+        searchParams.get("type") === "resale" ||
+        location.state?.isResale ||
+        order?.isResale ||
+        order?.orderType === "Resale" ||
+        order?.type === "Resale" ||
+        order?.resaleListingId != null ||
+        items.some((item) => item.isResale || item.resaleListingId != null) ||
+        (id && sessionStorage.getItem(`resale_order_${id}`) === "true")
+    );
 
     const getProduct = (item) => {
         const productId = item.productId || item.product?.id || item.id;
@@ -249,19 +281,23 @@ const OrderDetails = () => {
             order?.paymentMethod ??
             order?.payment?.paymentMethod;
 
-        if (method === 0 || method === "Esewa") {
+        if (method === 0 || method === "0" || method === "Esewa" || method === "eSewa") {
             return "eSewa";
         }
 
-        if (method === 1 || method === "Khalti") {
+        if (method === 1 || method === "1" || method === "Khalti") {
             return "Khalti";
         }
 
         if (
             method === 2 ||
-            method === "CashOnDelivery"
+            method === "2" ||
+            method === 3 ||
+            method === "3" ||
+            method === "CashOnDelivery" ||
+            method === "COD"
         ) {
-            return "Cash on Delivery";
+            return "COD";
         }
 
         if (typeof method === "string") {
@@ -272,22 +308,35 @@ const OrderDetails = () => {
     };
 
     const getPaymentStatus = () => {
+        // For COD orders that have been Delivered — payment is collected on delivery,
+        // so always treat them as Paid regardless of what numeric value the backend sends.
+        const rawStatus = order?.status;
+        const orderStatus = statusAliases[rawStatus] ?? rawStatus;
+        const paymentMethod = getPaymentMethod();
+        if (orderStatus === "Delivered" && paymentMethod === "COD") {
+            return "Paid";
+        }
+
         const status =
             order?.paymentStatus ??
             order?.payment?.status;
 
+        // 0 = Unpaid/Pending
         if (status === 0 || status === "0" || status === "Unpaid" || status === "Pending") {
             return "Unpaid";
         }
 
+        // 1 = Paid
         if (status === 1 || status === "1" || status === "Paid") {
             return "Paid";
         }
 
+        // 2 = Failed (but for COD delivered this is already handled above)
         if (status === 2 || status === "2" || status === "Failed") {
             return "Failed";
         }
 
+        // 3 = Refunded
         if (status === 3 || status === "3" || status === "Refunded") {
             return "Refunded";
         }
@@ -437,15 +486,18 @@ const OrderDetails = () => {
                             </div>
 
                             <span
-                                className={`inline-flex self-start sm:self-auto rounded-full px-3.5 py-1 text-xs font-medium ${getStatusClass(
-                                    currentStatus
-                                )}`}
+                                className={`inline-flex self-start sm:self-auto rounded-full px-3.5 py-1 text-xs font-medium ${
+                                    isResale
+                                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                                        : getStatusClass(currentStatus)
+                                }`}
                             >
-                                {currentStatus}
+                                {isResale ? "Placed" : currentStatus}
                             </span>
                         </div>
 
-                        {/* Status Timeline */}
+                        {/* Status Timeline - hidden for resale */}
+                        {!isResale && (
                         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                             <h2 className="text-base font-semibold text-gray-900 mb-6">
                                 Order Progress
@@ -583,6 +635,7 @@ const OrderDetails = () => {
                                 </div>
                             )}
                         </section>
+                        )}
 
                         {/* Order Content Grid */}
                         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
@@ -737,32 +790,38 @@ const OrderDetails = () => {
                                         </Link>
 
                                         <Link
-                                            to="/equipment"
+                                            to={isResale ? "/resale" : "/equipment"}
                                             className="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
                                         >
-                                            Continue shopping
+                                            {isResale ? "Continue to Resale" : "Continue shopping"}
                                         </Link>
                                     </div>
                                 </div>
 
                                 {/* Order Meta Info Card */}
                                 <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm text-xs space-y-3 text-gray-600">
-                                    <div className="flex justify-between items-center">
-                                        <span>Payment Status</span>
-                                        <span
-                                            className={`rounded-full px-2.5 py-0.5 font-medium ${
-                                                getPaymentStatus() === "Paid"
-                                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                                    : getPaymentStatus() === "Failed"
-                                                    ? "bg-red-50 text-red-700 border border-red-200"
-                                                    : "bg-amber-50 text-amber-700 border border-amber-200"
-                                            }`}
-                                        >
-                                            {getPaymentStatus()}
-                                        </span>
-                                    </div>
+                                    {!isResale && (
+                                        <div className="flex justify-between items-center">
+                                            <span>Payment Status</span>
+                                            <span
+                                                className={`rounded-full px-2.5 py-0.5 font-medium ${
+                                                    getPaymentStatus() === "Paid"
+                                                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                                        : getPaymentStatus() === "Failed"
+                                                        ? "bg-red-50 text-red-700 border border-red-200"
+                                                        : "bg-amber-50 text-amber-700 border border-amber-200"
+                                                }`}
+                                            >
+                                                {getPaymentStatus()}
+                                            </span>
+                                        </div>
+                                    )}
 
-                                    <div className="flex justify-between items-center border-t border-gray-100 pt-3">
+                                    <div
+                                        className={`flex justify-between items-center ${
+                                            !isResale ? "border-t border-gray-100 pt-3" : ""
+                                        }`}
+                                    >
                                         <span>Order Date</span>
                                         <span className="font-medium text-gray-900">
                                             {getOrderDate()}

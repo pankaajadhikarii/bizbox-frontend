@@ -28,8 +28,46 @@ const Orders = () => {
         fetchOrders();
     }, []);
 
+    const ORDER_STATUS_MAP = {
+        0: "Pending",
+        1: "Processing",
+        2: "Shipped",
+        3: "Delivered",
+        4: "Cancelled",
+        "0": "Pending",
+        "1": "Processing",
+        "2": "Shipped",
+        "3": "Delivered",
+        "4": "Cancelled",
+        pending: "Pending",
+        processing: "Processing",
+        shipped: "Shipped",
+        delivered: "Delivered",
+        cancelled: "Cancelled",
+        Pending: "Pending",
+        Processing: "Processing",
+        Shipped: "Shipped",
+        Delivered: "Delivered",
+        Cancelled: "Cancelled",
+    };
+
+    const getStatus = (rawStatus) => {
+        if (rawStatus === null || rawStatus === undefined || rawStatus === "") {
+            return "Pending";
+        }
+        if (ORDER_STATUS_MAP[rawStatus] !== undefined) {
+            return ORDER_STATUS_MAP[rawStatus];
+        }
+        const lower = String(rawStatus).toLowerCase();
+        if (ORDER_STATUS_MAP[lower] !== undefined) {
+            return ORDER_STATUS_MAP[lower];
+        }
+        return String(rawStatus);
+    };
+
     const getStatusClass = (status) => {
-        switch (status) {
+        const normalized = getStatus(status);
+        switch (normalized) {
             case "Pending":
                 return "bg-amber-50 text-amber-700 border border-amber-200/60";
             case "Processing":
@@ -174,12 +212,26 @@ const Orders = () => {
                                             order.orderItems ||
                                             [];
 
-                                        const status = order.status || "Pending";
+                                        const status = getStatus(order.status);
 
                                         const date =
                                             order.createdAt ||
                                             order.orderDate ||
                                             order.createdDate;
+
+                                        const isResaleOrder = Boolean(
+                                            order.isResale ||
+                                            order.resaleListingId != null ||
+                                            order.orderType === "Resale" ||
+                                            order.type === "Resale" ||
+                                            items.some((i) => i.isResale || i.resaleListingId != null) ||
+                                            sessionStorage.getItem(`resale_order_${orderId}`) === "true"
+                                        );
+
+                                        const displayStatus = isResaleOrder ? "Order Placed" : status;
+                                        const statusClass = isResaleOrder
+                                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                                            : getStatusClass(status);
 
                                         return (
                                             <tr
@@ -209,17 +261,15 @@ const Orders = () => {
 
                                                 <td className="px-6 py-4.5">
                                                     <span
-                                                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getStatusClass(
-                                                            status
-                                                        )}`}
+                                                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusClass}`}
                                                     >
-                                                        {status}
+                                                        {displayStatus}
                                                     </span>
                                                 </td>
 
                                                 <td className="px-6 py-4.5 text-right">
                                                     <Link
-                                                        to={`/orders/${orderId}`}
+                                                        to={`/orders/${orderId}${isResaleOrder ? "?type=resale" : ""}`}
                                                         className="inline-flex underline items-center gap-1 text-xs font-medium text-black transition hover:text-gray-600"
                                                     >
                                                         View details
@@ -250,12 +300,26 @@ const Orders = () => {
                                     order.orderItems ||
                                     [];
 
-                                const status = order.status || "Pending";
+                                const status = getStatus(order.status);
 
                                 const date =
                                     order.createdAt ||
                                     order.orderDate ||
                                     order.createdDate;
+
+                                const isResaleOrder = Boolean(
+                                    order.isResale ||
+                                    order.resaleListingId != null ||
+                                    order.orderType === "Resale" ||
+                                    order.type === "Resale" ||
+                                    items.some((i) => i.isResale || i.resaleListingId != null) ||
+                                    sessionStorage.getItem(`resale_order_${orderId}`) === "true"
+                                );
+
+                                const displayStatus = isResaleOrder ? "Order Placed" : status;
+                                const statusClass = isResaleOrder
+                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                                    : getStatusClass(status);
 
                                 return (
                                     <div key={orderId} className="p-5">
@@ -270,11 +334,9 @@ const Orders = () => {
                                             </div>
 
                                             <span
-                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getStatusClass(
-                                                    status
-                                                )}`}
+                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusClass}`}
                                             >
-                                                {status}
+                                                {displayStatus}
                                             </span>
                                         </div>
 
@@ -288,7 +350,7 @@ const Orders = () => {
                                         </div>
 
                                         <Link
-                                            to={`/orders/${orderId}`}
+                                            to={`/orders/${orderId}${isResaleOrder ? "?type=resale" : ""}`}
                                             className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white py-2 text-xs font-medium text-gray-900 transition hover:bg-gray-50 shadow-xs"
                                         >
                                             View details

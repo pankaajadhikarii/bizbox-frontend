@@ -1,5 +1,11 @@
 import api from "./api";
 
+const notifyCartUpdated = () => {
+    if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("cart-updated"));
+    }
+};
+
 const cartService = {
     // Get current user's cart
     async getCart() {
@@ -13,6 +19,7 @@ const cartService = {
             productId,
             quantity,
         });
+        notifyCartUpdated();
         return response.data;
     },
 
@@ -21,18 +28,21 @@ const cartService = {
         const response = await api.put(`/cart/items/${itemId}`, {
             quantity,
         });
+        notifyCartUpdated();
         return response.data;
     },
 
     // Remove item from cart
     async removeItem(itemId) {
         const response = await api.delete(`/cart/items/${itemId}`);
+        notifyCartUpdated();
         return response.data;
     },
 
     // Clear current user's cart
     async clearCart() {
         const response = await api.delete("/cart");
+        notifyCartUpdated();
         return response.data;
     },
 };

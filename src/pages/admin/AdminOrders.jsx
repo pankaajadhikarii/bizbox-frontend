@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import paymentService from "../../services/paymentService";
 
 const statuses = [
     "Pending",
@@ -234,19 +235,36 @@ const AdminOrders = () => {
         }
     };
 
+    const isCodOrder = (order) => {
+        const method = getPaymentMethod(order);
+        return method === "COD";
+    };
+
     const handleStatusChange = async (orderId, status) => {
         try {
             setUpdatingId(orderId);
             setError("");
             setSuccess("");
 
-            const statusValue = ORDER_STATUS_MAP[status] ?? ORDER_STATUS_MAP[status] ?? status;
+            const statusValue = ORDER_STATUS_MAP[status] ?? status;
 
             const response = await api.patch(`/orders/admin/${orderId}/status`, {
                 status: statusValue,
             });
 
             const updatedOrder = response?.data;
+
+            // Auto-mark payment as Paid for COD orders when delivered
+            if (status === "Delivered") {
+                const targetOrder = orders.find((o) => o.id === orderId);
+                if (targetOrder && isCodOrder(targetOrder)) {
+                    try {
+                        await paymentService.markCodPaid(orderId);
+                    } catch (payErr) {
+                        console.warn("[AdminOrders] Could not auto-mark COD payment as paid:", payErr);
+                    }
+                }
+            }
 
             setOrders((currentOrders) =>
                 currentOrders.map((order) =>
@@ -255,6 +273,10 @@ const AdminOrders = () => {
                             ...order,
                             ...(updatedOrder && typeof updatedOrder === "object" ? updatedOrder : {}),
                             status,
+                            // Optimistically reflect payment status in UI
+                            ...(status === "Delivered" && isCodOrder(order)
+                                ? { paymentStatus: 1 }
+                                : {}),
                         }
                         : order
                 )

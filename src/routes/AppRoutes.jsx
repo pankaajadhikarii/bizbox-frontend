@@ -23,6 +23,9 @@ import AdminOrders from "../pages/admin/AdminOrders";
 
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import Resale from "../pages/Resale";
+import ResaleDetails from "../pages/ResaleDetails";
+import ResalePurchase from "../pages/ResalePurchase";
 
 const AppRoutes = () => {
     return (
@@ -36,6 +39,8 @@ const AppRoutes = () => {
                     <Route path="/products/:id" element={<ProductDetails />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/resale" element={<Resale />} />
+                    <Route path="/resale/:id" element={<ResaleDetails />} />
 
                     <Route element={<ProtectedRoute />}>
                         <Route path="/cart" element={<Cart />} />
@@ -43,6 +48,7 @@ const AppRoutes = () => {
                         <Route path="/orders" element={<Orders />} />
                         <Route path="/orders/:id" element={<OrderDetails />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/resale/:id/purchase" element={<ResalePurchase />} />
                     </Route>
                 </Route>
 

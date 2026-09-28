@@ -56,10 +56,7 @@ const CreateResaleListing = () => {
 
     const getProductImage = (product) => {
         const raw = product?.imageUrl || product?.image;
-        return (
-            resolveImageUrl(raw) ||
-            "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=80"
-        );
+        return resolveImageUrl(raw) || "";
     };
 
     const getProductPrice = (product) => {
@@ -358,8 +355,7 @@ const CreateResaleListing = () => {
                                             )}
                                             className="h-full w-full object-cover"
                                             onError={(event) => {
-                                                event.currentTarget.src =
-                                                    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=80";
+                                                event.currentTarget.style.display = "none";
                                             }}
                                         />
                                     </div>

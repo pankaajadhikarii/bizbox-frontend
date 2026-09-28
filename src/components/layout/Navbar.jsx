@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 import bizkitLogo from "../../assets/screen.png";
 import defaultProfileImage from "../../assets/default-profile.png";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Store } from "lucide-react";
 
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { isAuthenticated, isAdmin, logout } = useAuth();
+    const { cartCount } = useCart();
     const [searchTerm, setSearchTerm] = useState("");
 
     const handleHomeClick = () => {
@@ -104,12 +106,31 @@ const Navbar = () => {
                 <div className="flex items-center gap-2">
                     {!isAdmin && (
                         <Link
-                            to="/cart"
-                            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-black"
+                            to="/resale"
+                            className={`relative flex items-center justify-center rounded-lg p-2 transition-colors hover:bg-gray-100 ${
+                                location.pathname.startsWith("/resale")
+                                    ? "text-black"
+                                    : "text-gray-600 hover:text-black"
+                            }`}
+                            aria-label="Resale marketplace"
+                            title="Resale Marketplace"
                         >
-                            <ShoppingCart
-                                className="h-5 w-5"
-                            />
+                            <Store className="h-5 w-5" />
+                        </Link>
+                    )}
+
+                    {!isAdmin && (
+                        <Link
+                            to="/cart"
+                            className="relative flex items-center justify-center rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-black"
+                            aria-label={`Shopping cart with ${cartCount} items`}
+                        >
+                            <ShoppingCart className="h-5 w-5" />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-black px-1 text-[10px] font-bold leading-none text-white shadow-xs">
+                                    {cartCount > 99 ? "99+" : cartCount}
+                                </span>
+                            )}
                         </Link>
                     )}
 
