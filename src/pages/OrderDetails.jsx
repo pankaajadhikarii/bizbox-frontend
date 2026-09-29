@@ -15,7 +15,6 @@ import {
   AlertCircle,
   RotateCcw,
   MapPin,
-  CreditCard,
 } from "lucide-react";
 import orderService from "../services/orderService";
 import productService from "../services/productService";
@@ -49,11 +48,6 @@ const statusSteps = [
 ];
 
 const statusAliases = {
-  0: "Pending",
-  1: "Processing",
-  2: "Shipped",
-  3: "Delivered",
-  4: "Cancelled",
   0: "Pending",
   1: "Processing",
   2: "Shipped",
@@ -112,13 +106,16 @@ const OrderDetails = () => {
             [];
 
         const pMap = {};
+
         list.forEach((p) => {
           const pId = p.id || p.productId;
+
           if (pId != null) {
             pMap[pId] = p;
             pMap[String(pId)] = p;
           }
         });
+
         setProductsMap(pMap);
       }
     } catch (err) {
@@ -140,6 +137,7 @@ const OrderDetails = () => {
     }
 
     const value = String(status).toLowerCase();
+
     return statusAliases[value] || String(status);
   };
 
@@ -163,17 +161,21 @@ const OrderDetails = () => {
 
   const isResale = Boolean(
     searchParams.get("type") === "resale" ||
-    location.state?.isResale ||
-    order?.isResale ||
-    order?.orderType === "Resale" ||
-    order?.type === "Resale" ||
-    order?.resaleListingId != null ||
-    items.some((item) => item.isResale || item.resaleListingId != null) ||
-    (id && sessionStorage.getItem(`resale_order_${id}`) === "true"),
+      location.state?.isResale ||
+      order?.isResale ||
+      order?.orderType === "Resale" ||
+      order?.type === "Resale" ||
+      order?.resaleListingId != null ||
+      items.some(
+        (item) => item.isResale || item.resaleListingId != null,
+      ) ||
+      (id &&
+        sessionStorage.getItem(`resale_order_${id}`) === "true"),
   );
 
   const getProduct = (item) => {
     const productId = item.productId || item.product?.id || item.id;
+
     const catalogProduct = productId
       ? productsMap[productId] || productsMap[String(productId)]
       : null;
@@ -203,6 +205,7 @@ const OrderDetails = () => {
 
   const getProductName = (item) => {
     const product = getProduct(item);
+
     return (
       product.name ||
       product.productName ||
@@ -214,6 +217,7 @@ const OrderDetails = () => {
 
   const getProductImage = (item) => {
     const product = getProduct(item);
+
     const raw =
       item.imageUrl ||
       item.productImageUrl ||
@@ -245,7 +249,9 @@ const OrderDetails = () => {
   const getUnitPrice = (item) => {
     const product = getProduct(item);
 
-    return Number(item.unitPrice ?? item.price ?? product.price ?? 0);
+    return Number(
+      item.unitPrice ?? item.price ?? product.price ?? 0,
+    );
   };
 
   const getItemTotal = (item) => {
@@ -272,12 +278,16 @@ const OrderDetails = () => {
         order.total ??
         order.grandTotal ??
         order.orderTotal ??
-        items.reduce((sum, item) => sum + getItemTotal(item), 0),
+        items.reduce(
+          (sum, item) => sum + getItemTotal(item),
+          0,
+        ),
     );
   };
 
   const getPaymentMethod = () => {
-    const method = order?.paymentMethod ?? order?.payment?.paymentMethod;
+    const method =
+      order?.paymentMethod ?? order?.payment?.paymentMethod;
 
     if (
       method === 0 ||
@@ -305,10 +315,8 @@ const OrderDetails = () => {
   };
 
   const getPaymentStatus = () => {
-
     const paymentMethod = getPaymentMethod();
 
-    // COD orders are considered paid once the order is delivered.
     if (
       paymentMethod === "COD" &&
       (order?.status === 3 ||
@@ -318,14 +326,8 @@ const OrderDetails = () => {
       return "Paid";
     }
 
-    const status = order?.paymentStatus ?? order?.payment?.status;
-
-    // OrderPaymentStatus:
-    // 0 = Unpaid
-    // 1 = Pending
-    // 2 = Paid
-    // 3 = Failed
-    // 4 = Refunded
+    const status =
+      order?.paymentStatus ?? order?.payment?.status;
 
     if (
       status === 2 ||
@@ -380,7 +382,10 @@ const OrderDetails = () => {
   };
 
   const getOrderDate = () => {
-    const date = order?.createdAt ?? order?.orderDate ?? order?.createdDate;
+    const date =
+      order?.createdAt ??
+      order?.orderDate ??
+      order?.createdDate;
 
     if (!date) {
       return "—";
@@ -415,26 +420,32 @@ const OrderDetails = () => {
     switch (status) {
       case "Pending":
         return "bg-amber-50 text-amber-700 border border-amber-200/60";
+
       case "Processing":
         return "bg-blue-50 text-blue-700 border border-blue-200/60";
+
       case "Shipped":
         return "bg-purple-50 text-purple-700 border border-purple-200/60";
+
       case "Delivered":
         return "bg-emerald-50 text-emerald-700 border border-emerald-200/60";
+
       case "Cancelled":
         return "bg-red-50 text-red-700 border border-red-200/60";
+
       default:
         return "bg-gray-100 text-gray-700 border border-gray-200";
     }
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 sm:py-10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gray-50 py-6 sm:py-8 lg:py-10">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+
         {/* Back Link */}
         <Link
           to="/orders"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-black mb-4"
+          className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-black"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to orders
@@ -444,37 +455,39 @@ const OrderDetails = () => {
         {loading && (
           <div className="animate-pulse space-y-6">
             <div className="space-y-2">
-              <div className="h-9 w-64 rounded-xl bg-gray-200" />
-              <div className="h-4 w-40 rounded bg-gray-200" />
+              <div className="h-8 w-52 max-w-full rounded-xl bg-gray-200 sm:h-9 sm:w-64" />
+              <div className="h-4 w-36 rounded bg-gray-200 sm:w-40" />
             </div>
 
             <div className="h-28 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
 
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-8 h-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
-              <div className="lg:col-span-4 h-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+              <div className="h-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-8" />
+              <div className="h-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-4" />
             </div>
           </div>
         )}
 
         {/* Error Banner */}
         {!loading && error && (
-          <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm sm:p-8">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
               <AlertCircle className="h-7 w-7" />
             </div>
 
-            <h2 className="mt-4 text-xl font-semibold text-gray-900">
+            <h2 className="mt-4 text-lg font-semibold text-gray-900 sm:text-xl">
               Unable to load order
             </h2>
 
-            <p className="mt-1.5 max-w-md text-sm text-gray-500">{error}</p>
+            <p className="mt-1.5 max-w-md text-sm leading-6 text-gray-500">
+              {error}
+            </p>
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
               <button
                 type="button"
                 onClick={loadOrder}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-xs font-medium text-white transition hover:bg-gray-800"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-xs font-medium text-white transition hover:bg-gray-800"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Try Again
@@ -482,7 +495,7 @@ const OrderDetails = () => {
 
               <Link
                 to="/orders"
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-center text-xs font-medium text-gray-700 transition hover:bg-gray-50"
               >
                 Back to Orders
               </Link>
@@ -492,22 +505,24 @@ const OrderDetails = () => {
 
         {/* Order Details Content */}
         {!loading && !error && order && (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
+
             {/* Page Heading */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <div className="min-w-0">
+                <h1 className="break-words text-2xl font-semibold tracking-tight text-black sm:text-3xl lg:text-4xl">
                   Order #{getOrderNumber()}
                 </h1>
+
                 <p className="mt-2 text-sm text-gray-600">
                   Placed on {getOrderDate()}
                 </p>
               </div>
 
               <span
-                className={`inline-flex self-start sm:self-auto rounded-full px-3.5 py-1 text-xs font-medium ${
+                className={`inline-flex w-fit shrink-0 rounded-full px-3.5 py-1 text-xs font-medium ${
                   isResale
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                    ? "border border-emerald-200/60 bg-emerald-50 text-emerald-700"
                     : getStatusClass(currentStatus)
                 }`}
               >
@@ -515,19 +530,23 @@ const OrderDetails = () => {
               </span>
             </div>
 
-            {/* Status Timeline - hidden for resale */}
+            {/* Status Timeline */}
             {!isResale && (
-              <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-6">
+              <section className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                <h2 className="mb-5 text-base font-semibold text-gray-900 sm:mb-6">
                   Order Progress
                 </h2>
 
                 {isCancelled ? (
-                  <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
-                    <XCircle className="h-5 w-5 shrink-0 text-red-600" />
-                    <div>
-                      <p className="text-sm font-semibold">Order Cancelled</p>
-                      <p className="text-xs text-red-600/80 mt-0.5">
+                  <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">
+                        Order Cancelled
+                      </p>
+
+                      <p className="mt-0.5 text-xs leading-5 text-red-600/80">
                         This order is no longer being processed.
                       </p>
                     </div>
@@ -537,10 +556,8 @@ const OrderDetails = () => {
                     {/* Desktop Timeline */}
                     <div className="hidden sm:block">
                       <div className="relative">
-                        {/* Track Background */}
                         <div className="absolute left-[12%] right-[12%] top-5 h-0.5 bg-gray-200" />
 
-                        {/* Track Active Progress */}
                         <div
                           className="absolute left-[12%] top-5 h-0.5 bg-black transition-all duration-300"
                           style={{
@@ -556,20 +573,23 @@ const OrderDetails = () => {
                           }}
                         />
 
-                        {/* Steps */}
                         <div className="relative grid grid-cols-4">
                           {statusSteps.map((step, index) => {
-                            const completed = index <= currentStepIndex;
-                            const active = index === currentStepIndex;
+                            const completed =
+                              index <= currentStepIndex;
+
+                            const active =
+                              index === currentStepIndex;
+
                             const StepIcon = step.icon;
 
                             return (
                               <div
                                 key={step.key}
-                                className="flex flex-col items-center text-center"
+                                className="flex min-w-0 flex-col items-center text-center"
                               >
                                 <div
-                                  className={`flex h-10 w-10 items-center justify-center rounded-full border-4 border-white shadow-xs transition-colors ${
+                                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white shadow-xs transition-colors ${
                                     completed
                                       ? "bg-black text-white"
                                       : "bg-gray-100 text-gray-400"
@@ -590,7 +610,7 @@ const OrderDetails = () => {
                                   {step.label}
                                 </p>
 
-                                <p className="mt-1 text-[11px] text-gray-500 max-w-[120px]">
+                                <p className="mt-1 max-w-[120px] text-[11px] text-gray-500">
                                   {step.description}
                                 </p>
                               </div>
@@ -603,12 +623,19 @@ const OrderDetails = () => {
                     {/* Mobile Vertical Timeline */}
                     <div className="space-y-4 sm:hidden">
                       {statusSteps.map((step, index) => {
-                        const completed = index <= currentStepIndex;
-                        const active = index === currentStepIndex;
+                        const completed =
+                          index <= currentStepIndex;
+
+                        const active =
+                          index === currentStepIndex;
+
                         const StepIcon = step.icon;
 
                         return (
-                          <div key={step.key} className="flex gap-3.5">
+                          <div
+                            key={step.key}
+                            className="flex gap-3.5"
+                          >
                             <div className="flex flex-col items-center">
                               <div
                                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
@@ -631,7 +658,7 @@ const OrderDetails = () => {
                               )}
                             </div>
 
-                            <div className="pt-0.5">
+                            <div className="min-w-0 pt-0.5">
                               <p
                                 className={`text-xs font-semibold ${
                                   active
@@ -643,7 +670,8 @@ const OrderDetails = () => {
                               >
                                 {step.label}
                               </p>
-                              <p className="text-[11px] text-gray-500 mt-0.5">
+
+                              <p className="mt-0.5 text-[11px] leading-5 text-gray-500">
                                 {step.description}
                               </p>
                             </div>
@@ -657,17 +685,21 @@ const OrderDetails = () => {
             )}
 
             {/* Order Content Grid */}
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
-              {/* Left Column: Items & Address */}
-              <div className="lg:col-span-8 space-y-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start lg:gap-8">
+
+              {/* Left Column */}
+              <div className="space-y-6 lg:col-span-8">
+
                 {/* Items Card */}
-                <section className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-                  <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-4 sm:px-6">
                     <h2 className="text-base font-semibold text-gray-900">
                       Ordered Items
                     </h2>
-                    <span className="text-xs text-gray-500">
-                      {items.length} {items.length === 1 ? "item" : "items"}
+
+                    <span className="shrink-0 text-xs text-gray-500">
+                      {items.length}{" "}
+                      {items.length === 1 ? "item" : "items"}
                     </span>
                   </div>
 
@@ -681,51 +713,58 @@ const OrderDetails = () => {
                         const quantity = getQuantity(item);
                         const unitPrice = getUnitPrice(item);
                         const itemTotal = getItemTotal(item);
-                        const productId = item.productId || item.product?.id;
+                        const productId =
+                          item.productId || item.product?.id;
 
                         return (
                           <div
-                            key={item.id || productId || index}
-                            className="flex items-center gap-4 p-5 sm:gap-6"
+                            key={
+                              item.id ||
+                              productId ||
+                              index
+                            }
+                            className="flex items-center gap-3 p-4 sm:gap-5 sm:p-5 lg:gap-6"
                           >
                             {/* Thumbnail */}
-                            <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50 sm:h-16 sm:w-16">
                               <img
                                 src={getProductImage(item)}
                                 alt={getProductName(item)}
                                 className="h-full w-full object-cover"
                                 onError={(e) => {
-                                  e.currentTarget.src = fallbackImage;
+                                  e.currentTarget.src =
+                                    fallbackImage;
                                 }}
                               />
                             </div>
 
                             {/* Info */}
-                            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                              <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                            <div className="min-w-0 flex-1">
+                              <span className="block truncate text-[10px] font-medium uppercase tracking-wider text-gray-400">
                                 {getCategoryName(item)}
                               </span>
 
                               {productId ? (
                                 <Link
                                   to={`/products/${productId}`}
-                                  className="text-sm font-semibold text-gray-900 line-clamp-1 hover:text-black transition"
+                                  className="mt-0.5 block truncate text-sm font-semibold text-gray-900 transition hover:text-black"
                                 >
                                   {getProductName(item)}
                                 </Link>
                               ) : (
-                                <span className="text-sm font-semibold text-gray-900 line-clamp-1">
+                                <span className="mt-0.5 block truncate text-sm font-semibold text-gray-900">
                                   {getProductName(item)}
                                 </span>
                               )}
 
-                              <p className="text-xs text-gray-500">
-                                Rs. {unitPrice.toLocaleString()} × {quantity}
+                              <p className="mt-0.5 truncate text-xs text-gray-500">
+                                Rs. {unitPrice.toLocaleString()} ×{" "}
+                                {quantity}
                               </p>
                             </div>
 
                             {/* Total */}
-                            <div className="text-right shrink-0">
+                            <div className="shrink-0 text-right">
                               <span className="text-sm font-semibold text-gray-900">
                                 Rs. {itemTotal.toLocaleString()}
                               </span>
@@ -738,23 +777,24 @@ const OrderDetails = () => {
                 </section>
 
                 {/* Delivery Address Card */}
-                <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <MapPin className="h-4 w-4 text-gray-500" />
+                <section className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                  <div className="mb-3 flex items-center gap-2">
+                    <MapPin className="h-4 w-4 shrink-0 text-gray-500" />
+
                     <h2 className="text-base font-semibold text-gray-900">
                       Delivery Information
                     </h2>
                   </div>
 
                   {order.customerName && (
-                    <div className="mb-3 rounded-xl bg-gray-50/75 p-3.5 border border-gray-100 text-sm">
+                    <div className="mb-3 rounded-xl border border-gray-100 bg-gray-50/75 p-3.5 text-sm">
                       <p className="font-semibold text-gray-900">
                         {order.customerName}
                       </p>
                     </div>
                   )}
 
-                  <div className="rounded-xl bg-gray-50 p-4 border border-gray-100 text-sm text-gray-700 leading-relaxed">
+                  <div className="break-words rounded-xl border border-gray-100 bg-gray-50 p-4 text-sm leading-relaxed text-gray-700">
                     {order.shippingAddress ||
                       order.deliveryAddress ||
                       "No delivery address provided."}
@@ -762,40 +802,48 @@ const OrderDetails = () => {
                 </section>
               </div>
 
-              {/* Right Column: Order Summary & Info */}
-              <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+              {/* Right Column */}
+              <aside className="space-y-6 lg:sticky lg:top-24 lg:col-span-4">
+
                 {/* Summary Card */}
-                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
                   <h2 className="text-base font-semibold text-gray-900">
                     Order Summary
                   </h2>
 
                   <div className="mt-5 space-y-3 text-sm">
-                    <div className="flex justify-between text-gray-600">
+                    <div className="flex items-center justify-between gap-4 text-gray-600">
                       <span>Products</span>
-                      <span>{items.length}</span>
+                      <span className="shrink-0">
+                        {items.length}
+                      </span>
                     </div>
 
-                    <div className="flex justify-between text-gray-600">
+                    <div className="flex items-center justify-between gap-4 text-gray-600">
                       <span>Total Quantity</span>
-                      <span>
+                      <span className="shrink-0">
                         {items.reduce(
-                          (sum, item) => sum + getQuantity(item),
+                          (sum, item) =>
+                            sum + getQuantity(item),
                           0,
                         )}
                       </span>
                     </div>
 
-                    <div className="flex justify-between text-gray-600">
+                    <div className="flex items-center justify-between gap-4 text-gray-600">
                       <span>Payment Method</span>
-                      <span className="font-medium text-gray-900">
+
+                      <span className="max-w-[50%] truncate text-right font-medium text-gray-900">
                         {getPaymentMethod()}
                       </span>
                     </div>
 
-                    <div className="border-t border-gray-100 pt-3 flex justify-between text-base font-semibold text-gray-900">
+                    <div className="flex items-center justify-between gap-4 border-t border-gray-100 pt-3 text-base font-semibold text-gray-900">
                       <span>Total Amount</span>
-                      <span>Rs. {getOrderTotal().toLocaleString()}</span>
+
+                      <span className="shrink-0 text-right">
+                        Rs. {getOrderTotal().toLocaleString()}
+                      </span>
                     </div>
                   </div>
 
@@ -812,23 +860,26 @@ const OrderDetails = () => {
                       to={isResale ? "/resale" : "/equipment"}
                       className="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
                     >
-                      {isResale ? "Continue to Resale" : "Continue shopping"}
+                      {isResale
+                        ? "Continue to Resale"
+                        : "Continue shopping"}
                     </Link>
                   </div>
                 </div>
 
-                {/* Order Meta Info Card */}
-                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm text-xs space-y-3 text-gray-600">
+                {/* Order Meta Info */}
+                <div className="space-y-3 rounded-2xl border border-gray-200 bg-white p-4 text-xs text-gray-600 shadow-sm sm:p-6">
                   {!isResale && (
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between gap-4">
                       <span>Payment Status</span>
+
                       <span
-                        className={`rounded-full px-2.5 py-0.5 font-medium ${
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 font-medium ${
                           getPaymentStatus() === "Paid"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
                             : getPaymentStatus() === "Failed"
-                              ? "bg-red-50 text-red-700 border border-red-200"
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                              ? "border border-red-200 bg-red-50 text-red-700"
+                              : "border border-amber-200 bg-amber-50 text-amber-700"
                         }`}
                       >
                         {getPaymentStatus()}
@@ -837,12 +888,15 @@ const OrderDetails = () => {
                   )}
 
                   <div
-                    className={`flex justify-between items-center ${
-                      !isResale ? "border-t border-gray-100 pt-3" : ""
+                    className={`flex items-center justify-between gap-4 ${
+                      !isResale
+                        ? "border-t border-gray-100 pt-3"
+                        : ""
                     }`}
                   >
                     <span>Order Date</span>
-                    <span className="font-medium text-gray-900">
+
+                    <span className="shrink-0 font-medium text-gray-900">
                       {getOrderDate()}
                     </span>
                   </div>

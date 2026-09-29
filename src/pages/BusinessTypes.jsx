@@ -42,13 +42,13 @@ const BusinessTypes = () => {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="break-words text-2xl font-semibold tracking-tight text-black sm:text-3xl lg:text-4xl">
             {search ? `Search results for "${search}"` : "Business types"}
           </h1>
 
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 sm:text-base">
             {search
               ? "Business types matching your search."
               : "Choose a business to find the equipment you need."}
@@ -56,30 +56,30 @@ const BusinessTypes = () => {
         </div>
 
         {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700 sm:mb-6">
             {error}
           </div>
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
             {[1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="h-80 rounded-lg border border-gray-200 bg-white"
+                className="h-72 animate-pulse rounded-lg border border-gray-200 bg-white sm:h-80"
               />
             ))}
           </div>
         ) : businessTypes.length === 0 ? (
-          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-            <p className="text-sm text-gray-500">
+          <div className="rounded-lg border border-gray-200 bg-white p-6 text-center sm:p-8">
+            <p className="break-words text-sm leading-6 text-gray-500">
               {search
                 ? `No business types found for "${search}".`
                 : "No business types available."}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
             {businessTypes.map((businessType) => {
               const imageUrl = resolveImageUrl(businessType.imageUrl);
 
@@ -87,9 +87,9 @@ const BusinessTypes = () => {
                 <Link
                   key={businessType.id}
                   to={`/equipment?businessTypeId=${businessType.id}`}
-                  className="overflow-hidden rounded-lg border border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
+                  className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-gray-300 hover:bg-gray-50"
                 >
-                  <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+                  <div className="aspect-[4/3] w-full shrink-0 overflow-hidden bg-gray-100">
                     {imageUrl && (
                       <img
                         src={imageUrl}
@@ -102,18 +102,18 @@ const BusinessTypes = () => {
                     )}
                   </div>
 
-                  <div className="p-5">
-                    <h2 className="text-lg font-semibold text-black">
+                  <div className="flex flex-1 flex-col p-4 sm:p-5">
+                    <h2 className="break-words text-base font-semibold leading-6 text-black sm:text-lg">
                       {businessType.name}
                     </h2>
 
-                    <p className="mt-2 text-sm leading-6 text-gray-600">
+                    <p className="mt-2 line-clamp-3 break-words text-sm leading-6 text-gray-600">
                       {businessType.description ||
                         businessDescriptions[businessType.name] ||
                         "View equipment for this business."}
                     </p>
 
-                    <span className="mt-4 inline-block text-sm font-medium text-black underline hover:text-gray-800">
+                    <span className="mt-auto inline-block self-start pt-4 text-sm font-medium text-black transition-colors hover:text-gray-800">
                       View equipment
                     </span>
                   </div>

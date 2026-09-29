@@ -134,7 +134,7 @@ const Navbar = () => {
                 </button>
 
                 {/* Desktop Navigation */}
-                <div className="hidden flex-1 items-center gap-6 px-8 md:flex">
+                <div className="hidden flex-1 items-center gap-6 px-8 lg:flex">
                     <nav className="flex items-center gap-6">
                         <button
                             type="button"
@@ -174,7 +174,7 @@ const Navbar = () => {
                     {/* Desktop Search */}
                     <div
                         ref={searchContainerRef}
-                        className="relative ml-auto w-full max-w-xs"
+                        className="relative ml-auto w-full max-w-[200px] xl:max-w-xs"
                     >
                         <form
                             onSubmit={handleSearch}
@@ -284,7 +284,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Desktop Right Actions */}
-                <div className="hidden items-center gap-2 md:flex">
+                <div className="hidden items-center gap-2 lg:flex">
                     {!isAdmin && (
                         <Link
                             to="/resale"
@@ -378,7 +378,7 @@ const Navbar = () => {
                 {/* Mobile Actions */}
                 <div
                     ref={mobileMenuRef}
-                    className="relative flex items-center gap-1 md:hidden"
+                    className="relative flex items-center gap-1 lg:hidden"
                 >
                     {!isAdmin && (
                         <Link

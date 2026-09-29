@@ -261,7 +261,10 @@ const AdminOrders = () => {
                     try {
                         await paymentService.markCodPaid(orderId);
                     } catch (payErr) {
-                        console.warn("[AdminOrders] Could not auto-mark COD payment as paid:", payErr);
+                        console.warn(
+                            "[AdminOrders] Could not auto-mark COD payment as paid:",
+                            payErr
+                        );
                     }
                 }
             }
@@ -270,14 +273,17 @@ const AdminOrders = () => {
                 currentOrders.map((order) =>
                     order.id === orderId
                         ? {
-                            ...order,
-                            ...(updatedOrder && typeof updatedOrder === "object" ? updatedOrder : {}),
-                            status,
-                            // Optimistically reflect payment status in UI
-                            ...(status === "Delivered" && isCodOrder(order)
-                                ? { paymentStatus: 1 }
-                                : {}),
-                        }
+                              ...order,
+                              ...(updatedOrder &&
+                              typeof updatedOrder === "object"
+                                  ? updatedOrder
+                                  : {}),
+                              status,
+                              // Optimistically reflect payment status in UI
+                              ...(status === "Delivered" && isCodOrder(order)
+                                  ? { paymentStatus: 1 }
+                                  : {}),
+                          }
                         : order
                 )
             );
@@ -293,244 +299,283 @@ const AdminOrders = () => {
     };
 
     return (
-        <main className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8">
+        <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+            <div className="mb-6 min-w-0 sm:mb-8">
+                <h1 className="break-words text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Orders
+                </h1>
 
-                <div className="mb-8">
-                    <h1 className="text-3xl font-semibold tracking-tight">
-                        Orders
-                    </h1>
+                <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-gray-600">
+                    View customer orders and manage their delivery status.
+                </p>
+            </div>
 
-                    <p className="mt-2 text-sm text-gray-600">
-                        View customer orders and manage their delivery status.
+            {error && (
+                <div className="mb-5 break-words rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700 sm:mb-6">
+                    {error}
+                </div>
+            )}
+
+            {success && (
+                <div className="mb-5 break-words rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm leading-6 text-green-700 sm:mb-6">
+                    {success}
+                </div>
+            )}
+
+            <div className="mb-5 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
+                <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+                    <p className="break-words text-sm text-gray-500">
+                        Total Orders
+                    </p>
+
+                    <p className="mt-2 text-2xl font-semibold text-gray-900">
+                        {orders.length}
                     </p>
                 </div>
 
-                {error && (
-                    <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                        {error}
-                    </div>
-                )}
+                <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+                    <p className="break-words text-sm text-gray-500">
+                        Pending
+                    </p>
 
-                {success && (
-                    <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-                        {success}
-                    </div>
-                )}
-
-                <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-                    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Total Orders
-                        </p>
-
-                        <p className="mt-2 text-2xl font-semibold text-gray-900">
-                            {orders.length}
-                        </p>
-                    </div>
-
-                    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Pending
-                        </p>
-
-                        <p className="mt-2 text-2xl font-semibold text-gray-900">
-                            {
-                                orders.filter(
-                                    (order) => getStatus(order) === "Pending"
-                                ).length
-                            }
-                        </p>
-                    </div>
-
-                    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Processing
-                        </p>
-
-                        <p className="mt-2 text-2xl font-semibold text-gray-900">
-                            {
-                                orders.filter(
-                                    (order) => getStatus(order) === "Processing"
-                                ).length
-                            }
-                        </p>
-                    </div>
-
-                    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Delivered
-                        </p>
-
-                        <p className="mt-2 text-2xl font-semibold text-gray-900">
-                            {
-                                orders.filter(
-                                    (order) => getStatus(order) === "Delivered"
-                                ).length
-                            }
-                        </p>
-                    </div>
+                    <p className="mt-2 text-2xl font-semibold text-gray-900">
+                        {
+                            orders.filter(
+                                (order) => getStatus(order) === "Pending"
+                            ).length
+                        }
+                    </p>
                 </div>
 
-                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+                    <p className="break-words text-sm text-gray-500">
+                        Processing
+                    </p>
 
-                    <div className="border-b border-gray-200 px-6 py-5">
-                        <h2 className="font-semibold text-gray-900">
-                            All Orders
-                        </h2>
+                    <p className="mt-2 text-2xl font-semibold text-gray-900">
+                        {
+                            orders.filter(
+                                (order) => getStatus(order) === "Processing"
+                            ).length
+                        }
+                    </p>
+                </div>
 
-                        <p className="mt-1 text-sm text-gray-500">
-                            {orders.length} order
-                            {orders.length !== 1 ? "s" : ""}
-                        </p>
+                <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+                    <p className="break-words text-sm text-gray-500">
+                        Delivered
+                    </p>
+
+                    <p className="mt-2 text-2xl font-semibold text-gray-900">
+                        {
+                            orders.filter(
+                                (order) => getStatus(order) === "Delivered"
+                            ).length
+                        }
+                    </p>
+                </div>
+            </div>
+
+            <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="flex min-w-0 flex-col gap-2 border-b border-gray-200 px-4 py-4 sm:px-6 sm:py-5">
+                    <h2 className="break-words font-semibold text-gray-900">
+                        All Orders
+                    </h2>
+
+                    <p className="text-sm text-gray-500">
+                        {orders.length} order
+                        {orders.length !== 1 ? "s" : ""}
+                    </p>
+                </div>
+
+                {loading ? (
+                    <div className="w-full overflow-x-auto">
+                        <table className="w-full min-w-[1100px]">
+                            <thead className="bg-gray-50">
+                                <tr className="border-b border-gray-200 text-left">
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Order
+                                    </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Customer
+                                    </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Date
+                                    </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Total
+                                    </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Payment
+                                    </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Status
+                                    </th>
+                                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Update
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody className="divide-y divide-gray-100 animate-pulse">
+                                {[...Array(5)].map((_, i) => (
+                                    <tr key={i}>
+                                        <td className="px-6 py-5">
+                                            <div className="h-4 w-20 rounded bg-gray-100" />
+                                        </td>
+
+                                        <td className="px-6 py-5">
+                                            <div className="h-4 w-28 rounded bg-gray-100" />
+                                        </td>
+
+                                        <td className="px-6 py-5">
+                                            <div className="h-4 w-24 rounded bg-gray-100" />
+                                        </td>
+
+                                        <td className="px-6 py-5">
+                                            <div className="h-4 w-20 rounded bg-gray-100" />
+                                        </td>
+
+                                        <td className="px-6 py-5">
+                                            <div className="h-4 w-24 rounded bg-gray-100" />
+                                        </td>
+
+                                        <td className="px-6 py-5">
+                                            <div className="h-6 w-20 rounded-full bg-gray-100" />
+                                        </td>
+
+                                        <td className="px-6 py-5 text-right">
+                                            <div className="ml-auto h-9 w-32 rounded-lg bg-gray-100" />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
+                ) : orders.length === 0 ? (
+                    <div className="px-4 py-12 text-center text-sm text-gray-500 sm:px-6">
+                        No orders found.
+                    </div>
+                ) : (
+                    <div className="w-full overflow-x-auto">
+                        <table className="w-full min-w-[1100px]">
+                            <thead className="bg-gray-50">
+                                <tr className="border-b border-gray-200 text-left">
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Order
+                                    </th>
 
-                    {loading ? (
-                        <div className="overflow-x-auto">
-                            <table className="w-full min-w-[1100px]">
-                                <thead className="bg-gray-50">
-                                    <tr className="border-b border-gray-200 text-left">
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Order</th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Customer</th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Date</th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Total</th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Payment</th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                                        <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Update</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100 animate-pulse">
-                                    {[...Array(5)].map((_, i) => (
-                                        <tr key={i}>
-                                            <td className="px-6 py-5"><div className="h-4 w-20 rounded bg-gray-100" /></td>
-                                            <td className="px-6 py-5"><div className="h-4 w-28 rounded bg-gray-100" /></td>
-                                            <td className="px-6 py-5"><div className="h-4 w-24 rounded bg-gray-100" /></td>
-                                            <td className="px-6 py-5"><div className="h-4 w-20 rounded bg-gray-100" /></td>
-                                            <td className="px-6 py-5"><div className="h-4 w-24 rounded bg-gray-100" /></td>
-                                            <td className="px-6 py-5"><div className="h-6 w-20 rounded-full bg-gray-100" /></td>
-                                            <td className="px-6 py-5 text-right"><div className="ml-auto h-9 w-32 rounded-lg bg-gray-100" /></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : orders.length === 0 ? (
-                        <div className="px-6 py-12 text-center text-sm text-gray-500">
-                            No orders found.
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full min-w-[1100px]">
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Customer
+                                    </th>
 
-                                <thead className="bg-gray-50">
-                                    <tr className="border-b border-gray-200 text-left">
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Date
+                                    </th>
 
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                            Order
-                                        </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Total
+                                    </th>
 
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                            Customer
-                                        </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Payment
+                                    </th>
 
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                            Date
-                                        </th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Status
+                                    </th>
 
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                            Total
-                                        </th>
+                                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Update
+                                    </th>
+                                </tr>
+                            </thead>
 
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                            Payment
-                                        </th>
+                            <tbody className="divide-y divide-gray-100">
+                                {orders.map((order) => {
+                                    const status = getStatus(order);
 
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                            Status
-                                        </th>
-
-                                        <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                            Update
-                                        </th>
-
-                                    </tr>
-                                </thead>
-
-                                <tbody className="divide-y divide-gray-100">
-
-                                    {orders.map((order) => {
-                                        const status = getStatus(order);
-
-                                        return (
-                                            <tr
-                                                key={order.id}
-                                                className="transition hover:bg-gray-50"
-                                            >
-
-                                                <td className="px-6 py-5 text-sm text-gray-700">
+                                    return (
+                                        <tr
+                                            key={order.id}
+                                            className="transition-colors hover:bg-gray-50"
+                                        >
+                                            <td className="max-w-[180px] px-6 py-5 text-sm text-gray-700">
+                                                <span className="break-words">
                                                     #{getOrderNumber(order)}
-                                                </td>
+                                                </span>
+                                            </td>
 
-                                                <td className="px-6 py-5 text-sm text-gray-700">
+                                            <td className="max-w-[220px] px-6 py-5 text-sm text-gray-700">
+                                                <span className="break-words">
                                                     {getCustomerName(order)}
-                                                </td>
+                                                </span>
+                                            </td>
 
-                                                <td className="px-6 py-5 text-sm text-gray-700">
-                                                    {getOrderDate(order)}
-                                                </td>
+                                            <td className="whitespace-nowrap px-6 py-5 text-sm text-gray-700">
+                                                {getOrderDate(order)}
+                                            </td>
 
-                                                <td className="px-6 py-5 text-sm text-gray-700">
-                                                    {formatPrice(getOrderTotal(order))}
-                                                </td>
+                                            <td className="whitespace-nowrap px-6 py-5 text-sm text-gray-700">
+                                                {formatPrice(getOrderTotal(order))}
+                                            </td>
 
-                                                <td className="px-6 py-5 text-sm text-gray-700">
-                                                    {getPaymentMethod(order)}
-                                                </td>
+                                            <td className="whitespace-nowrap px-6 py-5 text-sm text-gray-700">
+                                                {getPaymentMethod(order)}
+                                            </td>
 
-                                                <td className="px-6 py-5">
-                                                    <span
-                                                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClasses(
-                                                            status
-                                                        )}`}
+                                            <td className="px-6 py-5">
+                                                <span
+                                                    className={`inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${getStatusClasses(
+                                                        status
+                                                    )}`}
+                                                >
+                                                    {status}
+                                                </span>
+                                            </td>
+
+                                            <td className="px-6 py-5">
+                                                <div className="flex justify-end">
+                                                    <select
+                                                        value={status}
+                                                        disabled={
+                                                            updatingId === order.id
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleStatusChange(
+                                                                order.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="w-full max-w-[150px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 outline-none transition-colors focus:border-gray-900 focus:ring-1 focus:ring-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
                                                     >
-                                                        {status}
-                                                    </span>
-                                                </td>
-
-                                                <td className="px-6 py-5">
-                                                    <div className="flex justify-end">
-                                                        <select
-                                                            value={status}
-                                                            disabled={updatingId === order.id}
-                                                            onChange={(e) =>
-                                                                handleStatusChange(
-                                                                    order.id,
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 outline-none transition focus:border-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
-                                                        >
-                                                            {statuses.map((orderStatus) => (
+                                                        {statuses.map(
+                                                            (orderStatus) => (
                                                                 <option
-                                                                    key={orderStatus}
-                                                                    value={orderStatus}
+                                                                    key={
+                                                                        orderStatus
+                                                                    }
+                                                                    value={
+                                                                        orderStatus
+                                                                    }
                                                                 >
-                                                                    {orderStatus}
+                                                                    {
+                                                                        orderStatus
+                                                                    }
                                                                 </option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                </td>
-
-                                            </tr>
-                                        );
-                                    })}
-
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                </div>
+                                                            )
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
         </main>
     );
 };

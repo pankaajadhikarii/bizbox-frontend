@@ -271,13 +271,14 @@ const AdminBusinessTypes = () => {
   );
 
   return (
-    <main className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
+    <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="break-words text-2xl font-semibold tracking-tight sm:text-3xl">
             Business Types
           </h1>
-          <p className="mt-2 text-sm text-gray-600">
+
+          <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-gray-600">
             Manage the business categories and their curated equipment.
           </p>
         </div>
@@ -294,41 +295,42 @@ const AdminBusinessTypes = () => {
             setShowForm(true);
             setError("");
           }}
-          className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
+          className="w-full shrink-0 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 sm:w-auto"
         >
           Add Business Type
         </button>
       </div>
 
       {!showForm && error && (
-        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-6 break-words rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
           {error}
         </div>
       )}
 
       {showForm && (
-        <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:mb-8 sm:p-6">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="break-words text-lg font-semibold text-gray-900">
                 {editingId ? "Edit Business Type" : "Create Business Type"}
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+
+              <p className="mt-1 break-words text-sm leading-5 text-gray-500">
                 Add the basic information for this business type.
               </p>
             </div>
 
             <button
               onClick={resetForm}
-              className="text-sm text-gray-500 hover:text-gray-900"
+              className="shrink-0 rounded-md px-2 py-1 text-sm text-gray-500 transition-colors hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
             >
               Cancel
             </button>
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
+            <div className="grid min-w-0 gap-5 md:grid-cols-2">
+              <div className="min-w-0">
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Name
                   <span className="ml-1 text-red-500">*</span>
@@ -340,11 +342,11 @@ const AdminBusinessTypes = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="e.g. Coffee Shop"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
+                  className="w-full min-w-0 rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:px-4"
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Description
                   <span className="ml-1 text-red-500">*</span>
@@ -356,29 +358,31 @@ const AdminBusinessTypes = () => {
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Short description"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-gray-900"
+                  className="w-full min-w-0 rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:px-4"
                 />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="min-w-0 md:col-span-2">
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Business Type Image
                   <span className="ml-1 text-red-500">*</span>
                 </label>
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start">
                   <label
                     htmlFor="businessTypeImage"
-                    className="flex flex-1 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 text-center transition hover:border-gray-400 hover:bg-gray-50"
+                    className="flex min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 text-center transition-colors hover:border-gray-400 hover:bg-gray-50 focus-within:border-gray-900 focus-within:ring-2 focus-within:ring-gray-300"
                   >
                     <Upload size={24} />
 
-                    <span className="text-sm font-medium text-gray-600">
+                    <span className="max-w-full break-words text-sm font-medium text-gray-600">
                       {imageFile ? imageFile.name : "Click to upload image"}
                     </span>
-                    <span className="mt-1 text-xs text-gray-400">
+
+                    <span className="mt-1 break-words text-xs text-gray-400">
                       PNG, JPG, JPEG - max 2MB
                     </span>
+
                     <input
                       id="businessTypeImage"
                       type="file"
@@ -389,20 +393,22 @@ const AdminBusinessTypes = () => {
                   </label>
 
                   {imagePreview && (
-                    <div className="relative h-36 w-36 shrink-0 overflow-hidden rounded-lg border border-gray-200">
+                    <div className="relative h-36 w-full shrink-0 overflow-hidden rounded-lg border border-gray-200 sm:w-36">
                       <img
                         src={imagePreview}
                         alt="Preview"
                         className="h-full w-full object-cover"
                       />
+
                       <button
                         type="button"
                         onClick={() => {
                           setImageFile(null);
                           setImagePreview(null);
                         }}
-                        className="absolute right-1 top-1 rounded-full bg-white/80 p-1 text-gray-600 shadow hover:bg-white hover:text-red-600"
+                        className="absolute right-1 top-1 rounded-full bg-white/80 p-1 text-gray-600 shadow transition-colors hover:bg-white hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
                         title="Remove image"
+                        aria-label="Remove image"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -425,16 +431,16 @@ const AdminBusinessTypes = () => {
 
             <div className="mt-6 space-y-4">
               {error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div className="break-words rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
                   {error}
                 </div>
               )}
 
-              <div className="flex justify-end">
+              <div className="flex justify-stretch sm:justify-end">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {saving
                     ? "Saving..."
@@ -448,9 +454,12 @@ const AdminBusinessTypes = () => {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-200 px-6 py-5">
-          <h2 className="font-semibold text-gray-900">All Business Types</h2>
+      <div className="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 px-4 py-4 sm:px-6 sm:py-5">
+          <h2 className="break-words font-semibold text-gray-900">
+            All Business Types
+          </h2>
+
           <p className="mt-1 text-sm text-gray-500">
             {businessTypes.length} business type
             {businessTypes.length !== 1 ? "s" : ""}
@@ -459,20 +468,21 @@ const AdminBusinessTypes = () => {
 
         {loading ? (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[720px]">
               <thead className="bg-gray-50">
                 <tr className="border-b border-gray-200 text-left">
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500 sm:w-1/4">
+                  <th className="w-1/4 px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Business Type
                   </th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Description
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500 w-64">
+                  <th className="w-64 px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Actions
                   </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-100 animate-pulse">
                 {[...Array(4)].map((_, i) => (
                   <tr key={i}>
@@ -482,9 +492,11 @@ const AdminBusinessTypes = () => {
                         <div className="h-4 w-28 rounded bg-gray-100" />
                       </div>
                     </td>
+
                     <td className="px-6 py-4">
                       <div className="h-4 w-3/4 max-w-md rounded bg-gray-100" />
                     </td>
+
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="h-8 w-28 rounded-lg bg-gray-100" />
@@ -498,33 +510,36 @@ const AdminBusinessTypes = () => {
             </table>
           </div>
         ) : businessTypes.length === 0 ? (
-          <div className="px-6 py-12 text-center text-sm text-gray-500">
+          <div className="px-4 py-12 text-center text-sm text-gray-500 sm:px-6">
             No business types found.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[720px]">
               <thead className="bg-gray-50">
                 <tr className="border-b border-gray-200 text-left">
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500 sm:w-1/4">
+                  <th className="w-1/4 px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Business Type
                   </th>
+
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Description
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500 w-64">
+
+                  <th className="w-64 px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Actions
                   </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-100">
                 {businessTypes.map((businessType) => (
                   <tr
                     key={businessType.id}
-                    className="transition hover:bg-gray-50"
+                    className="transition-colors hover:bg-gray-50"
                   >
-                    <td className="px-6 py-4 align-top font-medium text-gray-900 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
+                    <td className="px-6 py-4 align-top font-medium text-gray-900">
+                      <div className="flex min-w-0 items-center gap-3">
                         {businessType.imageUrl ? (
                           <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                             <img
@@ -538,7 +553,8 @@ const AdminBusinessTypes = () => {
                             No img
                           </div>
                         )}
-                        <span className="font-medium text-gray-900">
+
+                        <span className="min-w-0 break-words font-medium text-gray-900">
                           {businessType.name}
                         </span>
                       </div>
@@ -553,25 +569,25 @@ const AdminBusinessTypes = () => {
                       </p>
                     </td>
 
-                    <td className="px-6 py-4 align-top text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-6 py-4 align-top text-right">
+                      <div className="flex flex-wrap items-center justify-end gap-2">
                         <button
                           onClick={() => handleManageProducts(businessType)}
-                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                         >
                           Manage Products
                         </button>
 
                         <button
                           onClick={() => handleEdit(businessType)}
-                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                         >
                           Edit
                         </button>
 
                         <button
                           onClick={() => handleDelete(businessType.id)}
-                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-1"
                         >
                           Delete
                         </button>
@@ -586,14 +602,15 @@ const AdminBusinessTypes = () => {
       </div>
 
       {showProducts && selectedBusinessType && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-3 py-4 sm:px-4">
+          <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl bg-white shadow-xl sm:max-h-[90vh]">
+            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-200 px-4 py-4 sm:px-6 sm:py-5">
+              <div className="min-w-0">
+                <h2 className="break-words text-base font-semibold text-gray-900 sm:text-lg">
                   {selectedBusinessType.name}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
+
+                <p className="mt-1 break-words text-sm leading-5 text-gray-500">
                   Manage curated products for this business type.
                 </p>
               </div>
@@ -604,19 +621,19 @@ const AdminBusinessTypes = () => {
                   setSelectedBusinessType(null);
                   setBusinessProducts([]);
                 }}
-                className="text-sm text-gray-500 hover:text-gray-900"
+                className="shrink-0 rounded-md px-2 py-1 text-sm text-gray-500 transition-colors hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               >
                 Close
               </button>
             </div>
 
-            <div className="max-h-[70vh] overflow-y-auto p-6">
-              <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="min-h-0 max-h-[calc(92vh-85px)] overflow-y-auto p-4 sm:max-h-[70vh] sm:p-6">
+              <div className="mb-5 rounded-lg border border-gray-200 bg-gray-50 p-3 sm:mb-6 sm:p-4">
+                <div className="flex min-w-0 flex-col gap-3 sm:flex-row">
                   <select
                     value={selectedProductId}
                     onChange={(e) => setSelectedProductId(e.target.value)}
-                    className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-gray-900"
+                    className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:px-4"
                   >
                     <option value="">Select a product</option>
 
@@ -630,7 +647,7 @@ const AdminBusinessTypes = () => {
                   <button
                     onClick={handleAddProduct}
                     disabled={!selectedProductId}
-                    className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full shrink-0 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                   >
                     Add Product
                   </button>
@@ -640,18 +657,23 @@ const AdminBusinessTypes = () => {
               {loadingProducts ? (
                 <div className="divide-y divide-gray-100 animate-pulse py-2">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center gap-3 px-1 py-4">
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 px-1 py-4"
+                    >
                       <div className="h-10 w-10 shrink-0 rounded-lg bg-gray-100" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-3.5 w-40 rounded bg-gray-100" />
-                        <div className="h-3 w-24 rounded bg-gray-100" />
+
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <div className="h-3.5 w-40 max-w-full rounded bg-gray-100" />
+                        <div className="h-3 w-24 max-w-full rounded bg-gray-100" />
                       </div>
-                      <div className="ml-auto h-8 w-16 rounded-lg bg-gray-100" />
+
+                      <div className="ml-auto h-8 w-16 shrink-0 rounded-lg bg-gray-100" />
                     </div>
                   ))}
                 </div>
               ) : businessProducts.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-gray-300 px-6 py-10 text-center text-sm text-gray-500">
+                <div className="rounded-lg border border-dashed border-gray-300 px-4 py-10 text-center text-sm leading-6 text-gray-500 sm:px-6">
                   No products assigned to this business type.
                 </div>
               ) : (
@@ -670,14 +692,15 @@ const AdminBusinessTypes = () => {
                     return (
                       <div
                         key={productId}
-                        className="flex items-center justify-between rounded-lg border border-gray-200 p-4"
+                        className="flex min-w-0 flex-col gap-3 rounded-lg border border-gray-200 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4"
                       >
-                        <div>
-                          <p className="font-medium text-gray-900">
+                        <div className="min-w-0">
+                          <p className="break-words font-medium text-gray-900">
                             {displayName}
                           </p>
+
                           {displayPrice !== undefined && (
-                            <p className="mt-1 text-sm text-gray-500">
+                            <p className="mt-1 break-words text-sm text-gray-500">
                               ${displayPrice}
                             </p>
                           )}
@@ -685,7 +708,7 @@ const AdminBusinessTypes = () => {
 
                         <button
                           onClick={() => handleRemoveProduct(productId)}
-                          className="rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                          className="w-full shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300 sm:w-auto"
                         >
                           Remove
                         </button>

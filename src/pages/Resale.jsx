@@ -49,7 +49,7 @@ const SkeletonCard = () => (
     <div className="aspect-[4/3] bg-gray-100" />
     <div className="space-y-2.5 p-3.5">
       <div className="h-3 w-16 rounded bg-gray-100" />
-      <div className="h-4 w-32 rounded bg-gray-100" />
+      <div className="h-4 w-32 max-w-full rounded bg-gray-100" />
       <div className="h-3 w-full rounded bg-gray-100" />
       <div className="h-3 w-3/4 rounded bg-gray-100" />
       <div className="h-8 w-full rounded-lg bg-gray-100" />
@@ -68,10 +68,10 @@ const ListingCard = ({ listing }) => {
   const condition = CONDITION_LABELS[listing.condition] ?? "Good";
 
   return (
-    <article className="flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors">
+    <article className="flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white transition-colors hover:border-gray-300">
       <div>
         <Link to={`/resale/${id}`} className="block overflow-hidden">
-          <div className="aspect-[4/3] w-full overflow-hidden bg-gray-100 flex items-center justify-center">
+          <div className="flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-gray-100">
             {img ? (
               <img
                 src={img}
@@ -88,14 +88,17 @@ const ListingCard = ({ listing }) => {
         </Link>
 
         <div className="p-3.5">
-          <div className="flex items-center justify-between gap-1.5">
+          <div className="flex items-center justify-between gap-2">
             <span className="rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
               {condition}
             </span>
-            <span className="text-[10px] text-gray-400">Pre-owned</span>
+
+            <span className="shrink-0 text-[10px] text-gray-400">
+              Pre-owned
+            </span>
           </div>
 
-          <Link to={`/resale/${id}`} className="mt-2 block">
+          <Link to={`/resale/${id}`} className="mt-2 block min-w-0">
             <h3 className="line-clamp-1 text-sm font-semibold tracking-tight text-gray-900 transition-colors hover:text-gray-600">
               {name}
             </h3>
@@ -105,13 +108,14 @@ const ListingCard = ({ listing }) => {
             {desc}
           </p>
 
-          <div className="mt-3 flex items-center justify-between gap-2">
-            <div className="min-w-0">
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-2">
+            <div className="min-w-0 flex-1">
               <p className="text-[10px] text-gray-400">Listed by</p>
               <p className="truncate text-xs font-medium text-gray-700">
                 {seller}
               </p>
             </div>
+
             <p className="shrink-0 text-sm font-bold text-gray-900">
               {formatCurrency(price)}
             </p>
@@ -124,7 +128,8 @@ const ListingCard = ({ listing }) => {
           to={`/resale/${id}`}
           className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-gray-900 py-2 text-xs font-medium text-white transition hover:bg-black"
         >
-          View Listing <ArrowRight className="h-3.5 w-3.5" />
+          View Listing
+          <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </article>
@@ -144,17 +149,24 @@ const StatusBadge = ({ status }) => {
       label: "Order Placed",
       cls: "bg-blue-50 text-blue-700",
     },
-    2: { icon: XCircle, label: "Removed", cls: "bg-red-50 text-red-700" },
+    2: {
+      icon: XCircle,
+      label: "Removed",
+      cls: "bg-red-50 text-red-700",
+    },
   };
+
   const cfg = configs[status] ?? {
     icon: Clock,
     label: "Unknown",
     cls: "bg-gray-100 text-gray-600",
   };
+
   const Icon = cfg.icon;
+
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${cfg.cls}`}
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${cfg.cls}`}
     >
       <Icon className="h-3.5 w-3.5" />
       {cfg.label}
@@ -180,8 +192,8 @@ const MyListingCard = ({ listing, onEdit, onDelete }) => {
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 transition hover:border-gray-300 hover:shadow-sm sm:p-5">
-      <div className="flex gap-4">
-        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-100 flex items-center justify-center sm:h-24 sm:w-24">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 sm:h-24 sm:w-24">
           {img ? (
             <img
               src={img}
@@ -196,14 +208,18 @@ const MyListingCard = ({ listing, onEdit, onDelete }) => {
           )}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
-          <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3">
+          <div className="flex min-w-0 flex-col gap-3 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between">
             <div className="min-w-0">
-              <h3 className="truncate font-semibold text-gray-900">{name}</h3>
+              <h3 className="break-words font-semibold text-gray-900">
+                {name}
+              </h3>
+
               <p className="mt-0.5 text-sm text-gray-500">
                 Condition: {condition}
               </p>
             </div>
+
             <StatusBadge status={listing.status} />
           </div>
 
@@ -213,20 +229,23 @@ const MyListingCard = ({ listing, onEdit, onDelete }) => {
             </p>
 
             {isActive && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => onEdit(listing)}
                   className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:border-gray-900 hover:text-gray-900"
                 >
-                  <Pencil className="h-3.5 w-3.5" /> Edit
+                  <Pencil className="h-3.5 w-3.5" />
+                  Edit
                 </button>
+
                 <button
                   type="button"
                   onClick={() => onDelete(listing)}
                   className="flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50"
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Remove
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Remove
                 </button>
               </div>
             )}
@@ -247,45 +266,51 @@ const MyListingCard = ({ listing, onEdit, onDelete }) => {
 
       {/* Buyer & Shipping Info Drawer for Sold Listings */}
       {isSold && showBuyerInfo && (
-        <div className="border-t border-gray-100 pt-3 mt-1">
+        <div className="mt-1 border-t border-gray-100 pt-3">
           <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-3.5 text-xs">
-            <p className="font-semibold text-blue-950 flex items-center gap-1.5 mb-2.5">
-              <User className="h-3.5 w-3.5 text-blue-700" /> Buyer & Delivery
-              Details
+            <p className="mb-2.5 flex items-start gap-1.5 font-semibold text-blue-950 sm:items-center">
+              <User className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-700 sm:mt-0" />
+              <span>Buyer & Delivery Details</span>
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="flex items-start gap-2">
-                <User className="h-4 w-4 text-gray-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-gray-400 block text-[10px] uppercase font-semibold">
+            <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
+              <div className="flex min-w-0 items-start gap-2">
+                <User className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+
+                <div className="min-w-0">
+                  <span className="block text-[10px] font-semibold uppercase text-gray-400">
                     Buyer Name
                   </span>
-                  <span className="font-medium text-gray-900">
+
+                  <span className="break-words font-medium text-gray-900">
                     {buyerName || "Customer"}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2">
-                <Mail className="h-4 w-4 text-gray-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-gray-400 block text-[10px] uppercase font-semibold">
+              <div className="flex min-w-0 items-start gap-2">
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+
+                <div className="min-w-0">
+                  <span className="block text-[10px] font-semibold uppercase text-gray-400">
                     Buyer Email
                   </span>
-                  <span className="font-medium text-gray-900">
+
+                  <span className="break-all font-medium text-gray-900">
                     {buyerEmail || "Not provided"}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2 sm:col-span-2 border-t border-blue-100/60 pt-2.5">
-                <MapPin className="h-4 w-4 text-gray-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-gray-400 block text-[10px] uppercase font-semibold">
+              <div className="flex min-w-0 items-start gap-2 border-t border-blue-100/60 pt-2.5 sm:col-span-2">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+
+                <div className="min-w-0">
+                  <span className="block text-[10px] font-semibold uppercase text-gray-400">
                     Delivery Address
                   </span>
-                  <span className="font-medium text-gray-900">
+
+                  <span className="break-words font-medium text-gray-900">
                     {shippingAddress || "Not provided"}
                   </span>
                 </div>
@@ -561,11 +586,12 @@ const Resale = () => {
     <div className="min-h-screen bg-gray-50">
       {/* ── Hero ── */}
       <section className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-7xl px-5 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
             Resale Marketplace
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
             Buy and sell pre-owned business equipment from verified BizBox
             orders.
           </p>
@@ -574,24 +600,27 @@ const Resale = () => {
 
       {/* ── Tabs ── */}
       <div className="sticky top-16 z-30 border-b border-gray-200 bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          <div className="flex gap-1">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 overflow-x-auto scrollbar-none">
             {TABS.map((tab) => {
               const Icon = tab.icon;
               const active = activeTab === tab.id;
+
               return (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => handleTabClick(tab.id, tab.authRequired)}
-                  className={`flex items-center gap-2 border-b-2 px-4 py-4 text-sm font-medium transition ${
+                  className={`flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-3.5 text-xs font-medium transition sm:gap-2 sm:px-4 sm:py-4 sm:text-sm ${
                     active
                       ? "border-gray-900 text-gray-900"
                       : "border-transparent text-gray-500 hover:text-gray-800"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
-                  {tab.label}
+                  <Icon className="h-4 w-4 shrink-0" />
+
+                  <span>{tab.label}</span>
+
                   {tab.authRequired && !isAuthenticated && (
                     <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500">
                       Login
@@ -605,15 +634,16 @@ const Resale = () => {
       </div>
 
       {/* ── Content ── */}
-      <main className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
         {activeTab === "browse" && (
           <div>
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-2 sm:mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">
                 Available Listings
               </h2>
+
               {!listingsLoading && listings.length > 0 && (
-                <span className="text-sm text-gray-500">
+                <span className="shrink-0 text-xs text-gray-500 sm:text-sm">
                   {listings.length}{" "}
                   {listings.length === 1 ? "listing" : "listings"}
                 </span>
@@ -621,7 +651,7 @@ const Resale = () => {
             </div>
 
             {listingsLoading && (
-              <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                   <SkeletonCard key={i} />
                 ))}
@@ -629,8 +659,11 @@ const Resale = () => {
             )}
 
             {!listingsLoading && listingsError && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
-                <p className="text-sm text-red-700">{listingsError}</p>
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center sm:p-8">
+                <p className="text-sm leading-6 text-red-700">
+                  {listingsError}
+                </p>
+
                 <button
                   type="button"
                   onClick={loadListings}
@@ -642,15 +675,18 @@ const Resale = () => {
             )}
 
             {!listingsLoading && !listingsError && listings.length === 0 && (
-              <div className="rounded-3xl border border-gray-200 bg-white px-6 py-20 text-center">
+              <div className="rounded-3xl border border-gray-200 bg-white px-5 py-14 text-center sm:px-6 sm:py-20">
                 <Store className="mx-auto h-12 w-12 text-gray-300" />
+
                 <h2 className="mt-5 text-xl font-semibold text-gray-900">
                   No listings yet
                 </h2>
-                <p className="mx-auto mt-2 max-w-sm text-sm text-gray-500">
+
+                <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-gray-500">
                   Be the first to list your pre-owned equipment on the
                   marketplace.
                 </p>
+
                 {isAuthenticated ? (
                   <button
                     type="button"
@@ -671,7 +707,7 @@ const Resale = () => {
             )}
 
             {!listingsLoading && !listingsError && listings.length > 0 && (
-              <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
                 {listings.map((listing) => (
                   <ListingCard key={listing.id} listing={listing} />
                 ))}
@@ -682,14 +718,15 @@ const Resale = () => {
 
         {activeTab === "my-listings" && (
           <div>
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
+            <div className="mb-5 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between sm:mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">
                 My Listings
               </h2>
+
               <button
                 type="button"
                 onClick={() => handleTabClick("sell", true)}
-                className="flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-black min-[420px]:w-auto"
               >
                 <PlusCircle className="h-4 w-4" />
                 New Listing
@@ -701,11 +738,12 @@ const Resale = () => {
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="flex animate-pulse gap-4 rounded-2xl border border-gray-200 bg-white p-5"
+                    className="flex animate-pulse gap-4 rounded-2xl border border-gray-200 bg-white p-4 sm:p-5"
                   >
-                    <div className="h-20 w-20 rounded-xl bg-gray-100" />
-                    <div className="flex-1 space-y-3">
-                      <div className="h-4 w-40 rounded bg-gray-100" />
+                    <div className="h-20 w-20 shrink-0 rounded-xl bg-gray-100" />
+
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div className="h-4 w-40 max-w-full rounded bg-gray-100" />
                       <div className="h-3 w-24 rounded bg-gray-100" />
                       <div className="h-5 w-20 rounded bg-gray-100" />
                     </div>
@@ -715,8 +753,9 @@ const Resale = () => {
             )}
 
             {!myLoading && myError && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
-                <p className="text-sm text-red-700">{myError}</p>
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center sm:p-6">
+                <p className="text-sm leading-6 text-red-700">{myError}</p>
+
                 <button
                   type="button"
                   onClick={loadMyListings}
@@ -728,14 +767,17 @@ const Resale = () => {
             )}
 
             {!myLoading && !myError && myListings.length === 0 && (
-              <div className="rounded-3xl border border-gray-200 bg-white px-6 py-16 text-center">
+              <div className="rounded-3xl border border-gray-200 bg-white px-5 py-14 text-center sm:px-6 sm:py-16">
                 <ListOrdered className="mx-auto h-10 w-10 text-gray-300" />
+
                 <h3 className="mt-4 text-lg font-semibold text-gray-900">
                   No listings yet
                 </h3>
-                <p className="mt-2 text-sm text-gray-500">
+
+                <p className="mt-2 text-sm leading-6 text-gray-500">
                   List equipment you own to sell it on the marketplace.
                 </p>
+
                 <button
                   type="button"
                   onClick={() => handleTabClick("sell", true)}
@@ -763,19 +805,22 @@ const Resale = () => {
 
         {activeTab === "sell" && (
           <div className="mx-auto max-w-2xl">
-            <h2 className="mb-6 text-xl font-semibold text-gray-900">
+            <h2 className="mb-5 text-lg font-semibold text-gray-900 sm:mb-6 sm:text-xl">
               List an Item for Sale
             </h2>
 
             {sellSuccess && (
-              <div className="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+              <div className="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-3.5 sm:p-4">
                 <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
-                <p className="text-sm text-emerald-800">{sellSuccess}</p>
+
+                <p className="text-sm leading-6 text-emerald-800">
+                  {sellSuccess}
+                </p>
               </div>
             )}
 
             {eligibleLoading && (
-              <div className="animate-pulse space-y-4 rounded-2xl border border-gray-200 bg-white p-6">
+              <div className="animate-pulse space-y-4 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
                 <div className="h-4 w-32 rounded bg-gray-100" />
                 <div className="h-12 w-full rounded-xl bg-gray-100" />
                 <div className="h-4 w-24 rounded bg-gray-100" />
@@ -784,7 +829,7 @@ const Resale = () => {
             )}
 
             {!eligibleLoading && eligibleError && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center text-sm text-red-700">
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center text-sm leading-6 text-red-700">
                 {eligibleError}
               </div>
             )}
@@ -792,10 +837,10 @@ const Resale = () => {
             {!eligibleLoading && !eligibleError && (
               <form
                 onSubmit={handleSellSubmit}
-                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+                className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
               >
                 {sellError && (
-                  <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                  <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-700">
                     {sellError}
                   </div>
                 )}
@@ -805,12 +850,14 @@ const Resale = () => {
                   <label className="text-sm font-medium text-gray-900">
                     Product <span className="text-red-500">*</span>
                   </label>
+
                   <select
                     value={sellProductId}
                     onChange={(e) => setSellProductId(e.target.value)}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-gray-900"
+                    className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition focus:border-gray-900 sm:px-4"
                   >
                     <option value="">— Select a product —</option>
+
                     {eligibleProducts.map((p) => (
                       <option
                         key={p.productId}
@@ -822,8 +869,9 @@ const Resale = () => {
                       </option>
                     ))}
                   </select>
+
                   {eligibleProducts.length === 0 && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs leading-5 text-gray-400">
                       No eligible products found. Purchase equipment first to
                       list it here.
                     </p>
@@ -835,6 +883,7 @@ const Resale = () => {
                   <label className="text-sm font-medium text-gray-900">
                     Asking Price (Rs.) <span className="text-red-500">*</span>
                   </label>
+
                   <input
                     type="number"
                     min="1"
@@ -842,7 +891,7 @@ const Resale = () => {
                     value={sellPrice}
                     onChange={(e) => setSellPrice(e.target.value)}
                     placeholder="e.g. 800"
-                    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-gray-900"
+                    className="w-full rounded-xl border border-gray-300 px-3.5 py-3 text-sm outline-none transition focus:border-gray-900 sm:px-4"
                   />
                 </div>
 
@@ -851,13 +900,14 @@ const Resale = () => {
                   <label className="text-sm font-medium text-gray-900">
                     Condition <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex gap-3">
+
+                  <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 min-[400px]:gap-3">
                     {Object.entries(ResaleCondition).map(([label, value]) => (
                       <button
                         key={value}
                         type="button"
                         onClick={() => setSellCondition(value)}
-                        className={`flex-1 rounded-xl border py-2.5 text-sm font-medium transition ${
+                        className={`w-full rounded-xl border py-2.5 text-sm font-medium transition ${
                           sellCondition === value
                             ? "border-gray-900 bg-gray-900 text-white"
                             : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
@@ -874,12 +924,13 @@ const Resale = () => {
                   <label className="text-sm font-medium text-gray-900">
                     Description
                   </label>
+
                   <textarea
                     value={sellDescription}
                     onChange={(e) => setSellDescription(e.target.value)}
                     rows={3}
                     placeholder="Describe the item's condition, usage, etc."
-                    className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-gray-900"
+                    className="w-full resize-none rounded-xl border border-gray-300 px-3.5 py-3 text-sm leading-6 outline-none transition focus:border-gray-900 sm:px-4"
                   />
                 </div>
 
@@ -888,6 +939,7 @@ const Resale = () => {
                   <label className="text-sm font-medium text-gray-900">
                     Photo <span className="text-red-500">*</span>
                   </label>
+
                   <input
                     ref={sellImageRef}
                     type="file"
@@ -895,13 +947,15 @@ const Resale = () => {
                     onChange={handleSellImageChange}
                     className="hidden"
                   />
+
                   {sellImagePreview ? (
                     <div className="relative overflow-hidden rounded-xl border border-gray-200">
                       <img
                         src={sellImagePreview}
                         alt="Preview"
-                        className="h-48 w-full object-cover"
+                        className="h-48 w-full object-cover sm:h-56"
                       />
+
                       <button
                         type="button"
                         onClick={() => {
@@ -917,10 +971,10 @@ const Resale = () => {
                     <button
                       type="button"
                       onClick={() => sellImageRef.current?.click()}
-                      className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-10 text-sm text-gray-400 transition hover:border-gray-400 hover:text-gray-600"
+                      className="flex min-h-36 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-8 text-center text-sm text-gray-400 transition hover:border-gray-400 hover:text-gray-600 sm:min-h-40"
                     >
                       <Upload className="h-6 w-6" />
-                      Click to upload a photo
+                      <span>Click to upload a photo</span>
                     </button>
                   )}
                 </div>
@@ -939,22 +993,26 @@ const Resale = () => {
       </main>
 
       {editListing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-3 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="my-3 w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl sm:my-0">
+            <div className="flex items-center justify-between gap-4 border-b border-gray-200 px-4 py-4 sm:px-6">
               <h3 className="font-semibold text-gray-900">Edit Listing</h3>
+
               <button
                 type="button"
                 onClick={() => setEditListing(null)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                className="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="space-y-4 p-6">
+            <form
+              onSubmit={handleEditSubmit}
+              className="max-h-[calc(100vh-110px)] space-y-4 overflow-y-auto p-4 sm:max-h-[calc(100vh-120px)] sm:p-6"
+            >
               {editError && (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-700">
                   {editError}
                 </div>
               )}
@@ -964,13 +1022,14 @@ const Resale = () => {
                 <label className="text-sm font-medium text-gray-900">
                   Price (Rs.)
                 </label>
+
                 <input
                   type="number"
                   min="1"
                   step="0.01"
                   value={editPrice}
                   onChange={(e) => setEditPrice(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-gray-900"
+                  className="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm outline-none focus:border-gray-900 sm:px-4"
                 />
               </div>
 
@@ -979,13 +1038,14 @@ const Resale = () => {
                 <label className="text-sm font-medium text-gray-900">
                   Condition
                 </label>
-                <div className="flex gap-3">
+
+                <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 min-[400px]:gap-3">
                   {Object.entries(ResaleCondition).map(([, value]) => (
                     <button
                       key={value}
                       type="button"
                       onClick={() => setEditCondition(value)}
-                      className={`flex-1 rounded-xl border py-2 text-sm font-medium transition ${
+                      className={`w-full rounded-xl border py-2 text-sm font-medium transition ${
                         editCondition === value
                           ? "border-gray-900 bg-gray-900 text-white"
                           : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
@@ -1002,11 +1062,12 @@ const Resale = () => {
                 <label className="text-sm font-medium text-gray-900">
                   Description
                 </label>
+
                 <textarea
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                   rows={3}
-                  className="w-full resize-none rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-gray-900"
+                  className="w-full resize-none rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm leading-6 outline-none focus:border-gray-900 sm:px-4"
                 />
               </div>
 
@@ -1015,6 +1076,7 @@ const Resale = () => {
                 <label className="text-sm font-medium text-gray-900">
                   Photo (optional update)
                 </label>
+
                 <input
                   ref={editImageRef}
                   type="file"
@@ -1022,34 +1084,38 @@ const Resale = () => {
                   onChange={handleEditImageChange}
                   className="hidden"
                 />
+
                 <div className="relative overflow-hidden rounded-xl border border-gray-200">
                   <img
                     src={editImagePreview}
                     alt="Preview"
-                    className="h-36 w-full object-cover"
+                    className="h-36 w-full object-cover sm:h-44"
                   />
+
                   <button
                     type="button"
                     onClick={() => editImageRef.current?.click()}
                     className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow hover:bg-gray-50"
                   >
-                    <Upload className="h-3.5 w-3.5" /> Change
+                    <Upload className="h-3.5 w-3.5" />
+                    Change
                   </button>
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-col gap-2.5 pt-2 min-[400px]:flex-row min-[400px]:gap-3">
                 <button
                   type="button"
                   onClick={() => setEditListing(null)}
-                  className="flex-1 rounded-xl border border-gray-300 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-900"
+                  className="w-full rounded-xl border border-gray-300 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-900"
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   disabled={editSubmitting}
-                  className="flex-1 rounded-xl bg-gray-900 py-2.5 text-sm font-medium text-white hover:bg-black disabled:opacity-60"
+                  className="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-medium text-white hover:bg-black disabled:opacity-60"
                 >
                   {editSubmitting ? "Saving..." : "Save Changes"}
                 </button>
@@ -1060,34 +1126,38 @@ const Resale = () => {
       )}
 
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-3 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="my-3 w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl sm:my-0 sm:p-6">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
               <Trash2 className="h-6 w-6 text-red-600" />
             </div>
+
             <h3 className="mt-4 text-lg font-semibold text-gray-900">
               Remove Listing?
             </h3>
-            <p className="mt-2 text-sm text-gray-500">
+
+            <p className="mt-2 break-words text-sm leading-6 text-gray-500">
               This will remove{" "}
               <span className="font-medium text-gray-800">
                 {deleteTarget.productName}
               </span>{" "}
               from the marketplace. This action cannot be undone.
             </p>
-            <div className="mt-6 flex gap-3">
+
+            <div className="mt-6 flex flex-col gap-2.5 min-[400px]:flex-row min-[400px]:gap-3">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="flex-1 rounded-xl border border-gray-300 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-900"
+                className="w-full rounded-xl border border-gray-300 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-900"
               >
                 Cancel
               </button>
+
               <button
                 type="button"
                 onClick={handleDelete}
                 disabled={deleteSubmitting}
-                className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+                className="w-full rounded-xl bg-red-600 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
               >
                 {deleteSubmitting ? "Removing..." : "Remove"}
               </button>

@@ -6,8 +6,7 @@ import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { useAuth } from "../context/AuthContext";
 import { resolveImageUrl } from "../utils/imageUrl";
-import { ShoppingCart, CheckCircle2 } from "lucide-react";
-import { ArrowDown, ArrowRight } from "lucide-react";
+import { ShoppingCart, CheckCircle2, ArrowDown, ArrowRight } from "lucide-react";
 
 const Equipment = () => {
   const { isAuthenticated, isAdmin } = useAuth();
@@ -44,8 +43,6 @@ const Equipment = () => {
       setError("");
 
       if (businessTypeId) {
-        // When filtering by business type, fetch business-type products
-        // + all products (for stock info) + categories + business types in parallel
         const [
           btProductsData,
           allProductsData,
@@ -58,19 +55,21 @@ const Equipment = () => {
           businessTypeService.getAll(),
         ]);
 
-        // Build a map of productId -> full product data (for stock info)
         const allProductsList = Array.isArray(allProductsData)
           ? allProductsData
           : allProductsData?.products ||
             allProductsData?.items ||
             allProductsData?.data ||
             [];
+
         const productMap = {};
+
         allProductsList.forEach((p) => {
-          if (p?.id) productMap[p.id] = p;
+          if (p?.id) {
+            productMap[p.id] = p;
+          }
         });
 
-        // Normalize business-type product objects to the standard shape
         const btList = Array.isArray(btProductsData)
           ? btProductsData
           : btProductsData?.products ||
@@ -80,31 +79,25 @@ const Equipment = () => {
 
         const normalized = btList.map((item) => {
           const fullProduct = productMap[item.productId] || {};
+
           return {
-            // Normalize id / name from business-type response
             id: item.productId ?? item.id ?? fullProduct.id,
             name: item.productName ?? item.name ?? fullProduct.name,
-            // Prefer imageUrl from the BT response; fall back to full product
             imageUrl:
               item.imageUrl || fullProduct.imageUrl || fullProduct.image,
-            // Description from full product (BT endpoint doesn't include it)
             description: fullProduct.description || item.description,
             price: item.price ?? fullProduct.price,
-            // Stock from full product data
             stockQuantity:
               fullProduct.stockQuantity ?? fullProduct.stock ?? null,
-            // Category from full product
             categoryId: fullProduct.categoryId,
             category: fullProduct.category,
             categoryName: fullProduct.categoryName,
-            // Keep extra BT-specific fields
             isRequired: item.isRequired,
             recommendedQuantity: item.recommendedQuantity,
             displayOrder: item.displayOrder,
           };
         });
 
-        // Sort by displayOrder if available
         normalized.sort(
           (a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999),
         );
@@ -115,7 +108,6 @@ const Equipment = () => {
           Array.isArray(businessTypesData) ? businessTypesData : [],
         );
       } else {
-        // Normal path — fetch all products directly
         const [productsData, categoriesData, businessTypesData] =
           await Promise.all([
             productService.getAll(),
@@ -133,7 +125,9 @@ const Equipment = () => {
         setProducts(
           productList.map((item) => item.product || item).filter(Boolean),
         );
+
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+
         setBusinessTypes(
           Array.isArray(businessTypesData) ? businessTypesData : [],
         );
@@ -169,9 +163,7 @@ const Equipment = () => {
     if (query) {
       result = result.filter((product) => {
         const name = product.name?.toLowerCase() || "";
-
         const description = product.description?.toLowerCase() || "";
-
         const category = getCategoryName(product).toLowerCase();
 
         return (
@@ -283,7 +275,7 @@ const Equipment = () => {
     <div className="min-h-screen bg-gray-50 text-[#1a1b1f]">
       {/* Header */}
       <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link
             to="/"
             className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-75"
@@ -297,7 +289,7 @@ const Equipment = () => {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-7 xl:flex">
+          <nav className="hidden items-center gap-5 xl:flex">
             <Link
               to="/equipment"
               className="text-[12px] font-semibold text-black"
@@ -334,12 +326,11 @@ const Equipment = () => {
             </Link>
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <Link
               to="/cart"
-              className="flex h-9 items-center gap-2 rounded-full px-3 text-[#4c4546] transition-all hover:bg-[#eeedf3] hover:text-black"
+              className="flex h-9 items-center gap-2 rounded-full px-2 text-[#4c4546] transition-all hover:bg-[#eeedf3] hover:text-black sm:px-3"
             >
-              {/* check this */}
               <span className="text-[18px]">🛍</span>
 
               <span className="rounded-full bg-[#e9e7ed] px-1.5 py-0.5 text-[10px] font-semibold text-black">
@@ -382,10 +373,10 @@ const Equipment = () => {
       {/* Main */}
       <main className="flex min-h-screen flex-1 flex-col">
         {/* Page Heading */}
-        <section className="mx-auto w-full max-w-7xl px-5 pb-6 pt-8 sm:px-6 lg:px-12">
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div>
+        <section className="mx-auto w-full max-w-7xl px-4 pb-5 pt-7 sm:px-6 sm:pb-6 sm:pt-8 lg:px-8">
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="min-w-0">
                 <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
                   Shop equipment
                 </h1>
@@ -395,34 +386,38 @@ const Equipment = () => {
                 </p>
 
                 {businessTypeId && (
-                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[12px] font-medium shadow-sm ring-1 ring-black/4">
-                    {selectedBusinessType?.name || "Selected Business"}
+                  <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-full bg-white px-4 py-2 text-[12px] font-medium shadow-sm ring-1 ring-black/4">
+                    <span className="truncate">
+                      {selectedBusinessType?.name || "Selected Business"}
+                    </span>
                   </div>
                 )}
               </div>
 
-              <div className="flex shrink-0 flex-wrap items-center gap-3 mb-6">
+              {/* Filters */}
+              <div className="mb-0 flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap lg:w-auto lg:items-center">
                 <button
                   type="button"
                   onClick={handleStockToggle}
-                  className={`flex h-10 items-center gap-2 rounded-lg px-4 text-[12px] font-medium ${
+                  className={`flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-[12px] font-medium sm:w-auto ${
                     stockOnly
                       ? "bg-black text-white"
                       : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
                   }`}
                 >
                   <span
-                    className={`h-2 w-2 rounded-full ${
+                    className={`h-2 w-2 shrink-0 rounded-full ${
                       stockOnly ? "bg-white" : "bg-[#cfc4c5]"
                     }`}
                   />
+
                   In Stock Only
                 </button>
 
                 <select
                   value={sortBy}
                   onChange={handleSortChange}
-                  className="h-10 cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-gray-50"
+                  className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-4 text-[12px] font-medium text-[#1a1b1f] outline-none hover:bg-gray-50 sm:w-auto"
                 >
                   <option value="featured">Sort: Featured</option>
                   <option value="price-low">Price: Low to High</option>
@@ -434,44 +429,44 @@ const Equipment = () => {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-7xl px-6 pb-8 lg:px-12">
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Categories */}
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleCategoryChange("all")}
-                className={`h-9 rounded-lg px-4 text-[12px] font-medium ${
-                  selectedCategory === "all"
-                    ? "bg-black text-white shadow-sm"
-                    : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
-                }`}
-              >
-                All Equipment ({products.length})
-              </button>
+        {/* Categories */}
+        <section className="mx-auto w-full max-w-7xl px-5 pb-8 sm:px-6 lg:px-12">
+  <div className="flex items-center gap-3">
+    <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 scrollbar-hide lg:flex-wrap lg:overflow-visible">
+      <button
+        type="button"
+        onClick={() => handleCategoryChange("all")}
+        className={`h-9 shrink-0 rounded-lg px-4 text-[12px] font-medium ${
+          selectedCategory === "all"
+            ? "bg-black text-white shadow-sm"
+            : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
+        }`}
+      >
+        All Equipment ({products.length})
+      </button>
 
-              {categoryNames.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => handleCategoryChange(category)}
-                  className={`h-9 rounded-lg px-4 text-[12px] font-medium ${
-                    selectedCategory === category
-                      ? "bg-black text-white shadow-sm"
-                      : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
+      {categoryNames.map((category) => (
+        <button
+          key={category}
+          type="button"
+          onClick={() => handleCategoryChange(category)}
+          className={`h-9 shrink-0 rounded-lg px-4 text-[12px] font-medium ${
+            selectedCategory === category
+              ? "bg-black text-white shadow-sm"
+              : "bg-[#f4f3f8] text-[#4c4546] hover:bg-[#eeedf3] hover:text-black"
+          }`}
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+  </div>
+</section>
 
         {/* Error */}
         {error && (
-          <section className="mx-auto w-full max-w-7xl px-6 pb-8 lg:px-12">
-            <div className="rounded-2xl bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">
+          <section className="mx-auto w-full max-w-7xl px-4 pb-7 sm:px-6 lg:px-8">
+            <div className="rounded-2xl bg-[#ffdad6] px-4 py-4 text-sm text-[#93000a] sm:px-5">
               {error}
             </div>
           </section>
@@ -479,20 +474,21 @@ const Equipment = () => {
 
         {/* Cart Message Toast */}
         {cartMessage && (
-          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-xl animate-fade-in">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>{cartMessage}</span>
+          <div className="fixed bottom-4 left-4 right-4 z-50 flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-xl animate-fade-in sm:bottom-6 sm:left-auto sm:right-6">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+
+            <span className="text-center">{cartMessage}</span>
           </div>
         )}
 
         {/* Products */}
-        <section className="mx-auto w-full max-w-7xl px-6 pb-20 lg:px-12">
+        <section className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 sm:pb-20 lg:px-8">
           {loading ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
               {Array.from({
                 length: 8,
               }).map((_, index) => (
-                <div key={index} className="rounded-2xl bg-white p-4">
+                <div key={index} className="rounded-2xl bg-white p-3 sm:p-4">
                   <div className="aspect-square rounded-xl bg-[#eeedf3]" />
 
                   <div className="mt-5 h-3 w-24 rounded bg-[#eeedf3]" />
@@ -506,7 +502,7 @@ const Equipment = () => {
               ))}
             </div>
           ) : visibleProducts.length === 0 ? (
-            <div className="flex min-h-75 flex-col items-center justify-center rounded-3xl bg-white px-6 text-center">
+            <div className="flex min-h-64 flex-col items-center justify-center rounded-3xl bg-white px-5 py-12 text-center sm:min-h-75 sm:px-6">
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#eeedf3] text-2xl">
                 ⌕
               </div>
@@ -527,11 +523,12 @@ const Equipment = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {visibleProducts.map((product, index) => {
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+                {visibleProducts.map((product) => {
                   const stockQuantityKnown =
                     product.stockQuantity !== null &&
                     product.stockQuantity !== undefined;
+
                   const stock = stockQuantityKnown
                     ? Number(product.stockQuantity)
                     : null;
@@ -541,9 +538,9 @@ const Equipment = () => {
                   return (
                     <article
                       key={product.id}
-                      className="relative flex flex-col justify-between rounded-lg border border-gray-200 bg-gray-50 p-2 hover:border-gray-300 hover:bg-gray-100"
+                      className="relative flex min-w-0 flex-col justify-between rounded-lg border border-gray-200 bg-gray-50 p-2 hover:border-gray-300 hover:bg-gray-100"
                     >
-                      <div>
+                      <div className="min-w-0">
                         <Link to={`/products/${product.id}`} className="block">
                           <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-[#f4f3f8]">
                             {getProductImage(product) && (
@@ -558,16 +555,16 @@ const Equipment = () => {
                             )}
                           </div>
 
-                          <div className="flex flex-col gap-1.5 pt-4">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
+                          <div className="flex min-w-0 flex-col gap-1.5 pt-4">
+                            <span className="truncate text-[10px] font-medium uppercase tracking-wider text-[#4c4546]">
                               {getCategoryName(product)}
                             </span>
 
-                            <h3 className="line-clamp-2 text-[17px] font-semibold leading-5.5 tracking-tight text-black">
+                            <h3 className="line-clamp-2 break-words text-[17px] font-semibold leading-5.5 tracking-tight text-black">
                               {product.name}
                             </h3>
 
-                            <p className="line-clamp-2 text-[13px] leading-4.5 text-[#4c4546]">
+                            <p className="line-clamp-2 break-words text-[13px] leading-4.5 text-[#4c4546]">
                               {product.description ||
                                 "Professional commercial equipment for your business."}
                             </p>
@@ -576,15 +573,15 @@ const Equipment = () => {
                       </div>
 
                       <div className="flex flex-col gap-3 pt-6">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex flex-col">
-                            <span className="text-[17px] font-semibold text-black">
+                        <div className="flex min-w-0 items-center justify-between gap-2">
+                          <div className="flex min-w-0 flex-col">
+                            <span className="truncate text-[16px] font-semibold text-black sm:text-[17px]">
                               Rs.
                               {Number(product.price || 0).toLocaleString()}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="min-w-0 text-right">
                             <span className="text-[10px] font-medium text-[#4c4546]">
                               {!inStock
                                 ? "Out of stock"
@@ -598,7 +595,7 @@ const Equipment = () => {
                         <div className="flex gap-2">
                           <Link
                             to={`/products/${product.id}`}
-                            className="flex h-10 flex-1 items-center justify-center gap-1 rounded-lg bg-black text-[12px] font-medium text-white hover:bg-gray-800"
+                            className="flex h-10 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg bg-black px-2 text-center text-[11px] font-medium text-white hover:bg-gray-800 sm:text-[12px]"
                           >
                             View Product
                           </Link>
@@ -623,7 +620,7 @@ const Equipment = () => {
                               {addingProductId === product.id ? (
                                 "..."
                               ) : (
-                                <ShoppingCart className="w-5 h-5" />
+                                <ShoppingCart className="h-5 w-5" />
                               )}
                             </button>
                           )}
@@ -635,8 +632,8 @@ const Equipment = () => {
               </div>
 
               {/* Load More */}
-              <div className="mt-14 flex flex-col items-center gap-4">
-                <div className="flex items-center gap-1.5 text-[13px] text-[#4c4546]">
+              <div className="mt-12 flex flex-col items-center gap-4 sm:mt-14">
+                <div className="flex flex-wrap items-center justify-center gap-1.5 text-center text-[13px] text-[#4c4546]">
                   <span>Showing</span>
 
                   <span className="font-semibold text-black">
@@ -646,7 +643,7 @@ const Equipment = () => {
                   <span>of {filteredProducts.length} equipment</span>
                 </div>
 
-                <div className="h-1 w-48 overflow-hidden rounded-full bg-[#e3e2e7]">
+                <div className="h-1 w-48 max-w-full overflow-hidden rounded-full bg-[#e3e2e7]">
                   <div
                     className="h-full rounded-full bg-black transition-all duration-300"
                     style={{
@@ -668,10 +665,11 @@ const Equipment = () => {
                   <button
                     type="button"
                     onClick={handleLoadMore}
-                    className="flex h-11 items-center gap-2 rounded-full bg-[#f4f3f8] px-8 text-[12px] font-medium text-black transition-all hover:bg-[#eeedf3]"
+                    className="flex h-11 w-full max-w-xs items-center justify-center gap-2 rounded-full bg-[#f4f3f8] px-6 text-[12px] font-medium text-black transition-all hover:bg-[#eeedf3] sm:w-auto sm:max-w-none sm:px-8"
                   >
                     Load More Products
-                    <ArrowDown className="w-4 h-4" />
+
+                    <ArrowDown className="h-4 w-4" />
                   </button>
                 )}
               </div>
@@ -680,8 +678,8 @@ const Equipment = () => {
         </section>
 
         {/* Procurement Banner */}
-        <section className="hidden mx-auto w-full max-w-7xl px-6 pb-16 lg:px-12">
-          <div className="relative overflow-hidden rounded-3xl bg-black p-8 text-white md:p-12 lg:p-16">
+        <section className="hidden mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 sm:pb-16 lg:px-8">
+          <div className="relative overflow-hidden rounded-3xl bg-black p-6 text-white sm:p-8 md:p-12 lg:p-16">
             <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
               <div
                 className="h-full w-full"
@@ -699,7 +697,7 @@ const Equipment = () => {
                   Business Equipment Planning
                 </div>
 
-                <h2 className="text-[28px] font-semibold leading-tight tracking-tight md:text-[36px]">
+                <h2 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px] md:text-[36px]">
                   Building a complete business setup?
                 </h2>
 
@@ -715,7 +713,8 @@ const Equipment = () => {
                   className="flex h-12 items-center justify-center gap-2 rounded-full bg-white px-6 text-[12px] font-semibold text-black transition-all hover:bg-[#f4f3f8]"
                 >
                   Explore Business Types
-                  <ArrowRight className="size-4" />
+
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
 
                 <Link
@@ -732,8 +731,8 @@ const Equipment = () => {
 
       {/* Footer */}
       <footer className="hidden mt-10 w-full bg-[#f4f3f8]">
-        <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
-          <div className="grid grid-cols-2 gap-8 pb-14 md:grid-cols-4 lg:gap-12">
+        <div className="mx-auto max-w-7xl px-4 pb-12 pt-12 sm:px-6 sm:pt-16 lg:px-8">
+          <div className="grid grid-cols-2 gap-8 pb-12 sm:gap-10 md:grid-cols-4 lg:gap-12 lg:pb-14">
             <div className="flex flex-col gap-3.5">
               <h4 className="text-[11px] font-semibold uppercase tracking-wider">
                 Shop by Business
@@ -848,7 +847,7 @@ const Equipment = () => {
               © 2026 BizBox. Commercial equipment for growing businesses.
             </p>
 
-            <div className="flex items-center gap-6 text-[11px] text-[#4c4546]">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-[#4c4546] sm:gap-6">
               <span>Nepal</span>
 
               <Link to="/" className="hover:text-black">

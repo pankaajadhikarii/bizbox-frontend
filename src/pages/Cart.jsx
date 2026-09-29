@@ -209,14 +209,17 @@ const Cart = () => {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 sm:py-10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
+    <main className="min-h-screen bg-gray-50 py-6 sm:py-8 lg:py-10">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        {/* Heading */}
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold tracking-tight text-black sm:text-3xl lg:text-4xl">
               Shopping cart
             </h1>
-            <p className="mt-2 text-sm text-gray-600">
+
+            <p className="mt-2 text-sm leading-6 text-gray-600">
               {items.length > 0
                 ? `You have ${totalItems} ${
                     totalItems === 1 ? "item" : "items"
@@ -230,7 +233,7 @@ const Cart = () => {
               type="button"
               onClick={handleClearCart}
               disabled={clearingCart}
-              className="inline-flex items-center gap-1.5 self-start rounded-lg px-3 py-1.5 text-xs font-medium text-gray-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50 sm:self-auto"
+              className="inline-flex w-fit items-center gap-1.5 self-start rounded-lg px-3 py-1.5 text-xs font-medium text-gray-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50 sm:self-auto"
             >
               <Trash2 className="h-3.5 w-3.5" />
               {clearingCart ? "Clearing..." : "Clear cart"}
@@ -238,42 +241,51 @@ const Cart = () => {
           )}
         </div>
 
+        {/* Error */}
         {error && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div className="mb-6 break-words rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-700">
             {error}
           </div>
         )}
 
+        {/* Loading */}
         {loading ? (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start animate-pulse">
-            <div className="lg:col-span-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm divide-y divide-gray-100">
+          <div className="grid grid-cols-1 gap-6 animate-pulse lg:grid-cols-12 lg:items-start lg:gap-8">
+            <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6 lg:col-span-8">
               {Array.from({ length: 3 }).map((_, idx) => (
-                <div key={idx} className="flex gap-4 py-4 first:pt-0 last:pb-0">
-                  <div className="h-20 w-20 shrink-0 rounded-xl bg-gray-100" />
-                  <div className="flex flex-1 flex-col justify-between py-1">
+                <div
+                  key={idx}
+                  className="flex gap-3 py-4 first:pt-0 sm:gap-4"
+                >
+                  <div className="h-16 w-16 shrink-0 rounded-xl bg-gray-100 sm:h-20 sm:w-20" />
+
+                  <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
                     <div className="space-y-2">
-                      <div className="h-4 w-40 rounded bg-gray-100" />
-                      <div className="h-3 w-24 rounded bg-gray-100" />
+                      <div className="h-4 w-32 max-w-full rounded bg-gray-100 sm:w-40" />
+                      <div className="h-3 w-20 rounded bg-gray-100 sm:w-24" />
                     </div>
-                    <div className="h-4 w-28 rounded bg-gray-100" />
+
+                    <div className="h-4 w-24 rounded bg-gray-100 sm:w-28" />
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="lg:col-span-4 h-64 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" />
+            <div className="h-64 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-4" />
           </div>
         ) : items.length === 0 ? (
-          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-              <ShoppingBag className="h-8 w-8" />
+
+          /* Empty State */
+          <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm sm:min-h-[400px] sm:p-8">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-400 sm:h-16 sm:w-16">
+              <ShoppingBag className="h-7 w-7 sm:h-8 sm:w-8" />
             </div>
 
-            <h2 className="mt-4 text-xl font-semibold text-gray-900">
+            <h2 className="mt-4 text-lg font-semibold text-gray-900 sm:text-xl">
               Your cart is empty
             </h2>
 
-            <p className="mt-1.5 max-w-sm text-sm text-gray-500">
+            <p className="mt-1.5 max-w-sm text-sm leading-6 text-gray-500">
               Looks like you haven't added any equipment to your cart yet.
               Explore our catalog to find what you need.
             </p>
@@ -286,9 +298,14 @@ const Cart = () => {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+
         ) : (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
-            <div className="lg:col-span-8 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+
+          /* Cart */
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start lg:gap-8">
+
+            {/* Cart Items */}
+            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:col-span-8">
               <div className="divide-y divide-gray-100">
                 {items.map((item) => {
                   const itemId = getItemId(item);
@@ -304,8 +321,9 @@ const Cart = () => {
                   return (
                     <div
                       key={itemId || productId}
-                      className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-6"
+                      className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5 lg:gap-6"
                     >
+                      {/* Product Image */}
                       <Link
                         to={`/products/${productId}`}
                         className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50"
@@ -322,30 +340,36 @@ const Cart = () => {
                         )}
                       </Link>
 
-                      <div className="flex min-w-0 flex-1 flex-col gap-1">
-                        <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                      {/* Product Info */}
+                      <div className="min-w-0 flex-1">
+                        <span className="block truncate text-[11px] font-medium uppercase tracking-wider text-gray-400">
                           {getProductCategory(item)}
                         </span>
 
                         <Link
                           to={`/products/${productId}`}
-                          className="font-medium text-gray-900 transition hover:text-gray-600 line-clamp-1"
+                          className="mt-0.5 block truncate font-medium text-gray-900 transition hover:text-gray-600"
                         >
                           {getProductName(item)}
                         </Link>
 
-                        <p className="text-xs text-gray-500">
+                        <p className="mt-0.5 text-xs text-gray-500">
                           Rs. {itemPrice.toLocaleString()} per unit
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between gap-4 sm:justify-end sm:gap-6">
-                        <div className="flex items-center rounded-lg border border-gray-200 bg-gray-50">
+                      {/* Quantity / Price / Remove */}
+                      <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end sm:gap-4 lg:gap-6">
+
+                        {/* Quantity */}
+                        <div className="flex shrink-0 items-center rounded-lg border border-gray-200 bg-gray-50">
                           <button
                             type="button"
                             onClick={() => handleDecrease(item)}
                             disabled={
-                              itemQuantity <= 1 || isUpdating || isRemoving
+                              itemQuantity <= 1 ||
+                              isUpdating ||
+                              isRemoving
                             }
                             className="flex h-8 w-8 items-center justify-center rounded-l-lg text-gray-600 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-30"
                             aria-label="Decrease quantity"
@@ -368,17 +392,19 @@ const Cart = () => {
                           </button>
                         </div>
 
-                        <div className="w-24 text-right">
+                        {/* Item Total */}
+                        <div className="w-auto shrink-0 text-right sm:w-24">
                           <span className="text-sm font-semibold text-gray-900">
                             Rs. {itemTotal.toLocaleString()}
                           </span>
                         </div>
 
+                        {/* Remove */}
                         <button
                           type="button"
                           onClick={() => handleRemove(item)}
                           disabled={isRemoving || isUpdating}
-                          className="p-1.5 text-gray-400 transition hover:text-red-600 disabled:opacity-30"
+                          className="shrink-0 p-1.5 text-gray-400 transition hover:text-red-600 disabled:opacity-30"
                           aria-label="Remove item"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -389,7 +415,8 @@ const Cart = () => {
                 })}
               </div>
 
-              <div className="border-t border-gray-100 bg-gray-50/50 px-5 py-3.5">
+              {/* Continue Shopping */}
+              <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-3.5 sm:px-5">
                 <Link
                   to="/equipment"
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 transition hover:text-black"
@@ -400,30 +427,38 @@ const Cart = () => {
               </div>
             </div>
 
-            <aside className="lg:col-span-4 lg:sticky lg:top-24">
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            {/* Order Summary */}
+            <aside className="lg:sticky lg:top-24 lg:col-span-4">
+              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
                 <h2 className="text-base font-semibold text-gray-900">
                   Order Summary
                 </h2>
 
                 <div className="mt-5 space-y-3 text-sm">
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex items-center justify-between gap-4 text-gray-600">
                     <span>Items ({totalItems})</span>
-                    <span>Rs. {subtotal.toLocaleString()}</span>
+
+                    <span className="shrink-0">
+                      Rs. {subtotal.toLocaleString()}
+                    </span>
                   </div>
 
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex items-center justify-between gap-4 text-gray-600">
                     <span>Delivery</span>
-                    <span className="font-medium text-gray-900">
+
+                    <span className="shrink-0 font-medium text-gray-900">
                       {deliveryFee > 0
                         ? `Rs. ${deliveryFee.toLocaleString()}`
                         : "Free"}
                     </span>
                   </div>
 
-                  <div className="flex justify-between border-t border-gray-100 pt-3 text-base font-semibold text-gray-900">
+                  <div className="flex items-center justify-between gap-4 border-t border-gray-100 pt-3 text-base font-semibold text-gray-900">
                     <span>Estimated Total</span>
-                    <span>Rs. {estimatedTotal.toLocaleString()}</span>
+
+                    <span className="shrink-0 text-right">
+                      Rs. {estimatedTotal.toLocaleString()}
+                    </span>
                   </div>
                 </div>
 
@@ -435,7 +470,7 @@ const Cart = () => {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
 
-                <div className="mt-5 space-y-1.5 rounded-xl bg-gray-50 p-3.5 text-xs text-gray-500">
+                <div className="mt-5 rounded-xl bg-gray-50 p-3.5 text-xs text-gray-500">
                   <p className="leading-relaxed">
                     Review delivery details and payment options on the next
                     step.
@@ -449,11 +484,7 @@ const Cart = () => {
 
       {message && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-medium shadow-xl ${
-            messageType === "error"
-              ? "border border-red-200 bg-red-50 text-red-700"
-              : "bg-gray-900 text-white"
-          }`}
+          className={`fixed bottom-4 left-4 right-4 z-50 flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-medium shadow-xl sm:bottom-6 sm:left-auto sm:right-6`}
         >
           {messageType === "error" && (
             <span className="h-2 w-2 rounded-full bg-red-500" />

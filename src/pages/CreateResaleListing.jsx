@@ -126,25 +126,25 @@ const CreateResaleListing = () => {
         <div className="min-h-screen bg-white text-gray-900">
             {/* Header */}
             <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
                     <Link
                         to="/"
-                        className="text-2xl font-bold tracking-tight"
+                        className="shrink-0 text-xl font-bold tracking-tight sm:text-2xl"
                     >
                         BizBox
                     </Link>
 
-                    <nav className="hidden items-center gap-8 md:flex">
+                    <nav className="hidden items-center gap-6 md:flex lg:gap-8">
                         <Link
                             to="/"
-                            className="text-sm text-gray-600 transition hover:text-black"
+                            className="text-sm text-gray-600 transition-colors hover:text-black"
                         >
                             Home
                         </Link>
 
                         <Link
                             to="/equipment"
-                            className="text-sm text-gray-600 transition hover:text-black"
+                            className="text-sm text-gray-600 transition-colors hover:text-black"
                         >
                             Equipment
                         </Link>
@@ -158,14 +158,14 @@ const CreateResaleListing = () => {
 
                         <Link
                             to="/orders"
-                            className="text-sm text-gray-600 transition hover:text-black"
+                            className="text-sm text-gray-600 transition-colors hover:text-black"
                         >
                             Orders
                         </Link>
 
                         <Link
                             to="/cart"
-                            className="text-sm text-gray-600 transition hover:text-black"
+                            className="text-sm text-gray-600 transition-colors hover:text-black"
                         >
                             Cart
                         </Link>
@@ -173,57 +173,58 @@ const CreateResaleListing = () => {
 
                     <Link
                         to="/resale"
-                        className="rounded-full border border-gray-300 px-5 py-2.5 text-sm font-medium transition hover:border-black"
+                        className="shrink-0 rounded-full border border-gray-300 px-3.5 py-2 text-xs font-medium transition-colors hover:border-black sm:px-5 sm:py-2.5 sm:text-sm"
                     >
-                        Back to Resale
+                        <span className="sm:hidden">Back</span>
+                        <span className="hidden sm:inline">Back to Resale</span>
                     </Link>
                 </div>
             </header>
 
             {/* Main */}
-            <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+            <main className="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-16">
                 {/* Heading */}
                 <div className="max-w-2xl">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-xs sm:tracking-[0.2em]">
                         Resale Marketplace
                     </p>
 
-                    <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
+                    <h1 className="mt-2 break-words text-3xl font-semibold tracking-tight sm:mt-3 sm:text-4xl lg:text-5xl">
                         Sell your equipment
                     </h1>
 
-                    <p className="mt-5 text-base leading-7 text-gray-600">
+                    <p className="mt-4 max-w-xl text-sm leading-6 text-gray-600 sm:mt-5 sm:text-base sm:leading-7">
                         Turn equipment you no longer need into value by
                         listing it on the BizBox resale marketplace.
                     </p>
                 </div>
 
-                <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_420px]">
+                <div className="mt-7 grid gap-7 sm:mt-10 sm:gap-10 lg:grid-cols-[minmax(0,1fr)_420px]">
                     {/* Form */}
-                    <section className="rounded-3xl border border-gray-200 p-6 sm:p-8">
-                        <h2 className="text-xl font-semibold">
+                    <section className="min-w-0 rounded-2xl border border-gray-200 p-4 sm:rounded-3xl sm:p-6 lg:p-8">
+                        <h2 className="text-lg font-semibold sm:text-xl">
                             Listing Information
                         </h2>
 
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 text-sm leading-6 text-gray-500">
                             Provide the details buyers need to understand
                             your equipment.
                         </p>
 
                         <form
                             onSubmit={handleSubmit}
-                            className="mt-8 space-y-6"
+                            className="mt-6 space-y-5 sm:mt-8 sm:space-y-6"
                         >
                             {error && (
                                 <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
-                                    <p className="text-sm leading-6 text-red-700">
+                                    <p className="break-words text-sm leading-6 text-red-700">
                                         {error}
                                     </p>
                                 </div>
                             )}
 
                             {/* Product */}
-                            <div>
+                            <div className="min-w-0">
                                 <label
                                     htmlFor="product"
                                     className="text-sm font-medium text-gray-900"
@@ -242,7 +243,7 @@ const CreateResaleListing = () => {
                                                 event.target.value
                                             )
                                         }
-                                        className="mt-2 w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-black"
+                                        className="mt-2 w-full min-w-0 rounded-2xl border border-gray-300 bg-white px-3.5 py-3 text-sm outline-none transition-colors focus:border-black sm:px-4"
                                     >
                                         <option value="">
                                             Select equipment
@@ -270,7 +271,7 @@ const CreateResaleListing = () => {
                                 </label>
 
                                 <div className="relative mt-2">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-500 sm:left-4">
                                         NPR
                                     </span>
 
@@ -286,7 +287,7 @@ const CreateResaleListing = () => {
                                             )
                                         }
                                         placeholder="Enter your asking price"
-                                        className="w-full rounded-2xl border border-gray-300 py-3 pl-14 pr-4 text-sm outline-none transition placeholder:text-gray-400 focus:border-black"
+                                        className="w-full rounded-2xl border border-gray-300 py-3 pl-12 pr-3.5 text-sm outline-none transition-colors placeholder:text-gray-400 focus:border-black sm:pl-14 sm:pr-4"
                                     />
                                 </div>
                             </div>
@@ -310,7 +311,7 @@ const CreateResaleListing = () => {
                                         )
                                     }
                                     placeholder="Describe the condition, usage, age, included accessories, and any other useful details..."
-                                    className="mt-2 w-full resize-none rounded-2xl border border-gray-300 px-4 py-3 text-sm leading-6 outline-none transition placeholder:text-gray-400 focus:border-black"
+                                    className="mt-2 w-full resize-none rounded-2xl border border-gray-300 px-3.5 py-3 text-sm leading-6 outline-none transition-colors placeholder:text-gray-400 focus:border-black sm:px-4"
                                 />
                             </div>
 
@@ -318,7 +319,7 @@ const CreateResaleListing = () => {
                             <button
                                 type="submit"
                                 disabled={submitting || loading}
-                                className="w-full rounded-full bg-black px-6 py-4 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="w-full rounded-full bg-black px-5 py-3.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-6 sm:py-4"
                             >
                                 {submitting
                                     ? "Publishing Listing..."
@@ -327,7 +328,7 @@ const CreateResaleListing = () => {
 
                             <Link
                                 to="/resale"
-                                className="flex w-full items-center justify-center rounded-full border border-gray-300 px-6 py-4 text-sm font-medium transition hover:border-black"
+                                className="flex w-full items-center justify-center rounded-full border border-gray-300 px-5 py-3.5 text-sm font-medium transition-colors hover:border-black sm:px-6 sm:py-4"
                             >
                                 Cancel
                             </Link>
@@ -335,17 +336,17 @@ const CreateResaleListing = () => {
                     </section>
 
                     {/* Preview */}
-                    <aside className="h-fit lg:sticky lg:top-24">
-                        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
-                            <div className="border-b border-gray-200 px-6 py-5">
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                    <aside className="h-fit min-w-0 lg:sticky lg:top-24">
+                        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white sm:rounded-3xl">
+                            <div className="border-b border-gray-200 px-4 py-4 sm:px-6 sm:py-5">
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-xs sm:tracking-[0.2em]">
                                     Listing Preview
                                 </p>
                             </div>
 
                             {selectedProduct ? (
                                 <>
-                                    <div className="aspect-[4/3] bg-gray-100">
+                                    <div className="aspect-[4/3] w-full bg-gray-100">
                                         <img
                                             src={getProductImage(
                                                 selectedProduct
@@ -360,28 +361,28 @@ const CreateResaleListing = () => {
                                         />
                                     </div>
 
-                                    <div className="p-6">
-                                        <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
+                                    <div className="p-4 sm:p-6">
+                                        <span className="inline-block rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
                                             Pre-owned
                                         </span>
 
-                                        <h3 className="mt-4 text-xl font-semibold">
+                                        <h3 className="mt-3 break-words text-lg font-semibold sm:mt-4 sm:text-xl">
                                             {getProductName(
                                                 selectedProduct
                                             )}
                                         </h3>
 
-                                        <p className="mt-2 text-sm text-gray-500">
+                                        <p className="mt-2 text-sm leading-6 text-gray-500">
                                             Previously owned business
                                             equipment.
                                         </p>
 
-                                        <div className="mt-6 flex items-end justify-between border-t border-gray-200 pt-5">
+                                        <div className="mt-5 flex flex-wrap items-end justify-between gap-3 border-t border-gray-200 pt-4 sm:mt-6 sm:pt-5">
                                             <span className="text-sm text-gray-500">
                                                 Asking Price
                                             </span>
 
-                                            <span className="text-xl font-semibold">
+                                            <span className="break-words text-lg font-semibold sm:text-xl">
                                                 NPR{" "}
                                                 {price
                                                     ? Number(
@@ -395,15 +396,15 @@ const CreateResaleListing = () => {
                                     </div>
                                 </>
                             ) : (
-                                <div className="flex min-h-[420px] items-center justify-center px-8 text-center">
-                                    <div>
-                                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                                <div className="flex min-h-[320px] items-center justify-center px-6 py-10 text-center sm:min-h-[420px] sm:px-8">
+                                    <div className="max-w-sm">
+                                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 sm:h-16 sm:w-16">
                                             <span className="text-2xl text-gray-400">
                                                 +
                                             </span>
                                         </div>
 
-                                        <h3 className="mt-5 text-lg font-semibold">
+                                        <h3 className="mt-4 text-base font-semibold sm:mt-5 sm:text-lg">
                                             Your listing preview
                                         </h3>
 
@@ -417,7 +418,7 @@ const CreateResaleListing = () => {
                             )}
                         </div>
 
-                        <div className="mt-5 rounded-3xl bg-gray-50 p-6">
+                        <div className="mt-4 rounded-2xl bg-gray-50 p-5 sm:mt-5 sm:rounded-3xl sm:p-6">
                             <h3 className="font-semibold">
                                 Before you list
                             </h3>
@@ -447,31 +448,31 @@ const CreateResaleListing = () => {
             </main>
 
             {/* Footer */}
-            <footer className="mt-16 border-t border-gray-200">
-                <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-gray-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-                    <p>
+            <footer className="mt-10 border-t border-gray-200 sm:mt-16">
+                <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-7 text-sm text-gray-500 sm:px-6 sm:py-8 md:flex-row md:items-center md:justify-between lg:px-8">
+                    <p className="text-center md:text-left">
                         © {new Date().getFullYear()} BizBox. All rights
                         reserved.
                     </p>
 
-                    <div className="flex gap-6">
+                    <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 sm:gap-x-6">
                         <Link
                             to="/equipment"
-                            className="transition hover:text-black"
+                            className="transition-colors hover:text-black"
                         >
                             Equipment
                         </Link>
 
                         <Link
                             to="/resale"
-                            className="transition hover:text-black"
+                            className="transition-colors hover:text-black"
                         >
                             Resale
                         </Link>
 
                         <Link
                             to="/orders"
-                            className="transition hover:text-black"
+                            className="transition-colors hover:text-black"
                         >
                             Orders
                         </Link>

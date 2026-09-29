@@ -72,9 +72,9 @@ const Home = () => {
       <main>
         {/* Hero */}
         <section className="border-b border-gray-200 bg-[#eaf2f8]">
-          <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-8 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-10">
-            <div className="max-w-2xl">
-              <h1 className="text-3xl font-semibold tracking-tight leading-[1.15] text-black sm:text-4xl lg:text-5xl">
+          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-10">
+            <div className="max-w-2xl min-w-0">
+              <h1 className="break-words text-3xl font-semibold leading-[1.15] tracking-tight text-black sm:text-4xl lg:text-5xl">
                 Shop equipment for you business.
               </h1>
 
@@ -83,17 +83,17 @@ const Home = () => {
                 restaurants, and salons.
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-3">
+              <div className="mt-5 flex flex-col gap-3 xs:flex-row sm:flex-row">
                 <Link
                   to="/business-types"
-                  className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                  className="rounded-lg bg-black px-5 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-gray-800"
                 >
                   Choose business
                 </Link>
 
                 <Link
                   to="/equipment"
-                  className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-black"
+                  className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-black"
                 >
                   Shop all equipment
                 </Link>
@@ -104,8 +104,8 @@ const Home = () => {
               /* Hero Loading Skeleton */
               <div className="hidden animate-pulse rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:block">
                 <div className="flex items-center gap-5">
-                  <div className="h-36 w-36 shrink-0 rounded-lg bg-gray-200" />
-                  <div className="flex-1 space-y-3">
+                  <div className="h-28 w-28 shrink-0 rounded-lg bg-gray-200 sm:h-36 sm:w-36" />
+                  <div className="min-w-0 flex-1 space-y-3">
                     <div className="h-3 w-24 rounded bg-gray-200" />
                     <div className="h-5 w-3/4 rounded bg-gray-200" />
                     <div className="h-4 w-20 rounded bg-gray-200" />
@@ -117,8 +117,8 @@ const Home = () => {
                 to={`/products/${featuredProduct.id}`}
                 className="hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:block"
               >
-                <div className="flex items-center gap-5">
-                  <div className="flex h-36 w-36 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-50 border border-gray-100">
+                <div className="flex items-center gap-4 sm:gap-5">
+                  <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-100 bg-gray-50 sm:h-36 sm:w-36">
                     {featuredProduct.imageUrl ? (
                       <img
                         src={resolveImageUrl(featuredProduct.imageUrl)}
@@ -132,12 +132,12 @@ const Home = () => {
                     )}
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                       Featured product
                     </p>
 
-                    <h2 className="mt-2 line-clamp-2 text-lg font-semibold text-black">
+                    <h2 className="mt-2 line-clamp-2 break-words text-lg font-semibold text-black">
                       {featuredProduct.name}
                     </h2>
 
@@ -150,17 +150,17 @@ const Home = () => {
             ) : (
               /* No Products Available State with Skeleton Box */
               <div className="hidden rounded-xl border border-dashed border-gray-300 bg-white/70 p-4 sm:block">
-                <div className="flex items-center gap-5">
-                  <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400">
+                <div className="flex items-center gap-4 sm:gap-5">
+                  <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400 sm:h-36 sm:w-36">
                     No Image
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
                       Featured product
                     </p>
 
-                    <h2 className="mt-2 text-base font-medium text-gray-500">
+                    <h2 className="mt-2 break-words text-base font-medium text-gray-500">
                       No products to display
                     </h2>
 
@@ -175,9 +175,9 @@ const Home = () => {
         </section>
 
         {/* Business Types */}
-        <section className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="break-words text-2xl font-semibold tracking-tight sm:text-3xl">
               Choose your business
             </h2>
 
@@ -194,7 +194,7 @@ const Home = () => {
                   className="animate-pulse overflow-hidden rounded-xl border border-gray-200 bg-white"
                 >
                   <div className="aspect-[4/3.3] bg-gray-200" />
-                  <div className="p-5 space-y-3">
+                  <div className="space-y-3 p-5">
                     <div className="h-5 w-3/4 rounded bg-gray-200" />
                     <div className="h-4 w-full rounded bg-gray-200" />
                     <div className="h-4 w-24 rounded bg-gray-200" />
@@ -207,13 +207,13 @@ const Home = () => {
               No business types available.
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {businessTypes.map((businessType) => (
                 <button
                   key={businessType.id}
                   type="button"
                   onClick={() => handleBusinessClick(businessType.id)}
-                  className="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-left transition-colors hover:border-gray-300 hover:bg-gray-50"
+                  className="flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-left transition-colors hover:border-gray-300 hover:bg-gray-50"
                 >
                   <div className="aspect-[4/3.3] w-full shrink-0 overflow-hidden bg-gray-100">
                     {businessType.imageUrl ? (
@@ -229,13 +229,13 @@ const Home = () => {
                     )}
                   </div>
 
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="line-clamp-2 text-lg font-semibold text-black">
+                  <div className="flex min-w-0 flex-1 flex-col p-5">
+                    <h3 className="line-clamp-2 break-words text-lg font-semibold text-black">
                       {businessType.name}
                     </h3>
 
                     {businessType.description && (
-                      <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">
+                      <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-gray-600">
                         {businessType.description}
                       </p>
                     )}
@@ -252,10 +252,10 @@ const Home = () => {
 
         {/* Equipment */}
         <section className="border-y border-gray-200 bg-[#fafafa]">
-          <div className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <div className="min-w-0">
+                <h2 className="break-words text-2xl font-semibold tracking-tight sm:text-3xl">
                   Shop equipment
                 </h2>
 
@@ -266,7 +266,7 @@ const Home = () => {
 
               <Link
                 to="/equipment"
-                className="hidden text-sm font-medium text-black transition-colors sm:block underline hover:text-gray-800"
+                className="hidden shrink-0 text-sm font-medium text-black underline transition-colors hover:text-gray-800 sm:block"
               >
                 View all
               </Link>
@@ -298,7 +298,7 @@ const Home = () => {
                   {products.map((product) => (
                     <div
                       key={product.id}
-                      className="flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-3 transition-colors hover:border-gray-300"
+                      className="flex min-w-0 flex-col rounded-xl border border-gray-200 bg-gray-50 p-3 transition-colors hover:border-gray-300"
                     >
                       <Link to={`/products/${product.id}`}>
                         <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-50">
@@ -316,19 +316,19 @@ const Home = () => {
                         </div>
                       </Link>
 
-                      <div className="flex flex-1 flex-col pt-4">
-                        <h3 className="line-clamp-2 text-base font-semibold text-black">
+                      <div className="flex min-w-0 flex-1 flex-col pt-4">
+                        <h3 className="line-clamp-2 break-words text-base font-semibold text-black">
                           {product.name}
                         </h3>
 
                         {product.description && (
-                          <p className="mt-2 line-clamp-2 text-sm leading-5 text-gray-600">
+                          <p className="mt-2 line-clamp-2 break-words text-sm leading-5 text-gray-600">
                             {product.description}
                           </p>
                         )}
 
                         <div className="mt-auto pt-5">
-                          <div className="flex items-center justify-between gap-3">
+                          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                             <span className="text-base font-semibold text-black">
                               Rs.
                               {Number(product.price || 0).toLocaleString()}

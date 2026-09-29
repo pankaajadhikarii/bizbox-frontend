@@ -61,6 +61,7 @@ const ProductDetails = () => {
   const descriptionText =
     product?.description ||
     "Professional commercial equipment designed for growing businesses.";
+
   const canExpandDescription = descriptionText.length > 180;
 
   const handleQuantityDecrease = () => {
@@ -163,7 +164,7 @@ const ProductDetails = () => {
     return (
       <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
         <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-12">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <Link to="/" className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
                 B
@@ -176,24 +177,24 @@ const ProductDetails = () => {
           </div>
         </header>
 
-        <main className="mx-auto max-w-7xl px-6 pb-20 lg:px-12">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <div className="aspect-square rounded-3xl bg-[#eeedf3]" />
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+            <div className="aspect-square w-full rounded-lg bg-[#eeedf3]" />
 
             <div className="flex flex-col justify-center">
               <div className="h-5 w-24 rounded-full bg-[#eeedf3]" />
 
-              <div className="mt-5 h-12 w-4/5 rounded-xl bg-[#eeedf3]" />
+              <div className="mt-5 h-12 w-full max-w-xl rounded-xl bg-[#eeedf3]" />
 
               <div className="mt-4 h-5 w-full rounded bg-[#eeedf3]" />
 
               <div className="mt-2 h-5 w-3/4 rounded bg-[#eeedf3]" />
 
-              <div className="mt-10 h-8 w-32 rounded bg-[#eeedf3]" />
+              <div className="mt-8 h-8 w-32 rounded bg-[#eeedf3]" />
 
-              <div className="mt-8 h-14 w-full rounded-full bg-[#eeedf3]" />
+              <div className="mt-8 h-12 w-full rounded-lg bg-[#eeedf3]" />
 
-              <div className="mt-3 h-14 w-full rounded-full bg-[#eeedf3]" />
+              <div className="mt-3 h-12 w-full rounded-lg bg-[#eeedf3]" />
             </div>
           </div>
         </main>
@@ -205,7 +206,7 @@ const ProductDetails = () => {
     return (
       <div className="min-h-screen bg-[#faf8fe] text-[#1a1b1f]">
         <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-12">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <Link to="/" className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
                 B
@@ -218,20 +219,22 @@ const ProductDetails = () => {
 
             <Link
               to="/equipment"
-              className="rounded-full bg-[#f4f3f8] px-5 py-2.5 text-[12px] font-medium hover:bg-[#eeedf3]"
+              className="rounded-full bg-[#f4f3f8] px-4 py-2.5 text-[12px] font-medium hover:bg-[#eeedf3] sm:px-5"
             >
               Back to Equipment
             </Link>
           </div>
         </header>
 
-        <main className="flex min-h-screen items-center justify-center px-6">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-10 text-center">
+        <main className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 text-center sm:p-10">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eeedf3] text-2xl">
               !
             </div>
 
-            <h1 className="mt-6 text-2xl font-semibold">Product unavailable</h1>
+            <h1 className="mt-6 text-2xl font-semibold">
+              Product unavailable
+            </h1>
 
             <p className="mt-3 text-sm leading-6 text-[#4c4546]">
               {error || "The product you are looking for could not be found."}
@@ -253,7 +256,7 @@ const ProductDetails = () => {
     <div className="min-h-screen bg-gray-50 text-[#1a1b1f]">
       {/* Header */}
       <header className="hidden fixed left-0 right-0 top-0 z-50 border-b border-black/4 bg-white/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link
             to="/"
             className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-75"
@@ -267,7 +270,7 @@ const ProductDetails = () => {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-7 xl:flex">
+          <nav className="hidden items-center gap-5 xl:flex">
             <Link
               to="/equipment"
               className="text-[12px] font-semibold text-black"
@@ -304,10 +307,10 @@ const ProductDetails = () => {
             </Link>
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <Link
               to="/cart"
-              className="flex h-9 items-center gap-2 rounded-full px-3 text-[#4c4546] transition-all hover:bg-[#eeedf3] hover:text-black"
+              className="flex h-9 items-center gap-2 rounded-full px-2 text-[#4c4546] transition-all hover:bg-[#eeedf3] hover:text-black sm:px-3"
             >
               <span className="text-[18px]">🛍</span>
 
@@ -349,9 +352,9 @@ const ProductDetails = () => {
       </header>
 
       {/* Main */}
-      <main className="mx-auto max-w-5xl px-5 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-4 flex items-center gap-2 text-xs text-gray-500">
+        <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-gray-500">
           <Link to="/" className="transition-colors hover:text-black">
             Home
           </Link>
@@ -364,14 +367,16 @@ const ProductDetails = () => {
 
           <span className="text-[#cfc4c5]">/</span>
 
-          <span className="font-medium text-black">{product.name}</span>
+          <span className="max-w-[180px] truncate font-medium text-black sm:max-w-xs">
+            {product.name}
+          </span>
         </div>
 
         {/* Product */}
-        <section className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-8">
+        <section className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-10">
           {/* Image */}
-          <div className="lg:max-w-md">
-            <div className="relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-white">
+          <div className="w-full lg:max-w-md">
+            <div className="relative aspect-square w-full overflow-hidden rounded-lg border border-gray-200 bg-white">
               {productImage && (
                 <img
                   src={productImage}
@@ -384,7 +389,7 @@ const ProductDetails = () => {
               )}
 
               <div
-                className={`absolute right-4 top-4 rounded-md bg-white px-3 py-1.5 text-xs font-medium shadow-sm ${
+                className={`absolute right-3 top-3 rounded-md bg-white px-2.5 py-1.5 text-xs font-medium shadow-sm sm:right-4 sm:top-4 sm:px-3 ${
                   inStock ? "text-[#1b873f]" : "text-[#ba1a1a]"
                 }`}
               >
@@ -395,7 +400,7 @@ const ProductDetails = () => {
             <div className="mt-3 flex items-center justify-between px-1">
               <Link
                 to="/equipment"
-                className="text-[12px] font-medium text-black transition-colors  underline hover:text-gray-800"
+                className="text-[12px] font-medium text-black underline transition-colors hover:text-gray-800"
               >
                 Back to Equipment
               </Link>
@@ -403,28 +408,29 @@ const ProductDetails = () => {
           </div>
 
           {/* Details */}
-          <div className="flex flex-col justify-center">
+          <div className="flex min-w-0 flex-col justify-center">
             <div>
-              <span className="inline-flex rounded-md bg-gray-200 px-3 py-1 text-xs font-medium text-black">
+              <span className="inline-flex max-w-full rounded-md bg-gray-200 px-3 py-1 text-xs font-medium text-black">
                 {categoryName}
               </span>
             </div>
 
-            <h1 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+            <h1 className="mt-4 max-w-2xl break-words text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
               {product.name}
             </h1>
 
-            <div className="mt-6">
+            <div className="mt-5 sm:mt-6">
               <span className="text-2xl font-semibold tracking-tight">
-                Rs.
-                {Number(product.price || 0).toLocaleString()}
+                Rs.{Number(product.price || 0).toLocaleString()}
               </span>
             </div>
 
-            <div className="my-6 h-px w-full bg-gray-200" />
+            <div className="my-5 h-px w-full bg-gray-200 sm:my-6" />
 
             <div>
-              <h2 className="text-sm font-semibold text-black">Description</h2>
+              <h2 className="text-sm font-semibold text-black">
+                Description
+              </h2>
 
               <p
                 className={`mt-2 max-w-xl text-sm leading-6 text-gray-600 ${
@@ -439,7 +445,9 @@ const ProductDetails = () => {
               {canExpandDescription && (
                 <button
                   type="button"
-                  onClick={() => setShowFullDescription((current) => !current)}
+                  onClick={() =>
+                    setShowFullDescription((current) => !current)
+                  }
                   className="mt-2 text-sm font-medium text-black underline underline-offset-2"
                 >
                   {showFullDescription ? "See less" : "See more"}
@@ -459,7 +467,7 @@ const ProductDetails = () => {
                     type="button"
                     onClick={handleQuantityDecrease}
                     disabled={quantity <= 1}
-                    className="flex h-12 w-12 items-center justify-center text-lg transition-colors hover:bg-[#eeedf3] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="flex h-11 w-11 items-center justify-center text-lg transition-colors hover:bg-[#eeedf3] disabled:cursor-not-allowed disabled:opacity-30 sm:h-12 sm:w-12"
                   >
                     −
                   </button>
@@ -470,14 +478,14 @@ const ProductDetails = () => {
                     max={stock}
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="h-12 w-14 bg-transparent text-center text-[13px] font-semibold outline-none"
+                    className="h-11 w-12 bg-transparent text-center text-[13px] font-semibold outline-none sm:h-12 sm:w-14"
                   />
 
                   <button
                     type="button"
                     onClick={handleQuantityIncrease}
                     disabled={quantity >= stock}
-                    className="flex h-12 w-12 items-center justify-center text-lg transition-colors hover:bg-[#eeedf3] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="flex h-11 w-11 items-center justify-center text-lg transition-colors hover:bg-[#eeedf3] disabled:cursor-not-allowed disabled:opacity-30 sm:h-12 sm:w-12"
                   >
                     +
                   </button>
@@ -491,7 +499,7 @@ const ProductDetails = () => {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={!inStock || addingToCart}
-                className={`flex h-12 flex-1 items-center justify-center rounded-lg px-6 text-sm font-semibold ${
+                className={`flex h-12 w-full items-center justify-center rounded-lg px-6 text-sm font-semibold sm:flex-1 ${
                   !inStock
                     ? "cursor-not-allowed bg-[#eeedf3] text-[#aaa]"
                     : "bg-black text-white hover:bg-[#333]"
@@ -509,7 +517,7 @@ const ProductDetails = () => {
                   type="button"
                   onClick={handleBuyNow}
                   disabled={addingToCart}
-                  className="flex h-12 flex-1 items-center justify-center rounded-lg bg-gray-200 px-6 text-sm font-semibold text-black hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 w-full items-center justify-center rounded-lg bg-gray-200 px-6 text-sm font-semibold text-black hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1"
                 >
                   Buy Now
                 </button>
@@ -517,7 +525,7 @@ const ProductDetails = () => {
             </div>
 
             {!isAuthenticated && (
-              <div className="mt-4 rounded-2xl bg-[#f4f3f8] px-5 py-4">
+              <div className="mt-4 rounded-2xl bg-[#f4f3f8] px-4 py-4 sm:px-5">
                 <p className="text-[11px] leading-5 text-[#4c4546]">
                   Sign in to add equipment to your cart and place an order.
                 </p>
@@ -571,7 +579,7 @@ const ProductDetails = () => {
 
         {/* Continue Shopping */}
         <section className="hidden mt-20">
-          <div className="relative overflow-hidden rounded-3xl bg-black p-8 text-white md:p-12">
+          <div className="relative overflow-hidden rounded-3xl bg-black p-6 text-white sm:p-8 md:p-12">
             <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
               <div
                 className="h-full w-full"
@@ -600,7 +608,7 @@ const ProductDetails = () => {
 
               <Link
                 to="/equipment"
-                className="flex h-11 shrink-0 items-center justify-center rounded-full bg-white px-6 text-[12px] font-semibold text-black transition hover:bg-[#f4f3f8]"
+                className="flex h-11 w-full shrink-0 items-center justify-center rounded-full bg-white px-6 text-[12px] font-semibold text-black transition hover:bg-[#f4f3f8] md:w-auto"
               >
                 Browse Equipment →
               </Link>
@@ -611,16 +619,17 @@ const ProductDetails = () => {
 
       {/* Cart Message Toast */}
       {cartMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-xl animate-fade-in">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>{cartMessage}</span>
+        <div className="fixed bottom-4 left-4 right-4 z-50 flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-xl animate-fade-in sm:bottom-6 sm:left-auto sm:right-6">
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+
+          <span className="text-center">{cartMessage}</span>
         </div>
       )}
 
       {/* Footer */}
       <footer className="hidden mt-10 w-full bg-[#f4f3f8]">
-        <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
-          <div className="grid grid-cols-2 gap-8 pb-14 md:grid-cols-4 lg:gap-12">
+        <div className="mx-auto max-w-7xl px-4 pb-12 pt-12 sm:px-6 sm:pt-16 lg:px-8">
+          <div className="grid grid-cols-2 gap-8 pb-12 sm:gap-10 md:grid-cols-4 lg:gap-12 lg:pb-14">
             <div className="flex flex-col gap-3.5">
               <h4 className="text-[11px] font-semibold uppercase tracking-wider">
                 Shop by Business
@@ -735,7 +744,7 @@ const ProductDetails = () => {
               © 2026 BizBox. Commercial equipment for growing businesses.
             </p>
 
-            <div className="flex items-center gap-6 text-[11px] text-[#4c4546]">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-[#4c4546] sm:gap-6">
               <span>Nepal</span>
 
               <Link to="/" className="hover:text-black">

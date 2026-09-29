@@ -110,10 +110,10 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-            <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-md items-center justify-center">
-                <div className="w-full">
-                    <div className="mb-8 flex flex-col items-center text-center">
+        <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+            <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md items-center justify-center sm:min-h-[calc(100vh-6rem)]">
+                <div className="w-full min-w-0">
+                    <div className="mb-6 flex flex-col items-center text-center sm:mb-8">
                         <Link
                             to="/"
                             className="inline-flex items-center transition-opacity hover:opacity-80"
@@ -122,23 +122,23 @@ const Login = () => {
                             <img
                                 src={bizkitLogo}
                                 alt="BizBox"
-                                className="h-10 w-auto object-contain"
+                                className="h-9 w-auto object-contain sm:h-10"
                             />
                         </Link>
 
-                        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
+                        <h1 className="mt-5 break-words text-2xl font-semibold tracking-tight text-gray-900 sm:mt-6 sm:text-3xl">
                             Welcome back
                         </h1>
 
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 max-w-xs text-sm leading-6 text-gray-500 sm:max-w-none">
                             Sign in to continue to your account.
                         </p>
                     </div>
 
-                    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+                    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-8">
                         {serverError && (
                             <div
-                                className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                                className="mb-5 rounded-xl border border-red-200 bg-red-50 px-3.5 py-3 text-sm leading-6 text-red-700 sm:mb-6 sm:px-4"
                                 role="alert"
                             >
                                 {serverError}
@@ -163,7 +163,7 @@ const Login = () => {
                                     onChange={handleChange}
                                     disabled={loading}
                                     placeholder="you@example.com"
-                                    className={`w-full rounded-xl border px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 ${
+                                    className={`w-full min-w-0 rounded-xl border px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 sm:px-4 ${
                                         errors.email
                                             ? "border-red-400 focus:border-red-500"
                                             : "border-gray-300 focus:border-gray-900"
@@ -171,7 +171,7 @@ const Login = () => {
                                 />
 
                                 {errors.email && (
-                                    <p className="mt-2 text-sm text-red-600">
+                                    <p className="mt-2 break-words text-sm leading-5 text-red-600">
                                         {errors.email}
                                     </p>
                                 )}
@@ -195,16 +195,17 @@ const Login = () => {
                                         onChange={handleChange}
                                         disabled={loading}
                                         placeholder="Enter your password"
-                                        className={`w-full rounded-xl border px-4 py-3 pr-11 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 ${
+                                        className={`w-full min-w-0 rounded-xl border px-3.5 py-3 pr-11 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 sm:px-4 ${
                                             errors.password
                                                 ? "border-red-400 focus:border-red-500"
                                                 : "border-gray-300 focus:border-gray-900"
                                         }`}
                                     />
+
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword((prev) => !prev)}
-                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none"
+                                        className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-gray-400 transition-colors hover:text-gray-600 focus:outline-none sm:right-3.5"
                                         aria-label={showPassword ? "Hide password" : "Show password"}
                                     >
                                         {showPassword ? (
@@ -216,7 +217,7 @@ const Login = () => {
                                 </div>
 
                                 {errors.password && (
-                                    <p className="mt-2 text-sm text-red-600">
+                                    <p className="mt-2 break-words text-sm leading-5 text-red-600">
                                         {errors.password}
                                     </p>
                                 )}
@@ -225,7 +226,7 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="mt-7 flex w-full items-center justify-center rounded-xl bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                className="mt-6 flex w-full items-center justify-center rounded-xl bg-black px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400 sm:mt-7"
                             >
                                 {loading ? (
                                     <>
@@ -258,7 +259,7 @@ const Login = () => {
                             </button>
                         </form>
 
-                        <div className="mt-6 text-center text-sm text-gray-500">
+                        <div className="mt-5 text-center text-sm leading-6 text-gray-500 sm:mt-6">
                             Don't have an account?{" "}
                             <Link
                                 to="/register"
@@ -269,7 +270,7 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <p className="mt-6 text-center text-xs text-gray-400">
+                    <p className="mx-auto mt-5 max-w-sm text-center text-xs leading-5 text-gray-400 sm:mt-6">
                         By signing in, you agree to the terms and conditions of BizBox.
                     </p>
                 </div>

@@ -18,16 +18,20 @@ const AdminLayout = () => {
     return (
         <div className="min-h-screen bg-gray-50 text-gray-900">
             <header className="border-b border-gray-200 bg-white">
-                <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-3 sm:px-6 lg:px-8">
-                    <Link to="/admin" aria-label="BizKit admin dashboard">
+                <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8">
+                    <Link
+                        to="/admin"
+                        aria-label="BizKit admin dashboard"
+                        className="shrink-0"
+                    >
                         <img
                             src={bizkitLogo}
                             alt="BizBox"
-                            className="h-9 w-auto object-contain"
+                            className="h-8 w-auto object-contain sm:h-9"
                         />
                     </Link>
 
-                    <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                    <nav className="order-3 flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm sm:order-none sm:w-auto sm:justify-end sm:gap-x-5">
                         {adminLinks.map((link) => {
                             const isActive = location.pathname === link.path;
 
@@ -35,7 +39,11 @@ const AdminLayout = () => {
                                 <Link
                                     key={link.path}
                                     to={link.path}
-                                    className={isActive ? "font-medium text-black" : "text-gray-500 hover:text-black"}
+                                    className={`whitespace-nowrap ${
+                                        isActive
+                                            ? "font-medium text-black"
+                                            : "text-gray-500 hover:text-black"
+                                    }`}
                                 >
                                     {link.label}
                                 </Link>
@@ -43,17 +51,17 @@ const AdminLayout = () => {
                         })}
                     </nav>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                         <Link
                             to="/"
-                            className="text-sm text-gray-500 hover:text-black"
+                            className="whitespace-nowrap text-xs text-gray-500 hover:text-black sm:text-sm"
                         >
                             View store
                         </Link>
 
                         <Link
                             to="/profile"
-                            className="h-8 w-8 overflow-hidden rounded-full border border-gray-200"
+                            className="h-8 w-8 shrink-0 overflow-hidden rounded-full border border-gray-200"
                             aria-label="Open profile"
                         >
                             <img
@@ -66,7 +74,7 @@ const AdminLayout = () => {
                         <button
                             type="button"
                             onClick={logout}
-                            className="text-sm text-gray-500 hover:text-black"
+                            className="whitespace-nowrap text-xs text-gray-500 hover:text-black sm:text-sm"
                         >
                             Logout
                         </button>

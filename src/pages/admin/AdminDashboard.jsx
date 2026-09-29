@@ -4,7 +4,7 @@ import businessTypeService from "../../services/businessTypeService";
 import categoryService from "../../services/categoryService";
 import productService from "../../services/productService";
 import api from "../../services/api";
-import { ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react";
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
@@ -221,12 +221,10 @@ const AdminDashboard = () => {
 
         if (raw === null || raw === undefined) return "—";
 
-        // Map numeric IDs to names
         if (PAYMENT_METHOD_MAP[raw] !== undefined) {
             return PAYMENT_METHOD_MAP[raw];
         }
 
-        // If it's a string like "Khalti" or "COD", return as-is
         const str = String(raw).trim();
         if (str === "" || (!isNaN(Number(str)) && str !== "")) return "—";
 
@@ -301,18 +299,18 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 text-gray-900">
+        <div className="min-h-screen w-full overflow-x-hidden bg-gray-50 text-gray-900">
             {/* Header */}
             <header className="hidden border-b border-gray-200 bg-white">
-                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                     <Link
                         to="/admin"
-                        className="text-2xl font-bold tracking-tight"
+                        className="text-xl font-bold tracking-tight sm:text-2xl"
                     >
                         BizBox
                     </Link>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <Link
                             to="/"
                             className="hidden text-sm text-gray-600 transition hover:text-black sm:block"
@@ -320,7 +318,7 @@ const AdminDashboard = () => {
                             View Store
                         </Link>
 
-                        <span className="rounded-full bg-black px-4 py-2 text-xs font-medium text-white">
+                        <span className="rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white sm:px-4 sm:py-2">
                             Admin
                         </span>
                     </div>
@@ -328,22 +326,22 @@ const AdminDashboard = () => {
             </header>
 
             {/* Main */}
-            <main className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8">
+            <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
                 {/* Heading */}
-                <div>
-                    <h1 className="text-3xl font-semibold tracking-tight">
+                <div className="min-w-0">
+                    <h1 className="break-words text-2xl font-semibold tracking-tight sm:text-3xl">
                         Dashboard
                     </h1>
 
-                    <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+                    <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-gray-600">
                         Overview of your catalog and customer orders.
                     </p>
                 </div>
 
                 {/* Error */}
                 {error && (
-                    <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-red-200 bg-red-50 p-5 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="text-sm text-red-700">
+                    <div className="mt-6 flex min-w-0 flex-col gap-4 rounded-2xl border border-red-200 bg-red-50 p-4 sm:mt-8 sm:p-5 md:flex-row md:items-center md:justify-between">
+                        <p className="min-w-0 break-words text-sm leading-6 text-red-700">
                             {error}
                         </p>
 
@@ -351,7 +349,7 @@ const AdminDashboard = () => {
                             onClick={() =>
                                 window.location.reload()
                             }
-                            className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
+                            className="w-full shrink-0 rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 sm:w-auto"
                         >
                             Try Again
                         </button>
@@ -359,32 +357,34 @@ const AdminDashboard = () => {
                 )}
 
                 {/* Stats */}
-                <section className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <section className="mt-8 grid min-w-0 grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
                     {statCards.map((card) => (
                         <Link
                             key={card.title}
                             to={card.href}
-                            className="rounded-lg border border-gray-200 bg-white p-5 hover:border-gray-400"
+                            className="min-w-0 rounded-lg border border-gray-200 bg-white p-4 transition-colors hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 sm:p-5"
                         >
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-500">
+                            <div className="flex min-w-0 items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <p className="break-words text-sm font-medium text-gray-500">
                                         {card.title}
                                     </p>
 
                                     {loading ? (
                                         <div className="mt-4 h-9 w-20 rounded-lg bg-gray-200" />
                                     ) : (
-                                        <p className="mt-3 text-3xl font-semibold tracking-tight">
+                                        <p className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
                                             {card.value}
                                         </p>
                                     )}
                                 </div>
 
-                                <span className="text-lg text-gray-400"><ArrowRight size={15} /></span>
+                                <span className="shrink-0 text-gray-400">
+                                    <ArrowRight size={15} />
+                                </span>
                             </div>
 
-                            <p className="mt-5 text-xs text-gray-500">
+                            <p className="mt-4 break-words text-xs leading-5 text-gray-500 sm:mt-5">
                                 {card.description}
                             </p>
                         </Link>
@@ -392,21 +392,21 @@ const AdminDashboard = () => {
                 </section>
 
                 {/* Recent Orders */}
-                <section className="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
-                    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
-                        <div>
-                            <h2 className="text-lg font-semibold">
+                <section className="mt-5 min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white sm:mt-6">
+                    <div className="flex min-w-0 flex-col gap-3 border-b border-gray-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
+                        <div className="min-w-0">
+                            <h2 className="break-words text-base font-semibold sm:text-lg">
                                 Recent Orders
                             </h2>
 
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="mt-1 break-words text-xs text-gray-500">
                                 Latest customer activity
                             </p>
                         </div>
 
                         <Link
                             to="/admin/orders"
-                            className="text-sm font-medium text-gray-900 transition hover:text-gray-500"
+                            className="w-fit shrink-0 text-sm font-medium text-gray-900 transition-colors hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
                         >
                             View all
                         </Link>
@@ -418,17 +418,17 @@ const AdminDashboard = () => {
                                 (item) => (
                                     <div
                                         key={item}
-                                        className="px-6 py-5"
+                                        className="px-4 py-5 sm:px-6"
                                     >
-                                        <div className="h-4 w-32 rounded bg-gray-200" />
-                                        <div className="mt-3 h-3 w-48 rounded bg-gray-100" />
+                                        <div className="h-4 w-32 max-w-full rounded bg-gray-200" />
+                                        <div className="mt-3 h-3 w-48 max-w-full rounded bg-gray-100" />
                                     </div>
                                 )
                             )}
                         </div>
                     ) : recentOrders.length === 0 ? (
-                        <div className="px-6 py-16 text-center">
-                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+                        <div className="px-4 py-12 text-center sm:px-6 sm:py-16">
+                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:h-14 sm:w-14">
                                 <span className="text-xl text-gray-400">
                                     —
                                 </span>
@@ -438,7 +438,7 @@ const AdminDashboard = () => {
                                 No orders yet
                             </h3>
 
-                            <p className="mt-2 text-sm text-gray-500">
+                            <p className="mt-2 break-words text-sm text-gray-500">
                                 Customer orders will appear here.
                             </p>
                         </div>
@@ -450,19 +450,18 @@ const AdminDashboard = () => {
                                         order.id ||
                                         order.orderNumber
                                     }
-                                    to={`/orders/${order.id
-                                        }`}
-                                    className="flex flex-col gap-4 px-6 py-5 transition hover:bg-gray-50 sm:flex-row sm:items-center sm:justify-between"
+                                    to={`/orders/${order.id}`}
+                                    className="flex min-w-0 flex-col gap-4 px-4 py-4 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-400 sm:px-6 sm:py-5 md:flex-row md:items-center md:justify-between"
                                 >
                                     <div className="min-w-0">
-                                        <p className="truncate text-sm font-semibold">
+                                        <p className="break-words text-sm font-semibold">
                                             #
                                             {getOrderNumber(
                                                 order
                                             )}
                                         </p>
 
-                                        <p className="mt-1 text-xs text-gray-500">
+                                        <p className="mt-1 break-words text-xs leading-5 text-gray-500">
                                             {
                                                 getCustomerName(
                                                     order
@@ -481,9 +480,9 @@ const AdminDashboard = () => {
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-between gap-5 sm:justify-end">
+                                    <div className="flex min-w-0 items-center justify-between gap-3 sm:gap-5 md:shrink-0 md:justify-end">
                                         <span
-                                            className={`rounded-full px-3 py-1.5 text-xs font-medium ${getStatusClasses(
+                                            className={`shrink-0 rounded-full px-2.5 py-1.5 text-xs font-medium sm:px-3 ${getStatusClasses(
                                                 getOrderStatus(
                                                     order
                                                 )
@@ -494,7 +493,7 @@ const AdminDashboard = () => {
                                             )}
                                         </span>
 
-                                        <span className="text-sm font-semibold">
+                                        <span className="shrink-0 text-sm font-semibold">
                                             {formatCurrency(
                                                 getOrderTotal(
                                                     order
@@ -509,19 +508,19 @@ const AdminDashboard = () => {
                 </section>
 
                 {/* Admin Information */}
-                <section className="hidden mt-8 rounded-3xl bg-black p-7 text-white sm:p-8">
+                <section className="mt-6 hidden rounded-3xl bg-black p-5 text-white sm:p-8">
                     <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+                        <div className="min-w-0">
+                            <p className="break-words text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
                                 BizBox Administration
                             </p>
 
-                            <h2 className="mt-3 text-2xl font-semibold">
+                            <h2 className="mt-3 break-words text-xl font-semibold sm:text-2xl">
                                 Keep the catalog ready for every
                                 business.
                             </h2>
 
-                            <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
+                            <p className="mt-3 max-w-2xl break-words text-sm leading-6 text-gray-400">
                                 Manage equipment and orders from one
                                 centralized administration area.
                             </p>
@@ -529,7 +528,7 @@ const AdminDashboard = () => {
 
                         <Link
                             to="/admin/products"
-                            className="inline-flex shrink-0 items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-gray-200"
+                            className="inline-flex w-full shrink-0 items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-black sm:w-auto"
                         >
                             Manage Catalog
                         </Link>
