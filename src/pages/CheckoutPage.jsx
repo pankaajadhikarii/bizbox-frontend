@@ -390,14 +390,14 @@ const CheckoutPage = () => {
                   </div>
                 )}
 
-                {Number(paymentMethod) === PAYMENT_METHOD.ESEWA && (
+                {/* {Number(paymentMethod) === PAYMENT_METHOD.ESEWA && (
                   <div className="mt-4 flex items-start gap-2 rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs leading-5 text-emerald-800">
                     <Wallet className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
                     <div className="min-w-0 space-y-1">
                       <p>
                         You will leave this site and sign in on eSewa&apos;s
                         sandbox (rc-epay.esewa.com.np). Use a UAT test wallet,
-                        not a real eSewa account or your Bizkit login.
+                        not a real eSewa account or your BizBox login.
                       </p>
                       <p className="break-words">
                         Test ID: 9806800001 (or 0002–0005) · Password:
@@ -405,7 +405,7 @@ const CheckoutPage = () => {
                       </p>
                     </div>
                   </div>
-                )}
+                )} */}
               </section>
             </div>
 
