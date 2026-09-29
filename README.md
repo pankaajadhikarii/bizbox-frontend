@@ -1,16 +1,60 @@
-# React + Vite
+# BizBox
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+BizBox is a business equipment e-commerce web application developed as a **college project**. The main objective of the project is to gain practical experience in developing a modern e-commerce platform, including product browsing, authentication, cart management, checkout, and online payment integration.
 
-Currently, two official plugins are available:
+The project aims to simplify the process of finding and purchasing business equipment by providing products, information, and purchasing functionality through a single online platform.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The project demonstrates the practical application of concepts learned during college through a real-world inspired web application.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Clone the repository:
 
-## Expanding the ESLint configuration
+```bash
+git clone https://github.com/pankaajadhikarii/bizbox-frontend.git
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Navigate to the project:
+
+```bash
+cd bizbox-frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+## eSewa Test Payment
+
+The project uses the **eSewa test environment** for payment testing.
+
+Use the following test credentials when prompted:
+
+| Credential  | Value        |
+| ----------- | ------------ |
+| eSewa ID    | `9806800001/2/3/4/5` |
+| Password    | `Nepal@123`  |
+| MPIN        | `1122`       |
+| OTP / Token | `123456`     |
+
+These are eSewa's currently documented test credentials.
+
+## Live Demo
+
+https://bizbox-frontend.vercel.app/
+
+## Repository
+
+https://github.com/pankaajadhikarii/bizbox-frontend
+
+## Author
+
+**Pankaj Adhikari**
