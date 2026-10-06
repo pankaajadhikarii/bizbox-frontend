@@ -864,7 +864,7 @@ const OrderDetails = () => {
 
                   <div className="mt-6 flex flex-col gap-2.5">
                     <Link
-                      to="/orders"
+                      to={isAdminView ? "/admin/orders" : "/orders"}
                       className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-black py-2.5 text-xs font-medium text-white transition hover:bg-gray-800 shadow-xs"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
