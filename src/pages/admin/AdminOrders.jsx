@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../../services/api";
 import paymentService from "../../services/paymentService";
 
@@ -520,9 +521,12 @@ const AdminOrders = () => {
                                             className="transition-colors hover:bg-gray-50"
                                         >
                                             <td className="max-w-[180px] px-6 py-5 text-sm text-gray-700">
-                                                <span className="break-words">
+                                                <Link
+                                                    to={`/orders/${order.id}`}
+                                                    className="break-words font-medium text-gray-900 underline decoration-gray-300 underline-offset-2 transition hover:decoration-gray-900"
+                                                >
                                                     #{getOrderNumber(order)}
-                                                </span>
+                                                </Link>
                                             </td>
 
                                             <td className="max-w-[220px] px-6 py-5 text-sm text-gray-700">

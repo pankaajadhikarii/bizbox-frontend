@@ -3,6 +3,22 @@ import { Link } from "react-router-dom";
 import { Package, ArrowRight, RotateCcw, AlertCircle } from "lucide-react";
 import orderService from "../services/orderService";
 
+const isResaleOrder = (order) => {
+  const orderId = order?.id;
+  const items = order?.items || order?.orderItems || [];
+  const orderType = order?.orderType || order?.type;
+
+  return Boolean(
+    order?.isResale ||
+      order?.resaleListingId != null ||
+      (typeof orderType === "string" &&
+        orderType.toLowerCase() === "resale") ||
+      items.some((item) => item?.isResale || item?.resaleListingId != null) ||
+      (orderId &&
+        sessionStorage.getItem(`resale_order_${orderId}`) === "true"),
+  );
+};
+
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +30,8 @@ const Orders = () => {
       setError("");
 
       const data = await orderService.getAll();
-      setOrders(Array.isArray(data) ? data : data.orders || []);
+      const orders = Array.isArray(data) ? data : data?.orders || [];
+      setOrders(orders.filter((order) => !isResaleOrder(order)));
     } catch (err) {
       setError(
         err.userMessage || "Unable to load your orders. Please try again.",
