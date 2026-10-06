@@ -450,7 +450,7 @@ const AdminDashboard = () => {
                                         order.id ||
                                         order.orderNumber
                                     }
-                                    to={`/orders/${order.id}`}
+                                    to={`/orders/${order.id}?admin=true`}
                                     className="flex min-w-0 flex-col gap-4 px-4 py-4 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-400 sm:px-6 sm:py-5 md:flex-row md:items-center md:justify-between"
                                 >
                                     <div className="min-w-0">

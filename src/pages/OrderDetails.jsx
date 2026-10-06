@@ -69,6 +69,7 @@ const OrderDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const isAdminView = searchParams.get("admin") === "true";
 
   const [order, setOrder] = useState(null);
   const [productsMap, setProductsMap] = useState({});
@@ -454,7 +455,7 @@ const OrderDetails = () => {
 
         {/* Back Link */}
         <Link
-          to="/orders"
+          to={isAdminView ? "/admin/orders" : "/orders"}
           className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-black"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
@@ -541,7 +542,7 @@ const OrderDetails = () => {
             </div>
 
             {/* Status Timeline */}
-            {!isResale && (
+            {!isResale && !isAdminView && (
               <section className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
                 <h2 className="mb-5 text-base font-semibold text-gray-900 sm:mb-6">
                   Order Progress
@@ -822,31 +823,35 @@ const OrderDetails = () => {
                   </h2>
 
                   <div className="mt-5 space-y-3 text-sm">
-                    <div className="flex items-center justify-between gap-4 text-gray-600">
-                      <span>Products</span>
-                      <span className="shrink-0">
-                        {items.length}
-                      </span>
-                    </div>
+                    {!isAdminView && (
+                      <>
+                        <div className="flex items-center justify-between gap-4 text-gray-600">
+                          <span>Products</span>
+                          <span className="shrink-0">
+                            {items.length}
+                          </span>
+                        </div>
 
-                    <div className="flex items-center justify-between gap-4 text-gray-600">
-                      <span>Total Quantity</span>
-                      <span className="shrink-0">
-                        {items.reduce(
-                          (sum, item) =>
-                            sum + getQuantity(item),
-                          0,
-                        )}
-                      </span>
-                    </div>
+                        <div className="flex items-center justify-between gap-4 text-gray-600">
+                          <span>Total Quantity</span>
+                          <span className="shrink-0">
+                            {items.reduce(
+                              (sum, item) =>
+                                sum + getQuantity(item),
+                              0,
+                            )}
+                          </span>
+                        </div>
 
-                    <div className="flex items-center justify-between gap-4 text-gray-600">
-                      <span>Payment Method</span>
+                        <div className="flex items-center justify-between gap-4 text-gray-600">
+                          <span>Payment Method</span>
 
-                      <span className="max-w-[50%] truncate text-right font-medium text-gray-900">
-                        {getPaymentMethod()}
-                      </span>
-                    </div>
+                          <span className="max-w-[50%] truncate text-right font-medium text-gray-900">
+                            {getPaymentMethod()}
+                          </span>
+                        </div>
+                      </>
+                    )}
 
                     <div className="flex items-center justify-between gap-4 border-t border-gray-100 pt-3 text-base font-semibold text-gray-900">
                       <span>Total Amount</span>

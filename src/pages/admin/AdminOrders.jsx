@@ -522,7 +522,7 @@ const AdminOrders = () => {
                                         >
                                             <td className="max-w-[180px] px-6 py-5 text-sm text-gray-700">
                                                 <Link
-                                                    to={`/orders/${order.id}`}
+                                                    to={`/orders/${order.id}?admin=true`}
                                                     className="break-words font-medium text-gray-900 underline decoration-gray-300 underline-offset-2 transition hover:decoration-gray-900"
                                                 >
                                                     #{getOrderNumber(order)}
