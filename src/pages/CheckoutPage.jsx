@@ -37,6 +37,7 @@ const CheckoutPage = () => {
   const [placingOrder, setPlacingOrder] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.COD);
 
   const [error, setError] = useState("");
@@ -319,6 +320,24 @@ const CheckoutPage = () => {
                     Include your city, street, and any specific delivery
                     instructions.
                   </p>
+                </div>
+
+                <div className="mt-4">
+                  <label
+                    htmlFor="phoneNumber"
+                    className="mb-1.5 block text-xs font-medium text-gray-700"
+                  >
+                    Phone Number
+                  </label>
+
+                  <input
+                    id="phoneNumber"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(event) => setPhoneNumber(event.target.value)}
+                    placeholder="Enter your phone number"
+                    className="w-full rounded-xl border border-gray-300 p-3.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-black focus:ring-1 focus:ring-black"
+                  />
                 </div>
               </section>
 

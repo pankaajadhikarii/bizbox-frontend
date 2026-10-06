@@ -16,6 +16,7 @@ const ResalePurchase = () => {
 
     const [listing, setListing] = useState(null);
     const [shippingAddress, setShippingAddress] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [paymentMethod, setPaymentMethod] = useState(2); // Default to Cash on Delivery
 
     const [loading, setLoading] = useState(true);
@@ -147,20 +148,6 @@ const ResalePurchase = () => {
     };
 
     const paymentOptions = [
-        {
-            id: 0,
-            name: "eSewa",
-            description: "Pay online securely using your eSewa wallet",
-            badge: "eS",
-            badgeBg: "bg-emerald-100 text-emerald-800",
-        },
-        {
-            id: 1,
-            name: "Khalti",
-            description: "Pay online with your Khalti digital wallet",
-            badge: "K",
-            badgeBg: "bg-purple-100 text-purple-800",
-        },
         {
             id: 2,
             name: "Cash on Delivery",
@@ -301,6 +288,26 @@ const ResalePurchase = () => {
                                 <p className="mt-1.5 text-xs leading-5 text-gray-400">
                                     Include your city, street, and any specific delivery instructions.
                                 </p>
+                            </div>
+
+                            <div className="mt-4">
+                                <label
+                                    htmlFor="phoneNumber"
+                                    className="mb-1.5 block text-xs font-medium text-gray-700"
+                                >
+                                    Phone Number
+                                </label>
+
+                                <input
+                                    id="phoneNumber"
+                                    type="tel"
+                                    value={phoneNumber}
+                                    onChange={(event) =>
+                                        setPhoneNumber(event.target.value)
+                                    }
+                                    placeholder="Enter your phone number"
+                                    className="w-full rounded-xl border border-gray-300 p-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-black focus:ring-1 focus:ring-black sm:p-3.5"
+                                />
                             </div>
                         </section>
 

@@ -18,6 +18,21 @@ const ORDER_STATUS_MAP = {
     Cancelled: 4,
 };
 
+const isResaleOrder = (order) => {
+    const items = order?.items || order?.orderItems || [];
+    const orderType = order?.orderType || order?.type;
+
+    return Boolean(
+        order?.isResale ||
+        order?.resaleListingId != null ||
+        (typeof orderType === "string" &&
+            orderType.toLowerCase() === "resale") ||
+        items.some(
+            (item) => item?.isResale || item?.resaleListingId != null
+        )
+    );
+};
+
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -42,8 +57,12 @@ const AdminOrders = () => {
                   raw?.items ||
                   raw?.data ||
                   [];
-            setOrders(list);
-            console.log("[AdminOrders] Loaded orders from API:", list);
+            const regularOrders = list.filter((order) => !isResaleOrder(order));
+            setOrders(regularOrders);
+            console.log(
+                "[AdminOrders] Loaded regular orders from API:",
+                regularOrders
+            );
         } catch (err) {
             setError(err.userMessage || "Failed to load orders.");
         } finally {

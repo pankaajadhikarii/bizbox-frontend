@@ -408,6 +408,16 @@ const OrderDetails = () => {
     return order?.orderNumber || order?.id || id;
   };
 
+  const getCustomerName = () =>
+    order?.customerName?.trim() || "Customer";
+
+  const getCustomerEmail = () =>
+    order?.customerEmail?.trim() || "No email provided.";
+
+  const getCustomerAddress = () =>
+    order?.shippingAddress?.trim() ||
+    "No shipping address provided.";
+
   const currentStatus = normalizeStatus(order?.status);
 
   const currentStepIndex = statusSteps.findIndex(
@@ -786,18 +796,18 @@ const OrderDetails = () => {
                     </h2>
                   </div>
 
-                  {order.customerName && (
-                    <div className="mb-3 rounded-xl border border-gray-100 bg-gray-50/75 p-3.5 text-sm">
-                      <p className="font-semibold text-gray-900">
-                        {order.customerName}
-                      </p>
-                    </div>
-                  )}
+                  <div className="mb-3 rounded-xl border border-gray-100 bg-gray-50/75 p-3.5 text-sm">
+                    <p className="font-semibold text-gray-900">
+                      {getCustomerName()}
+                    </p>
+
+                    <p className="mt-1 break-words text-gray-600">
+                      {getCustomerEmail()}
+                    </p>
+                  </div>
 
                   <div className="break-words rounded-xl border border-gray-100 bg-gray-50 p-4 text-sm leading-relaxed text-gray-700">
-                    {order.shippingAddress ||
-                      order.deliveryAddress ||
-                      "No delivery address provided."}
+                    {getCustomerAddress()}
                   </div>
                 </section>
               </div>
