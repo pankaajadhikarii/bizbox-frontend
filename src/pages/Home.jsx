@@ -75,7 +75,7 @@ const Home = () => {
           <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-10">
             <div className="max-w-2xl min-w-0">
               <h1 className="break-words text-3xl font-semibold leading-[1.15] tracking-tight text-black sm:text-4xl lg:text-5xl">
-                Shop equipment for you business.
+                Shop equipment for your business.
               </h1>
 
               <p className="mt-3 max-w-lg text-base leading-7 text-gray-600">
