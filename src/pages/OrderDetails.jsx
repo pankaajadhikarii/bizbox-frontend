@@ -505,7 +505,7 @@ const OrderDetails = () => {
               </button>
 
               <Link
-                to="/orders"
+                to={isAdminView ? "/admin/orders" : "/orders"}
                 className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-center text-xs font-medium text-gray-700 transition hover:bg-gray-50"
               >
                 Back to Orders
@@ -871,14 +871,16 @@ const OrderDetails = () => {
                       Back to all orders
                     </Link>
 
-                    <Link
-                      to={isResale ? "/resale" : "/equipment"}
-                      className="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
-                    >
-                      {isResale
-                        ? "Continue to Resale"
-                        : "Continue shopping"}
-                    </Link>
+                    {!isAdminView && (
+                      <Link
+                        to={isResale ? "/resale" : "/equipment"}
+                        className="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                      >
+                        {isResale
+                          ? "Continue to Resale"
+                          : "Continue shopping"}
+                      </Link>
+                    )}
                   </div>
                 </div>
 
